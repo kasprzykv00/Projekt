@@ -95,7 +95,7 @@
   </svg>
 
   <!-- ===================== HEADER ===================== -->
-  <header class="site-header fixed-top" id="top">
+  <header class="site-header fixed-top">
     <nav class="navbar navbar-expand-lg site-nav" aria-label="Nawigacja główna">
       <div class="container-fluid site-nav__inner">
         <a class="navbar-brand site-nav__brand" href="index.html" data-action="scroll-top" aria-label="e-spania — strona główna">
@@ -106,7 +106,7 @@
         <div class="offcanvas offcanvas-end site-menu" tabindex="-1" id="siteMenu" aria-labelledby="siteMenuLabel" data-bs-backdrop="false">
           <div class="offcanvas-header site-menu__header">
             <p class="offcanvas-title site-menu__title" id="siteMenuLabel">Menu</p>
-            <button type="button" class="btn site-menu__close" data-bs-dismiss="offcanvas">
+            <button type="button" class="btn text-btn" data-bs-dismiss="offcanvas">
               <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
               <span>Zamknij</span>
             </button>
@@ -139,7 +139,7 @@
 
           <a class="btn btn-accent btn-book" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
 
-          <button class="navbar-toggler site-nav__toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteMenu" aria-controls="siteMenu" aria-label="Otwórz menu">
+          <button class="navbar-toggler icon-btn site-nav__toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteMenu" aria-controls="siteMenu" aria-label="Otwórz menu">
             <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
           </button>
         </div>
@@ -156,13 +156,13 @@
         <img class="hero__image" src="assets/images/hero-mobile.webp" width="828" height="1300" alt="Basen z turkusową mozaiką przed bielonym domem z kamiennym murem, kwitnącą bugenwillą i palmą" fetchpriority="high">
       </picture>
       <!-- Film w tle: montaż widoków z Hiszpanii (Pexels). Wersję poziomą lub pionową wybiera JS. -->
-      <video class="hero__video" id="heroVideo" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"
+      <video class="hero__video" id="heroVideo" muted loop playsinline preload="none" aria-hidden="true"
              data-src-landscape="assets/video/hero-desktop.mp4" data-src-portrait="assets/video/hero-mobile.mp4"></video>
       <div class="hero__shade" aria-hidden="true"></div>
 
       <div class="container hero__inner">
         <div class="hero__content">
-          <p class="eyebrow eyebrow--light hero__eyebrow">e-spania · Hotel w Hiszpanii</p>
+          <p class="eyebrow eyebrow--light eyebrow--center hero__eyebrow">e-spania · Hotel w Hiszpanii</p>
           <h1 class="hero__title" id="hero-title" data-split>Śródziemnomorski rytm, <em>spokojny luksus</em></h1>
           <a class="hero__discover" href="#hotel">
             <span>Odkryj e-spania</span>
@@ -182,9 +182,9 @@
               </button>
               <div class="dropdown-menu booking-pop calendar" id="calendar" role="dialog" aria-label="Kalendarz — wybierz daty pobytu">
                 <div class="calendar__head">
-                  <button class="calendar__nav" type="button" data-cal-step="-1" aria-label="Poprzedni miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg></button>
+                  <button class="icon-btn calendar__nav" type="button" data-cal-step="-1" aria-label="Poprzedni miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg></button>
                   <p class="calendar__hint" id="calendarHint" aria-live="polite">Wybierz datę przyjazdu</p>
-                  <button class="calendar__nav" type="button" data-cal-step="1" aria-label="Następny miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+                  <button class="icon-btn calendar__nav" type="button" data-cal-step="1" aria-label="Następny miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
                 </div>
                 <div class="calendar__months" id="calendarMonths"><!-- miesiące rysuje JS --></div>
                 <div class="booking-pop__foot">
@@ -197,31 +197,30 @@
               <p class="booking__error" id="dates-error" aria-live="polite"></p>
             </div>
 
-            <div class="col-6 col-lg-auto booking__field dropup guests">
+            <div class="col-6 col-lg-auto booking__field booking__field--guests dropup">
               <button class="booking__trigger" type="button" id="guestsToggle" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">
                 <span class="visually-hidden">Liczba gości: </span>
                 <span class="booking__value" id="guestsSummary">2 dorosłych</span>
                 <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
               </button>
-              <div class="dropdown-menu booking-pop guests__menu">
+              <div class="dropdown-menu booking-pop guests">
                 <div class="guests__row">
                   <label class="guests__label" for="adults">Dorośli <small>od 13 lat</small></label>
                   <div class="stepper">
-                    <button class="stepper__btn" type="button" data-step="-1" data-target="adults" aria-label="Mniej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                    <button class="icon-btn stepper__btn" type="button" data-step="-1" data-target="adults" aria-label="Mniej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
                     <input class="stepper__input" type="number" id="adults" name="adults" value="2" min="1" max="6" inputmode="numeric">
-                    <button class="stepper__btn" type="button" data-step="1" data-target="adults" aria-label="Więcej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
+                    <button class="icon-btn stepper__btn" type="button" data-step="1" data-target="adults" aria-label="Więcej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
                   </div>
                 </div>
                 <div class="guests__row">
                   <label class="guests__label" for="children">Dzieci <small>0–12 lat</small></label>
                   <div class="stepper">
-                    <button class="stepper__btn" type="button" data-step="-1" data-target="children" aria-label="Mniej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                    <button class="icon-btn stepper__btn" type="button" data-step="-1" data-target="children" aria-label="Mniej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
                     <input class="stepper__input" type="number" id="children" name="children" value="0" min="0" max="4" inputmode="numeric">
-                    <button class="stepper__btn" type="button" data-step="1" data-target="children" aria-label="Więcej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
+                    <button class="icon-btn stepper__btn" type="button" data-step="1" data-target="children" aria-label="Więcej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
                   </div>
                 </div>
-                <div class="booking-pop__foot">
-                  <span></span>
+                <div class="booking-pop__foot booking-pop__foot--end">
                   <button class="booking-pop__link booking-pop__link--strong guests__done" type="button">Gotowe</button>
                 </div>
               </div>
@@ -245,7 +244,7 @@
         </form>
       </div>
 
-      <button class="hero__video-toggle" type="button" id="heroVideoToggle" aria-pressed="false" aria-label="Wstrzymaj film w tle" hidden>
+      <button class="icon-btn hero__video-toggle" type="button" id="heroVideoToggle" aria-pressed="false" aria-label="Wstrzymaj film w tle" hidden>
         <svg class="icon icon--sm hero__icon-pause" aria-hidden="true"><use href="#i-pause"/></svg>
         <svg class="icon icon--sm hero__icon-play" aria-hidden="true"><use href="#i-play"/></svg>
       </button>
@@ -268,10 +267,10 @@
           </div>
           <div class="col-lg-7 col-xl-6 order-lg-1">
             <div class="about__media">
-              <figure class="about__figure about__figure--main media-reveal" data-reveal="clip" data-parallax="0.05">
+              <figure class="about__figure about__figure--main media-frame" data-reveal="clip" data-parallax="0.05">
                 <img src="assets/images/about-house.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Bielona fasada z drewnianymi okiennicami i palmą na tle błękitnego nieba">
               </figure>
-              <figure class="about__figure about__figure--accent media-reveal" data-reveal="clip" data-parallax="-0.08">
+              <figure class="about__figure about__figure--accent media-frame" data-reveal="clip" data-parallax="-0.08">
                 <img src="assets/images/about-courtyard.webp" width="800" height="1000" loading="lazy" decoding="async" alt="Patio z drzewkami cytrynowymi w terakotowych donicach">
               </figure>
             </div>
@@ -294,10 +293,10 @@
           </div>
         </div>
 
-        <div class="row gx-lg-5 rooms__grid">
+        <div class="row gx-lg-5">
           <div class="col-md-6 col-lg-7">
             <article class="room-card" data-room-id="classic" data-room-capacity="2" data-reveal>
-              <figure class="room-card__media media-reveal" data-reveal="clip">
+              <figure class="room-card__media media-frame" data-reveal="clip">
                 <img src="assets/images/room-classic.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Jasny pokój z podwójnym łóżkiem, białą pościelą i dekoracyjnymi kapeluszami na ścianie">
               </figure>
               <div class="room-card__body">
@@ -315,7 +314,7 @@
           </div>
           <div class="col-md-6 col-lg-5 rooms__offset">
             <article class="room-card" data-room-id="deluxe" data-room-capacity="2" data-reveal>
-              <figure class="room-card__media room-card__media--tall media-reveal" data-reveal="clip">
+              <figure class="room-card__media room-card__media--tall media-frame" data-reveal="clip">
                 <img src="assets/images/room-deluxe.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Przestronny pokój z lnianą pościelą, rzeźbionym panelem nad łóżkiem i jutowym dywanem">
               </figure>
               <div class="room-card__body">
@@ -333,7 +332,7 @@
           </div>
           <div class="col-md-6 col-lg-5">
             <article class="room-card" data-room-id="junior" data-room-capacity="3" data-reveal>
-              <figure class="room-card__media room-card__media--tall media-reveal" data-reveal="clip">
+              <figure class="room-card__media room-card__media--tall media-frame" data-reveal="clip">
                 <img src="assets/images/room-junior.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Sypialnia z łukowymi oknami wychodzącymi na zieleń i kutym żyrandolem">
               </figure>
               <div class="room-card__body">
@@ -351,7 +350,7 @@
           </div>
           <div class="col-md-6 col-lg-7 rooms__offset">
             <article class="room-card" data-room-id="suite" data-room-capacity="4" data-reveal>
-              <figure class="room-card__media media-reveal" data-reveal="clip">
+              <figure class="room-card__media media-frame" data-reveal="clip">
                 <img src="assets/images/room-suite.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Otwarte drzwi balkonowe z widokiem na morze o zmierzchu">
               </figure>
               <div class="room-card__body">
@@ -385,10 +384,10 @@
           </div>
         </div>
 
-        <div class="row gy-5 gx-lg-5 experiences__list">
+        <div class="row gy-5 gx-lg-5">
           <div class="col-md-4">
             <article class="experience" data-reveal>
-              <figure class="experience__media media-reveal" data-reveal="clip">
+              <figure class="experience__media media-frame" data-reveal="clip">
                 <img src="assets/images/exp-pool.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Zadaszone łoże z białymi zasłonami przy basenie">
               </figure>
               <p class="experience__time">Popołudnie</p>
@@ -398,7 +397,7 @@
           </div>
           <div class="col-md-4 experiences__offset">
             <article class="experience" data-reveal>
-              <figure class="experience__media media-reveal" data-reveal="clip">
+              <figure class="experience__media media-frame" data-reveal="clip">
                 <img src="assets/images/exp-table.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Długi stół nakryty białym obrusem na tarasie o zachodzie słońca">
               </figure>
               <p class="experience__time">Wieczór</p>
@@ -408,7 +407,7 @@
           </div>
           <div class="col-md-4">
             <article class="experience" data-reveal>
-              <figure class="experience__media media-reveal" data-reveal="clip">
+              <figure class="experience__media media-frame" data-reveal="clip">
                 <img src="assets/images/exp-coast.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Skaliste wybrzeże opadające do spokojnego morza">
               </figure>
               <p class="experience__time">Poranek</p>
@@ -434,20 +433,20 @@
         </div>
 
         <ul class="gallery__grid">
-          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="0"><img src="assets/images/gal-pool-arches.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Wąski basen z turkusowymi płytkami prowadzący do mauretańskich łuków"></button></li>
-          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="1"><img src="assets/images/gal-courtyard-pool.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Zacieniony dziedziniec z basenem, roślinami w donicach i arkadami"></button></li>
-          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="2"><img src="assets/images/gal-tiles.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Ściana z kolorowymi płytkami azulejos otoczona zielenią"></button></li>
-          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="3"><img src="assets/images/gal-olive.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Drzewo oliwne w donicy przy kamiennym łuku"></button></li>
-          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="4"><img src="assets/images/gal-lane.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Bielony zaułek z brukiem w okrągłe wzory i roślinami w donicach"></button></li>
-          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="5"><img src="assets/images/gal-white-house.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Bielony dom z szarymi drzwiami, kamiennymi schodami i śródziemnomorskim ogrodem"></button></li>
-          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="6"><img src="assets/images/gal-terrace.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Taras z mozaikowym stolikiem i widokiem na morze o zmierzchu"></button></li>
-          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="7"><img src="assets/images/gal-patio.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Słoneczne patio z łukowym przejściem, palmami i czerwonymi kwiatami"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-pool-arches.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Wąski basen z turkusowymi płytkami prowadzący do mauretańskich łuków"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-courtyard-pool.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Zacieniony dziedziniec z basenem, roślinami w donicach i arkadami"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-tiles.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Ściana z kolorowymi płytkami azulejos otoczona zielenią"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-olive.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Drzewo oliwne w donicy przy kamiennym łuku"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-lane.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Bielony zaułek z brukiem w okrągłe wzory i roślinami w donicach"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-white-house.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Bielony dom z szarymi drzwiami, kamiennymi schodami i śródziemnomorskim ogrodem"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-terrace.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Taras z mozaikowym stolikiem i widokiem na morze o zmierzchu"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button media-frame" type="button"><img src="assets/images/gal-patio.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Słoneczne patio z łukowym przejściem, palmami i czerwonymi kwiatami"></button></li>
         </ul>
       </div>
     </section>
 
     <!-- ===================== OPINIE ===================== -->
-    <section class="section section--soft reviews" id="opinie" aria-labelledby="reviews-title">
+    <section class="section section--soft" id="opinie" aria-labelledby="reviews-title">
       <div class="container">
         <div class="row align-items-end gy-4 section-head">
           <div class="col-lg-7">
@@ -499,9 +498,10 @@
       <img class="cta__image" data-parallax="0.1" src="assets/images/cta-bay.webp" width="1920" height="1000" loading="lazy" decoding="async" alt="Zatoka z łodziami żaglowymi o zachodzie słońca">
       <div class="cta__shade" aria-hidden="true"></div>
       <div class="container cta__inner">
-        <p class="eyebrow eyebrow--light" data-reveal>Twój pobyt</p>
+        <p class="eyebrow eyebrow--light eyebrow--center" data-reveal>Twój pobyt</p>
         <h2 class="cta__title" id="cta-title" data-reveal data-split>Zostań, aż zajdzie <em>słońce</em></h2>
         <p class="cta__text" data-reveal>Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt w e-spania.</p>
+        <!-- Wrapper: animacja pojawiania ustawia transform, który nadpisałby uniesienie przycisku przy hover -->
         <div data-reveal>
           <a class="btn btn-accent btn-lg-pill" href="#rezerwacja" data-action="focus-booking">Sprawdź dostępność</a>
         </div>
@@ -538,7 +538,7 @@
         <div class="col-md-4 col-lg-2">
           <h2 class="site-footer__heading">Rezerwacja</h2>
           <p class="site-footer__small">Sprawdź termin w kilka sekund.</p>
-          <a class="btn btn-outline-light btn-ghost" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
+          <a class="btn btn-ghost" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
         </div>
       </div>
       <div class="site-footer__bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -556,7 +556,7 @@
         <h2 class="room-panel__title" id="roomPanelTitle">Pokoje i suity</h2>
         <p class="room-panel__summary" id="roomPanelSummary" aria-live="polite">Wybierz pokój, a dodamy go do wyszukiwania.</p>
       </div>
-      <button type="button" class="btn room-panel__close" data-bs-dismiss="offcanvas">
+      <button type="button" class="btn text-btn room-panel__close" data-bs-dismiss="offcanvas">
         <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
         <span>Zamknij</span>
       </button>
@@ -568,7 +568,7 @@
           <p class="demo-note room-panel__note">Dostępność i dane pokoi są demonstracyjne. Wybór pokoju nie jest rezerwacją.</p>
         </div>
         <div class="col-lg-7 d-none d-lg-block room-panel__preview-col">
-          <figure class="room-preview" id="roomPreview">
+          <figure class="room-preview">
             <img class="room-preview__image" id="roomPreviewImage" src="assets/images/room-classic.webp" width="1200" height="900" loading="lazy" alt="">
             <figcaption class="room-preview__caption">
               <span class="room-preview__name" id="roomPreviewName">Pokój Classic</span>
@@ -584,15 +584,15 @@
   <div class="modal fade lightbox" id="galleryModal" tabindex="-1" aria-labelledby="lightboxCaption" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content lightbox__content">
-        <button type="button" class="btn lightbox__close" data-bs-dismiss="modal">
+        <button type="button" class="btn text-btn lightbox__close" data-bs-dismiss="modal">
           <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span>Zamknij</span>
         </button>
         <figure class="lightbox__figure">
           <img class="lightbox__image" id="lightboxImage" src="assets/images/gal-pool-arches.webp" loading="lazy" alt="">
           <figcaption class="lightbox__caption" id="lightboxCaption" aria-live="polite"></figcaption>
         </figure>
-        <button type="button" class="btn lightbox__nav lightbox__nav--prev" data-gallery-step="-1" aria-label="Poprzednie zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
-        <button type="button" class="btn lightbox__nav lightbox__nav--next" data-gallery-step="1" aria-label="Następne zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        <button type="button" class="icon-btn lightbox__nav lightbox__nav--prev" data-gallery-step="-1" aria-label="Poprzednie zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <button type="button" class="icon-btn lightbox__nav lightbox__nav--next" data-gallery-step="1" aria-label="Następne zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
       </div>
     </div>
   </div>
@@ -604,7 +604,7 @@
         <p class="es-toast__title" id="appToastTitle"></p>
         <p class="es-toast__text" id="appToastText"></p>
       </div>
-      <button type="button" class="btn es-toast__close" data-bs-dismiss="toast" aria-label="Zamknij powiadomienie"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button type="button" class="icon-btn es-toast__close" data-bs-dismiss="toast" aria-label="Zamknij powiadomienie"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-close"/></svg></button>
     </div>
   </div>
 

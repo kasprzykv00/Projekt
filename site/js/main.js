@@ -48,6 +48,27 @@
   const dateFormat = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short' });
   const formatRange = (start, end) => `${dateFormat.format(fromISO(start))} – ${dateFormat.format(fromISO(end))}`;
 
+  /* ---------- Pomocnicze: przewijanie i dropdowny ---------- */
+
+  // Wywołuje fn przy przewijaniu, najwyżej raz na klatkę animacji
+  function onScrollFrame(fn) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        fn();
+        ticking = false;
+      });
+    }, { passive: true });
+  }
+
+  // Zamyka dropdown (kalendarz, goście) i oddaje fokus przyciskowi, który go otworzył
+  function closeDropdown(toggle) {
+    bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
+    toggle.focus();
+  }
+
   /* ---------- Powiadomienia (Bootstrap Toast) ---------- */
   const toastEl = qs('#appToast');
   const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 7000 });
@@ -63,6 +84,16 @@
   const menuEl = qs('#siteMenu');
   const menu = bootstrap.Offcanvas.getOrCreateInstance(menuEl);
 
+  // Na telefonie najpierw zamyka menu, a dopiero potem wykonuje akcję (przewinięcie, fokus)
+  function afterMenuClosed(action) {
+    if (!menuEl.classList.contains('show')) {
+      action();
+      return;
+    }
+    menuEl.addEventListener('hidden.bs.offcanvas', action, { once: true });
+    menu.hide();
+  }
+
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: scrollBehavior() });
     history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -71,7 +102,6 @@
   function initHeader() {
     const progress = qs('.scroll-progress');
     let lastY = window.scrollY;
-    let ticking = false;
 
     // Nagłówek: tło po zjechaniu z hero, chowanie przy przewijaniu w dół, pasek postępu
     function update() {
@@ -83,16 +113,10 @@
       if (y < lastY - 2) header.classList.remove('is-hidden');
       progress.style.setProperty('--progress', max > 0 ? (y / max).toFixed(4) : 0);
       lastY = y;
-      ticking = false;
     }
 
     update();
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        ticking = true;
-        window.requestAnimationFrame(update);
-      }
-    }, { passive: true });
+    onScrollFrame(update);
 
     // Fokus klawiatury w nagłówku zawsze go pokazuje
     header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
@@ -101,26 +125,20 @@
     qsa('[data-action="scroll-top"]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        if (menuEl.classList.contains('show')) {
-          menuEl.addEventListener('hidden.bs.offcanvas', scrollToTop, { once: true });
-          menu.hide();
-        } else {
-          scrollToTop();
-        }
+        afterMenuClosed(scrollToTop);
       });
     });
 
-    // Na telefonie link w menu najpierw zamyka panel, a dopiero potem przewija do sekcji
+    // Link w otwartym menu mobilnym: przewijamy dopiero po zamknięciu panelu
+    // (na desktopie menu nie jest panelem — działa zwykły link #sekcja)
     qsa('.site-menu__link', menuEl).forEach((link) => {
       link.addEventListener('click', (event) => {
         if (!menuEl.classList.contains('show')) return;
         event.preventDefault();
-        const target = qs(link.hash);
-        menuEl.addEventListener('hidden.bs.offcanvas', () => {
-          target.scrollIntoView({ behavior: scrollBehavior() });
+        afterMenuClosed(() => {
+          qs(link.hash).scrollIntoView({ behavior: scrollBehavior() });
           history.pushState(null, '', link.hash);
-        }, { once: true });
-        menu.hide();
+        });
       });
     });
   }
@@ -405,10 +423,7 @@
     if (departure.value) {
       validateDates();
       // Po wybraniu wyjazdu okienko zamyka się samo — jak w kalendarzach rezerwacyjnych
-      window.setTimeout(() => {
-        bootstrap.Dropdown.getOrCreateInstance(datesToggle).hide();
-        datesToggle.focus();
-      }, reduceMotion.matches ? 0 : 350);
+      window.setTimeout(() => closeDropdown(datesToggle), reduceMotion.matches ? 0 : 350);
     } else {
       // Jeśli wcześniej był błąd, podpowiadamy kolejny krok zamiast starego komunikatu
       if (datesToggle.closest('.booking__field').classList.contains('is-invalid')) validateDates();
@@ -478,8 +493,7 @@
     });
 
     qs('#calendarDone').addEventListener('click', () => {
-      bootstrap.Dropdown.getOrCreateInstance(datesToggle).hide();
-      datesToggle.focus();
+      closeDropdown(datesToggle);
       if (arrival.value) validateDates();
     });
 
@@ -511,11 +525,7 @@
       });
     });
 
-    const guestsToggle = qs('#guestsToggle');
-    qs('.guests__done').addEventListener('click', () => {
-      bootstrap.Dropdown.getOrCreateInstance(guestsToggle).hide();
-      guestsToggle.focus();
-    });
+    qs('.guests__done').addEventListener('click', () => closeDropdown(qs('#guestsToggle')));
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -539,12 +549,7 @@
     qsa('[data-action="focus-booking"]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        if (menuEl.classList.contains('show')) {
-          menuEl.addEventListener('hidden.bs.offcanvas', focusBooking, { once: true });
-          menu.hide();
-        } else {
-          focusBooking();
-        }
+        afterMenuClosed(focusBooking);
       });
     });
 
@@ -823,7 +828,6 @@
     const items = qsa('[data-parallax]').map((el) => ({ el, speed: Number(el.dataset.parallax) }));
     if (!items.length) return;
 
-    let ticking = false;
     function update() {
       const viewport = window.innerHeight;
       items.forEach(({ el, speed }) => {
@@ -834,15 +838,10 @@
         const offset = Math.max(-limit, Math.min(limit, (parent.top + parent.height / 2 - viewport / 2) * speed));
         el.style.setProperty('--parallax', `${offset.toFixed(1)}px`);
       });
-      ticking = false;
     }
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        ticking = true;
-        window.requestAnimationFrame(update);
-      }
-    }, { passive: true });
+
     update();
+    onScrollFrame(update);
   }
 
   splitWords();

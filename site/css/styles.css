@@ -1,9 +1,25 @@
 /* =========================================================
    e-spania — style strony głównej
-   Kolejność: zmienne → baza → komponenty Bootstrapa (nadpisania)
-   → sekcje strony → animacje → preferencje dostępności.
+
    Mobile first: style bazowe są dla telefonu, media queries
    (min-width) rozbudowują układ na większych ekranach.
+   Punkty przełamania jak w Bootstrapie: 576 / 768 / 992 / 1200 px.
+
+   Spis treści
+    1. Zmienne (design tokens)
+    2. Baza i fokus
+    3. Elementy wspólne (typografia, ikony, ramki zdjęć, przyciski pomocnicze)
+    4. Komponenty Bootstrapa — własne warianty
+       4.1 Przyciski  4.2 Nagłówek (navbar)  4.3 Menu mobilne (offcanvas)  4.4 Wybór języka (dropdown)
+    5. Hero
+    6. Moduł rezerwacji (pasek, okienka, kalendarz, goście)
+    7. Sekcje strony
+    8. Stopka
+    9. Panel wyboru pokoi (offcanvas)
+   10. Podgląd galerii (modal)
+   11. Powiadomienia (toast)
+   12. Animacje
+   13. Ograniczenie ruchu (prefers-reduced-motion)
    ========================================================= */
 
 /* ---------- 1. Zmienne (design tokens) ---------- */
@@ -17,6 +33,7 @@
   /* Odcienie pochodne — potrzebne dla kontrastu WCAG i głębi */
   --color-accent-strong: #C9411D;   /* tło przycisków: biały tekst 4.9:1 */
   --color-accent-hover: #A9361A;
+  --color-accent-on-dark: #F0876B;  /* akcent na ciemnym tle: 5.4:1 */
   --color-primary-deep: #EEE6E3;    /* delikatnie ciemniejsze tło sekcji */
   --color-ink: #1E1C1C;
   --color-muted: #5F5757;           /* tekst drugorzędny: 6.3:1 na primary */
@@ -24,6 +41,9 @@
   --color-on-dark: #F7F2F2;
   --color-on-dark-muted: rgba(247, 242, 242, 0.76);
   --color-line-dark: rgba(247, 242, 242, 0.16);
+  --color-line-on-image: rgba(255, 255, 255, 0.14);
+  --color-error: #FF9C80;           /* obramowanie błędu na ciemnym tle */
+  --color-error-text: #FFC9B8;      /* tekst błędu na ciemnym tle */
   --focus-ring: var(--color-accent-strong);
 
   --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
@@ -31,21 +51,31 @@
 
   --header-h: 4.5rem;
   --section-space: clamp(5rem, 3.5rem + 7vw, 10rem);
+  --tap: 2.75rem;                   /* minimalny obszar dotyku: 44 px */
   --radius-sm: 0.25rem;
   --radius-md: 0.75rem;
   --radius-lg: 1.25rem;
+  --radius-pill: 999px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
   --dur-fast: 200ms;
   --dur-med: 450ms;
+
+  /* Opóźnienie animacji hero — czas trwania kurtyny przy wejściu (0, gdy kurtyny nie ma) */
+  --intro-delay: 1.35s;
+}
+
+.no-intro {
+  --intro-delay: 0s;
 }
 
 @media (min-width: 992px) {
   :root { --header-h: 5.25rem; }
 }
 
-/* ---------- 2. Baza ---------- */
+/* ---------- 2. Baza i fokus ---------- */
 *,
 *::before,
 *::after {
@@ -92,16 +122,23 @@ a {
   text-decoration-thickness: 1px;
 }
 
-em {
-  font-style: italic;
-}
-
-:focus-visible {
+/* Jedna ramka fokusu dla całej strony. Bootstrap w .btn, .nav-link i .navbar-toggler
+   zeruje outline i używa własnego cienia — przywracamy spójną ramkę. */
+:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible,
+.navbar-toggler:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
+  box-shadow: none;
 }
 
-/* Na ciemnym tle obramowanie focus jest jasne */
+/* Bootstrap rysuje cień przycisku menu także po kliknięciu myszą */
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Na ciemnym tle ramka fokusu jest jasna */
 .hero,
 .section--dark,
 .site-footer,
@@ -116,22 +153,6 @@ em {
 /* …ale jasna lista języków wraca do akcentu */
 .lang-switch__menu {
   --focus-ring: var(--color-accent-strong);
-}
-
-.icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.icon--sm {
-  width: 1rem;
-  height: 1rem;
 }
 
 .skip-link {
@@ -151,7 +172,9 @@ em {
   transform: none;
 }
 
-/* Wspólne elementy typograficzne */
+/* ---------- 3. Elementy wspólne ---------- */
+
+/* 3.1 Typografia */
 .eyebrow {
   display: flex;
   align-items: center;
@@ -164,7 +187,9 @@ em {
   color: var(--color-muted);
 }
 
-.eyebrow::before {
+/* Kreska przed tekstem; wersja wyśrodkowana ma kreski po obu stronach */
+.eyebrow::before,
+.eyebrow--center::after {
   content: "";
   width: 1.75rem;
   height: 1px;
@@ -173,6 +198,10 @@ em {
 
 .eyebrow--light {
   color: var(--color-on-dark-muted);
+}
+
+.eyebrow--center {
+  justify-content: center;
 }
 
 .section-title {
@@ -184,18 +213,12 @@ em {
   text-wrap: balance;
 }
 
-.about .section-title {
-  margin-bottom: 2rem;
-}
-
-.section-title em,
-.cta__title em {
+.section-title em {
   color: var(--color-accent);
-  font-weight: 300;
 }
 
 .section--dark .section-title em {
-  color: #F0876B; /* jaśniejszy akcent na ciemnym tle — kontrast 5.4:1 */
+  color: var(--color-accent-on-dark);
 }
 
 .lead-text {
@@ -205,6 +228,7 @@ em {
   line-height: 1.45;
 }
 
+/* Oznaczenia treści demonstracyjnych */
 .demo-note {
   display: flex;
   align-items: baseline;
@@ -240,16 +264,113 @@ em {
   font-weight: 600;
 }
 
-/* ---------- 3. Komponenty Bootstrapa — własne warianty ---------- */
-
-/* 3.1 Przyciski (.btn) */
-.btn {
-  --bs-btn-font-family: var(--font-body);
-  min-height: 2.75rem;
+/* 3.2 Ikony SVG (sprite w index.html) */
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Wspólna baza przycisków-pigułek. Przy najechaniu kolor „wlewa się” od dołu
-   (warstwa ::before), a przycisk lekko się unosi. */
+.icon--sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* 3.3 Okrągły przycisk z samą ikoną (44 × 44 px). Wygląd obramowania i tła
+   ustawia klasa konkretnego elementu, np. .stepper__btn, .lightbox__nav. */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  transition: background-color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft), opacity var(--dur-fast) var(--ease-soft);
+}
+
+/* 3.4 Tekstowy przycisk „Zamknij” (menu, panel pokoi, galeria) */
+.text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.text-btn:hover {
+  color: inherit;
+  opacity: 0.75;
+}
+
+/* 3.5 Link tekstowy ze strzałką („Wybierz” w kartach pokoi) */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background:
+    linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+  transition: color var(--dur-fast) var(--ease-soft), background-size var(--dur-med) var(--ease-out);
+}
+
+.link-arrow .icon {
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.link-arrow:hover,
+.link-arrow:focus-visible {
+  color: var(--color-accent-strong);
+  background-size: 40% 1px;
+}
+
+.link-arrow:hover .icon,
+.link-arrow:focus-visible .icon {
+  transform: translateX(0.25rem);
+}
+
+/* 3.6 Ramka zdjęcia: przycina obraz i wypełnia nim całą powierzchnię */
+.media-frame {
+  overflow: hidden;
+}
+
+.media-frame > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- 4. Komponenty Bootstrapa — własne warianty ---------- */
+
+/* 4.1 Przyciski (.btn).
+   Kolory ustawiamy zmiennymi Bootstrapa (--bs-btn-*), dzięki czemu stany
+   hover / focus / active działają bez !important. Przy najechaniu kolor
+   „wlewa się” od dołu (warstwa ::before), a przycisk lekko się unosi. */
+.btn {
+  --bs-btn-font-family: var(--font-body);
+  min-height: var(--tap);
+}
+
 .btn-accent,
 .btn-ink,
 .btn-ghost {
@@ -262,7 +383,7 @@ em {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -306,55 +427,55 @@ em {
 }
 
 .btn-accent {
-  background-color: var(--color-accent-strong);
-  border: 1px solid var(--color-accent-strong);
-  color: #FFFFFF;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-bg: var(--color-accent-strong);
+  --bs-btn-border-color: var(--color-accent-strong);
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: var(--color-accent-strong);
+  --bs-btn-hover-border-color: var(--color-accent-hover);
+  --bs-btn-active-color: #FFFFFF;
+  --bs-btn-active-bg: var(--color-accent-strong);
+  --bs-btn-active-border-color: var(--color-accent-hover);
 }
 
 .btn-accent:hover,
-.btn-accent:focus-visible,
-.btn-accent:active {
-  background-color: var(--color-accent-strong) !important;
-  border-color: var(--color-accent-hover) !important;
-  color: #FFFFFF !important;
+.btn-accent:focus-visible {
   box-shadow: 0 0.75rem 1.75rem rgba(201, 65, 29, 0.32);
 }
 
 .btn-ink {
   --btn-fill: var(--color-ink);
-  background-color: var(--color-secondary);
-  border: 1px solid var(--color-secondary);
-  color: var(--color-on-dark);
+  --bs-btn-color: var(--color-on-dark);
+  --bs-btn-bg: var(--color-secondary);
+  --bs-btn-border-color: var(--color-secondary);
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: var(--color-secondary);
+  --bs-btn-hover-border-color: var(--color-secondary);
+  --bs-btn-active-color: #FFFFFF;
+  --bs-btn-active-bg: var(--color-secondary);
+  --bs-btn-active-border-color: var(--color-secondary);
 }
 
-.btn-ink:hover,
-.btn-ink:focus-visible {
-  background-color: var(--color-secondary);
-  color: #FFFFFF;
-}
-
+/* Wybrany pokój: przycisk w wersji konturowej */
 .btn-ink[aria-pressed="true"] {
   --btn-fill: var(--color-secondary);
-  background-color: transparent;
-  color: var(--color-secondary);
-}
-
-.btn-ink[aria-pressed="true"]:hover {
-  color: var(--color-on-dark);
+  --bs-btn-color: var(--color-secondary);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-color: var(--color-on-dark);
+  --bs-btn-hover-bg: transparent;
 }
 
 .btn-ghost {
   --btn-fill: var(--color-on-dark);
-  background: transparent;
-  border: 1px solid var(--color-line-dark);
-  color: var(--color-on-dark);
-}
-
-.btn-ghost:hover,
-.btn-ghost:focus-visible {
-  background: transparent;
-  border-color: var(--color-on-dark);
-  color: var(--color-secondary);
+  --bs-btn-color: var(--color-on-dark);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: var(--color-line-dark);
+  --bs-btn-hover-color: var(--color-secondary);
+  --bs-btn-hover-bg: transparent;
+  --bs-btn-hover-border-color: var(--color-on-dark);
+  --bs-btn-active-color: var(--color-secondary);
+  --bs-btn-active-bg: var(--color-on-dark);
+  --bs-btn-active-border-color: var(--color-on-dark);
 }
 
 .btn-lg-pill {
@@ -362,42 +483,11 @@ em {
   font-size: 0.8125rem;
 }
 
-/* Link tekstowy ze strzałką */
-.link-arrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0;
-  border: 0;
-  border-radius: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  background:
-    linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
-  transition: color var(--dur-fast) var(--ease-soft), background-size var(--dur-med) var(--ease-out);
-}
-
-.link-arrow .icon {
-  transition: transform var(--dur-med) var(--ease-out);
-}
-
-.link-arrow:hover,
-.link-arrow:focus-visible {
-  color: var(--color-accent-strong);
-  background-size: 40% 1px;
-}
-
-.link-arrow:hover .icon,
-.link-arrow:focus-visible .icon {
-  transform: translateX(0.25rem);
-}
-
-/* 3.2 Navbar */
+/* 4.2 Nagłówek (navbar): przezroczysty na hero, z tłem po przewinięciu,
+   chowa się przy przewijaniu w dół (klasy ustawia JS) */
 .site-header {
   color: #FFFFFF;
+  transition: background-color var(--dur-med) var(--ease-soft), color var(--dur-med) var(--ease-soft), box-shadow var(--dur-med) var(--ease-soft), transform 0.6s var(--ease-out);
 }
 
 .site-header.is-scrolled {
@@ -406,6 +496,28 @@ em {
   box-shadow: 0 1px 0 var(--color-line);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
+}
+
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+/* Pasek postępu przewijania (szerokość = --progress od 0 do 1) */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease-soft);
+}
+
+.site-header.is-scrolled .scroll-progress {
+  opacity: 1;
 }
 
 .site-nav {
@@ -418,11 +530,12 @@ em {
   flex-wrap: nowrap;
 }
 
+/* Dwie wersje logo nałożone na siebie — przenikają się po przewinięciu */
 .site-nav__brand {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 2.75rem;
+  min-height: var(--tap);
   margin-right: 0;
   padding: 0;
   width: 4.75rem;
@@ -456,20 +569,8 @@ em {
 }
 
 .site-nav__toggler {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
   border: 1px solid currentColor;
-  border-radius: 50%;
-  color: inherit;
   opacity: 0.9;
-}
-
-.site-nav__toggler:focus {
-  box-shadow: none;
 }
 
 .btn-book {
@@ -477,7 +578,7 @@ em {
   margin-inline: 0.25rem;
 }
 
-/* 3.3 Offcanvas — menu mobilne (na desktopie staje się zwykłą listą linków) */
+/* 4.3 Menu mobilne (offcanvas) — od 992 px Bootstrap zamienia je w zwykłą listę linków */
 .site-menu {
   --bs-offcanvas-width: 100%;
   background-color: var(--color-secondary);
@@ -500,28 +601,6 @@ em {
   color: var(--color-on-dark-muted);
 }
 
-.site-menu__close,
-.room-panel__close,
-.lightbox__close {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: inherit;
-}
-
-.site-menu__close:hover,
-.room-panel__close:hover,
-.lightbox__close:hover {
-  color: inherit;
-  opacity: 0.75;
-}
-
 .site-menu__body {
   display: flex;
   flex-direction: column;
@@ -534,7 +613,7 @@ em {
   display: flex;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.5rem 0 !important;
+  padding: 0.5rem 0 !important;   /* !important: Bootstrap ustawia padding .nav-link w .navbar-nav */
   font-family: var(--font-heading);
   font-size: clamp(2rem, 1.5rem + 2.5vw, 2.75rem);
   font-weight: 300;
@@ -543,6 +622,7 @@ em {
   counter-increment: menu;
 }
 
+/* Numer przed linkiem: 01, 02… */
 .site-menu__link::before {
   content: "0" counter(menu);
   font-family: var(--font-body);
@@ -589,6 +669,7 @@ em {
     content: none;
   }
 
+  /* Podkreślenie rysowane od lewej przy najechaniu */
   .site-menu__link::after {
     content: "";
     position: absolute;
@@ -613,7 +694,7 @@ em {
   }
 }
 
-/* 3.4 Dropdown — wybór języka */
+/* 4.4 Wybór języka (dropdown) */
 .lang-switch__toggle {
   display: inline-flex;
   align-items: center;
@@ -641,22 +722,19 @@ em {
   --bs-dropdown-link-active-bg: var(--color-secondary);
   --bs-dropdown-link-active-color: var(--color-on-dark);
   --bs-dropdown-link-hover-bg: var(--color-primary-deep);
+  min-width: 10rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem !important;  /* !important: Bootstrap/Popper ustawia margin menu */
   box-shadow: var(--bs-dropdown-box-shadow);
 }
 
-.lang-switch__menu {
-  min-width: 10rem;
-  padding: 0.5rem;
-  margin-top: 0.5rem !important;
-}
-
 .lang-switch__item {
-  min-height: 2.75rem;
+  min-height: var(--tap);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
 }
 
-/* ---------- 4. Hero — film w tle, wyśrodkowany tytuł ---------- */
+/* ---------- 5. Hero — zdjęcie i film w tle, wyśrodkowany tytuł ---------- */
 .hero {
   position: relative;
   display: flex;
@@ -703,12 +781,12 @@ em {
     linear-gradient(180deg, rgba(22, 20, 20, 0.55) 0%, rgba(22, 20, 20, 0.1) 22%, rgba(22, 20, 20, 0.15) 60%, rgba(22, 20, 20, 0.7) 100%);
 }
 
+/* Kolumna: treść na środku (margin auto), pasek rezerwacji na dole */
 .hero__inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100%;
   padding-top: calc(var(--header-h) + 2rem);
   padding-bottom: 1rem;
   text-align: center;
@@ -723,18 +801,6 @@ em {
   padding-block: 2rem;
 }
 
-.hero__eyebrow {
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.hero__eyebrow::after {
-  content: "";
-  width: 1.75rem;
-  height: 1px;
-  background: var(--color-accent);
-}
-
 .hero__title {
   margin-bottom: 1.75rem;
   font-size: clamp(2.375rem, 1rem + 6.4vw, 7rem);
@@ -745,15 +811,11 @@ em {
   text-shadow: 0 2px 30px rgba(0, 0, 0, 0.18);
 }
 
-.hero__title em {
-  font-weight: 300;
-}
-
 .hero__discover {
   display: inline-flex;
   align-items: center;
   gap: 0.875rem;
-  min-height: 2.75rem;
+  min-height: var(--tap);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -784,23 +846,16 @@ em {
   animation: nudge-down 0.9s var(--ease-out);
 }
 
+/* Przycisk pauzy filmu; ikonę (pauza / odtwórz) przełącza aria-pressed */
 .hero__video-toggle {
   position: absolute;
   top: calc(var(--header-h) + 0.5rem);
   right: clamp(0.75rem, 3vw, 2.5rem);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 50%;
   background: rgba(22, 20, 20, 0.25);
   color: #FFFFFF;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  transition: background-color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
 }
 
 .hero__video-toggle:hover {
@@ -808,6 +863,7 @@ em {
   background: rgba(22, 20, 20, 0.45);
 }
 
+/* display: inline-flex z .icon-btn nadpisałby atrybut hidden */
 .hero__video-toggle[hidden] {
   display: none;
 }
@@ -835,7 +891,9 @@ em {
   }
 }
 
-/* ---------- 5. Moduł dostępności (glassmorphism) + 3.5 Formularze ---------- */
+/* ---------- 6. Moduł rezerwacji (glassmorphism) ---------- */
+
+/* 6.1 Pasek z polami */
 .booking {
   position: relative;
   z-index: 2;
@@ -862,11 +920,11 @@ em {
 .booking__field {
   position: relative;
   padding: 0.375rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid var(--color-line-on-image);
 }
 
-.booking__field.guests {
-  border-right: 1px solid rgba(255, 255, 255, 0.14);
+.booking__field--guests {
+  border-right: 1px solid var(--color-line-on-image);
 }
 
 .booking__trigger {
@@ -911,7 +969,7 @@ em {
   margin: 0 0 0.375rem;
   font-size: 0.75rem;
   line-height: 1.35;
-  color: #FFC9B8;
+  color: var(--color-error-text);
 }
 
 .booking__error:empty {
@@ -919,7 +977,7 @@ em {
 }
 
 .booking__field.is-invalid {
-  box-shadow: inset 0 -2px 0 #FF9C80;
+  box-shadow: inset 0 -2px 0 var(--color-error);
 }
 
 .booking__submit {
@@ -940,18 +998,18 @@ em {
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
-/* Okienka nad paskiem (kalendarz, goście) — ciemne szkło */
+/* 6.2 Okienka nad paskiem (kalendarz, goście) — dropdown Bootstrapa w trybie static, ciemne szkło */
 .booking-pop {
   --bs-dropdown-bg: rgba(34, 32, 32, 0.9);
   --bs-dropdown-color: #FFFFFF;
   --bs-dropdown-border-width: 1px;
-  --bs-dropdown-border-color: rgba(255, 255, 255, 0.14);
+  --bs-dropdown-border-color: var(--color-line-on-image);
   --bs-dropdown-border-radius: var(--radius-md);
   --focus-ring: #FFFFFF;
   position: absolute;
   left: 0;
   right: auto;
-  top: auto !important;
+  top: auto !important;            /* !important: Bootstrap ustawia pozycję menu .dropup */
   bottom: calc(100% + 0.75rem) !important;
   padding: 1.25rem;
   margin: 0 !important;
@@ -973,8 +1031,12 @@ em {
   margin-top: 0.75rem;
 }
 
+.booking-pop__foot--end {
+  justify-content: flex-end;
+}
+
 .booking-pop__link {
-  min-height: 2.75rem;
+  min-height: var(--tap);
   padding: 0 0.5rem;
   border: 0;
   background: none;
@@ -997,7 +1059,7 @@ em {
   text-underline-offset: 0.4em;
 }
 
-/* Kalendarz */
+/* 6.3 Kalendarz (miesiące rysuje JS) */
 .calendar {
   width: min(23rem, calc(100vw - 2rem));
 }
@@ -1015,20 +1077,6 @@ em {
   font-size: 0.8125rem;
   text-align: center;
   color: rgba(255, 255, 255, 0.8);
-}
-
-.calendar__nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: #FFFFFF;
-  transition: background-color var(--dur-fast) var(--ease-soft);
 }
 
 .calendar__nav:hover:not(:disabled) {
@@ -1082,7 +1130,7 @@ em {
 .calendar__day {
   position: relative;
   width: 100%;
-  height: 2.75rem;
+  height: var(--tap);
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -1101,6 +1149,7 @@ em {
   cursor: not-allowed;
 }
 
+/* Kropka pod dzisiejszą datą */
 .calendar__day.is-today::after {
   content: "";
   position: absolute;
@@ -1119,19 +1168,16 @@ em {
 }
 
 .calendar__day.is-start,
-.calendar__day.is-end {
+.calendar__day.is-start:hover,
+.calendar__day.is-end,
+.calendar__day.is-end:hover {
   background: #FFFFFF;
   color: var(--color-secondary);
   font-weight: 600;
 }
 
-.calendar__day.is-start:hover,
-.calendar__day.is-end:hover {
-  background: #FFFFFF;
-}
-
-/* Goście — wiersze ze stepperem w ciemnym okienku */
-.guests__menu {
+/* 6.4 Goście — wiersze ze stepperem (− liczba +) */
+.guests {
   width: min(19rem, calc(100vw - 2rem));
 }
 
@@ -1144,7 +1190,7 @@ em {
 }
 
 .guests__row + .guests__row {
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid var(--color-line-on-image);
 }
 
 .guests__label {
@@ -1167,16 +1213,7 @@ em {
 }
 
 .stepper__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 50%;
-  background: transparent;
-  color: #FFFFFF;
   transition: border-color var(--dur-fast) var(--ease-soft), background-color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
 }
 
@@ -1194,6 +1231,7 @@ em {
   cursor: not-allowed;
 }
 
+/* Pole liczby bez strzałek przeglądarki — liczbę zmieniają przyciski − / + */
 .stepper__input {
   width: 2.25rem;
   padding: 0;
@@ -1212,6 +1250,7 @@ em {
   margin: 0;
 }
 
+/* 6.5 Tablet i desktop */
 @media (min-width: 768px) {
   .calendar {
     width: 42rem;
@@ -1222,15 +1261,15 @@ em {
   }
 }
 
+/* Od 992 px pola stoją w jednej „pigułce”, rozdzielone pionowymi kreskami */
 @media (min-width: 992px) {
   .booking__bar {
     align-items: center;
     padding: 0.375rem 0.375rem 0.375rem 1.25rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
 
-  .booking__field,
-  .booking__field.guests {
+  .booking__field {
     padding: 0 1.25rem;
     border: 0;
   }
@@ -1254,9 +1293,10 @@ em {
   }
 
   .booking__field.is-invalid .booking__value {
-    color: #FFC9B8;
+    color: var(--color-error-text);
   }
 
+  /* Błąd jako dymek pod polem; zajmuje miejsce tekstu statusu */
   .booking__error {
     position: absolute;
     left: 1.25rem;
@@ -1265,7 +1305,7 @@ em {
     max-width: 18rem;
     margin: 0;
     padding: 0.5rem 0.75rem;
-    border-left: 2px solid #FF9C80;
+    border-left: 2px solid var(--color-error);
     border-radius: var(--radius-sm);
     background: rgba(28, 26, 26, 0.92);
   }
@@ -1279,7 +1319,6 @@ em {
   }
 
   .booking__button {
-    min-height: 3.25rem;
     padding-inline: 2.25rem;
   }
 
@@ -1288,7 +1327,7 @@ em {
   }
 }
 
-/* ---------- 6. Sekcje ---------- */
+/* ---------- 7. Sekcje strony ---------- */
 .section {
   padding-block: var(--section-space);
 }
@@ -1306,20 +1345,14 @@ em {
   margin-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
 }
 
-/* 6.1 O hotelu */
+/* 7.1 O hotelu — dwa zdjęcia nałożone na siebie */
+.about .section-title {
+  margin-bottom: 2rem;
+}
+
 .about__media {
   position: relative;
   padding-bottom: 22%;
-}
-
-.about__figure {
-  overflow: hidden;
-}
-
-.about__figure img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .about__figure--main {
@@ -1351,13 +1384,6 @@ em {
   border-bottom: 1px solid var(--color-line);
 }
 
-@media (min-width: 576px) {
-  .principles__item {
-    flex-direction: row;
-    align-items: baseline;
-  }
-}
-
 .principles__name {
   min-width: 6rem;
   font-family: var(--font-heading);
@@ -1371,13 +1397,19 @@ em {
   color: var(--color-muted);
 }
 
-/* 6.2 Pokoje */
+@media (min-width: 576px) {
+  .principles__item {
+    flex-direction: row;
+    align-items: baseline;
+  }
+}
+
+/* 7.2 Pokoje */
 .room-card {
   margin-bottom: clamp(3rem, 2rem + 3vw, 5rem);
 }
 
 .room-card__media {
-  overflow: hidden;
   aspect-ratio: 4 / 3;
   background-color: var(--color-primary-deep);
 }
@@ -1387,9 +1419,6 @@ em {
 }
 
 .room-card__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   transition: transform 1.4s var(--ease-out);
 }
 
@@ -1398,7 +1427,6 @@ em {
 }
 
 .room-card__body {
-  position: relative;
   padding-top: 1.5rem;
 }
 
@@ -1421,6 +1449,7 @@ em {
   color: var(--color-muted);
 }
 
+/* Lista cech pokoju z ikonami (też w panelu pokoi) */
 .room-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1441,6 +1470,7 @@ em {
   color: var(--color-muted);
 }
 
+/* Co druga kolumna obniżona — układ „schodkowy” */
 @media (min-width: 768px) {
   .rooms__offset {
     padding-top: 5rem;
@@ -1453,17 +1483,10 @@ em {
   }
 }
 
-/* 6.3 Doświadczenia */
+/* 7.3 Doświadczenia */
 .experience__media {
-  overflow: hidden;
   aspect-ratio: 3 / 4;
   margin-bottom: 1.5rem;
-}
-
-.experience__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .experience__time {
@@ -1491,7 +1514,7 @@ em {
   }
 }
 
-/* 6.4 Galeria */
+/* 7.4 Galeria */
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1515,18 +1538,15 @@ em {
   height: 100%;
   padding: 0;
   border: 0;
-  overflow: hidden;
   background-color: var(--color-primary-deep);
   cursor: zoom-in;
 }
 
 .gallery__button img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 1.2s var(--ease-out), opacity var(--dur-med) var(--ease-soft);
+  transition: transform 1.2s var(--ease-out);
 }
 
+/* Ramka do środka — na zewnątrz ucięłoby ją przycięcie (clip-path) animacji */
 .gallery__button:focus-visible {
   outline: 3px solid var(--color-accent-strong);
   outline-offset: -3px;
@@ -1556,7 +1576,7 @@ em {
   .gallery__item:nth-child(8) { grid-area: 3 / 4 / 5 / 5; }
 }
 
-/* 6.5 Opinie */
+/* 7.5 Opinie */
 .review {
   display: flex;
   flex-direction: column;
@@ -1570,7 +1590,7 @@ em {
   margin-bottom: 1.5rem;
   padding: 0.25rem 0.75rem;
   border: 1px solid var(--color-line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -1611,7 +1631,7 @@ em {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  min-height: 2.75rem;
+  min-height: var(--tap);
   font-size: 0.8125rem;
   color: var(--color-muted);
   text-decoration: underline;
@@ -1621,7 +1641,7 @@ em {
   color: var(--color-accent-strong);
 }
 
-/* 6.6 Końcowe CTA */
+/* 7.6 Końcowe CTA */
 .cta {
   position: relative;
   display: flex;
@@ -1634,12 +1654,13 @@ em {
   background-color: var(--color-secondary);
 }
 
+/* Zdjęcie wyższe o 16% niż sekcja — zapas na przesunięcie parallax */
 .cta__image {
   position: absolute;
-  inset: 0;
+  inset: -8% 0 auto;
   z-index: -2;
   width: 100%;
-  height: 100%;
+  height: 116%;
   object-fit: cover;
 }
 
@@ -1657,13 +1678,6 @@ em {
   padding-block: 5rem;
 }
 
-.cta__inner .eyebrow::after {
-  content: "";
-  width: 1.75rem;
-  height: 1px;
-  background: var(--color-accent);
-}
-
 .cta__title {
   max-width: 14ch;
   margin-bottom: 1.25rem;
@@ -1674,17 +1688,13 @@ em {
   text-wrap: balance;
 }
 
-.cta__title em {
-  color: #FFFFFF;
-}
-
 .cta__text {
   max-width: 30rem;
   margin-bottom: 2.25rem;
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* ---------- 7. Stopka ---------- */
+/* ---------- 8. Stopka ---------- */
 .site-footer {
   padding: clamp(4rem, 3rem + 4vw, 6.5rem) 0 2rem;
   background-color: var(--color-ink);
@@ -1727,8 +1737,8 @@ em {
 .site-footer__list a {
   display: inline-flex;
   align-items: center;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+  min-width: var(--tap);
+  min-height: var(--tap);
   text-decoration: none;
 }
 
@@ -1759,18 +1769,18 @@ em {
 
 .site-footer__bottom a {
   display: inline-block;
-  min-width: 2.75rem;
+  min-width: var(--tap);
   padding: 0.75rem 0.25rem;
   text-align: center;
   color: var(--color-on-dark);
 }
 
-/* ---------- 8. Panel wyboru pokoi (offcanvas) ---------- */
+/* ---------- 9. Panel wyboru pokoi (offcanvas) ---------- */
 .room-panel {
   --bs-offcanvas-width: 100%;
   --bs-offcanvas-bg: var(--color-primary);
   --bs-offcanvas-transition: transform 0.55s var(--ease-out);
-  border-left: 0 !important;
+  border-left: 0 !important;       /* !important: Bootstrap .offcanvas-end ustawia border-left */
 }
 
 .offcanvas-backdrop.show {
@@ -1813,6 +1823,7 @@ em {
   margin-top: 1.5rem;
 }
 
+/* Lista pokoi (elementy .room-option buduje JS z kart w sekcji #pokoje) */
 .room-list {
   margin: 0;
   padding: 0;
@@ -1826,9 +1837,9 @@ em {
   gap: 1rem;
   padding-block: 1.25rem;
   border-bottom: 1px solid var(--color-line);
-  transition: opacity var(--dur-fast) var(--ease-soft);
 }
 
+/* Pionowa kreska przy podglądanym / wybranym pokoju */
 .room-option::before {
   content: "";
   position: absolute;
@@ -1892,6 +1903,7 @@ em {
   padding: 0.5rem 1.25rem;
 }
 
+/* Ikona „✓” tylko przy wybranym pokoju */
 .room-option__select .icon {
   display: none;
 }
@@ -1900,13 +1912,13 @@ em {
   display: inline-block;
 }
 
+/* Duży podgląd zdjęcia (tylko desktop) */
 .room-preview {
   position: sticky;
   top: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
-  margin: 0;
   padding: 1.5rem 2rem 2rem 0;
 }
 
@@ -1946,9 +1958,9 @@ em {
     --bs-offcanvas-width: min(70rem, 94vw);
   }
 
+  /* Na desktopie miniatury znikają — zdjęcie pokazuje podgląd obok */
   .room-option {
     grid-template-columns: minmax(0, 1fr);
-    cursor: default;
   }
 
   .room-option__thumb {
@@ -1965,7 +1977,7 @@ em {
   }
 }
 
-/* ---------- 9. Galeria — podgląd (modal) ---------- */
+/* ---------- 10. Podgląd galerii (modal) ---------- */
 .lightbox__content {
   position: relative;
   display: flex;
@@ -1977,6 +1989,7 @@ em {
   color: var(--color-on-dark);
 }
 
+/* Bez domyślnego „zjazdu” okna modala — tylko przenikanie */
 .lightbox.fade .modal-dialog {
   transform: none;
 }
@@ -2012,23 +2025,17 @@ em {
   color: var(--color-on-dark-muted);
 }
 
+/* Strzałki: na telefonie pod zdjęciem, od 768 px po bokach */
 .lightbox__nav {
   position: absolute;
   bottom: 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 3rem;
   height: 3rem;
-  padding: 0;
   border: 1px solid var(--color-line-dark);
-  border-radius: 50%;
-  color: var(--color-on-dark);
 }
 
 .lightbox__nav:hover {
   border-color: var(--color-on-dark);
-  color: var(--color-on-dark);
 }
 
 .lightbox__nav--prev {
@@ -2063,21 +2070,13 @@ em {
   }
 }
 
-/* ---------- 10. Toast — powiadomienia ---------- */
-/* Powiadomienia pojawiają się pod nagłówkiem, żeby nie zasłaniać modułu rezerwacji u dołu hero */
+/* ---------- 11. Powiadomienia (toast) ---------- */
+/* Pod nagłówkiem, żeby nie zasłaniać modułu rezerwacji u dołu hero */
 .es-toast-container {
   z-index: 1090;
   top: var(--header-h);
   left: 50%;
   transform: translateX(-50%);
-}
-
-@media (min-width: 992px) {
-  .es-toast-container {
-    left: auto;
-    right: clamp(0.5rem, 2vw, 1.5rem);
-    transform: none;
-  }
 }
 
 .es-toast {
@@ -2112,23 +2111,19 @@ em {
   color: var(--color-on-dark-muted);
 }
 
-.es-toast__close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 0;
-  color: inherit;
-}
-
 .es-toast__close:hover {
-  color: inherit;
   opacity: 0.75;
 }
 
-/* ---------- 11. Animacje ---------- */
+@media (min-width: 992px) {
+  .es-toast-container {
+    left: auto;
+    right: clamp(0.5rem, 2vw, 1.5rem);
+    transform: none;
+  }
+}
+
+/* ---------- 12. Animacje ---------- */
 @keyframes rise {
   from {
     opacity: 0;
@@ -2145,6 +2140,13 @@ em {
 @keyframes settle {
   from {
     transform: scale(1.12);
+  }
+}
+
+/* Właściwość scale (nie transform), żeby nie kolidować z powiększeniem przy hover */
+@keyframes reveal-zoom {
+  from {
+    scale: 1.18;
   }
 }
 
@@ -2192,7 +2194,8 @@ em {
   }
 }
 
-/* 11.1 Wejście na stronę: kurtyna z logo (tylko przy pierwszej wizycie w sesji) */
+/* 12.1 Wejście na stronę: kurtyna z logo (raz na sesję — patrz skrypt w <head>).
+   Działa w samym CSS, więc nie zależy od main.js. */
 .intro {
   display: none;
 }
@@ -2205,7 +2208,11 @@ em {
   place-items: center;
   background-color: var(--color-secondary);
   pointer-events: none;
-  animation: intro-curtain 0.9s cubic-bezier(0.76, 0, 0.24, 1) 1.15s forwards;
+  animation: intro-curtain 0.9s var(--ease-curtain) 1.15s forwards;
+}
+
+.no-intro .intro {
+  display: none;
 }
 
 .intro__logo {
@@ -2214,19 +2221,7 @@ em {
   animation: intro-logo 1.5s var(--ease-soft) both;
 }
 
-.no-intro .intro {
-  display: none;
-}
-
-/* Elementy hero startują po kurtynie albo od razu, gdy kurtyny nie ma */
-:root {
-  --intro-delay: 1.35s;
-}
-
-.no-intro {
-  --intro-delay: 0s;
-}
-
+/* 12.2 Elementy hero startują po kurtynie (--intro-delay) */
 .js .site-header {
   animation: fade 1.2s var(--ease-soft) calc(var(--intro-delay) + 0.5s) both;
 }
@@ -2239,7 +2234,7 @@ em {
 .js .hero__discover  { animation: rise 1s var(--ease-out) calc(var(--intro-delay) + 0.9s) both; }
 .js .booking         { animation: rise 1.1s var(--ease-out) calc(var(--intro-delay) + 1s) both; }
 
-/* 11.2 Tytuły odsłaniane słowo po słowie (JS dzieli tekst na słowa) */
+/* 12.3 Tytuły odsłaniane słowo po słowie (JS dzieli tekst [data-split] na .word) */
 .word {
   display: inline-block;
   overflow: hidden;
@@ -2267,7 +2262,8 @@ em {
   transform: none;
 }
 
-/* 11.3 Pojawianie się przy przewijaniu (klasę .is-visible dodaje JS) */
+/* 12.4 Pojawianie się przy przewijaniu (klasę .is-visible dodaje JS).
+   data-reveal — rozjaśnienie z przesunięciem; data-reveal="clip" — odsłanianie kurtyną od dołu. */
 .js [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 1.75rem, 0);
@@ -2280,17 +2276,16 @@ em {
   transform: none;
 }
 
-/* Tytuły z dzieleniem słów: tylko delikatne rozjaśnienie, ruch robią słowa */
+/* Tytuły z dzieleniem słów: tylko rozjaśnienie, ruch robią słowa */
 .js [data-reveal][data-split] {
   transform: none;
 }
 
-/* Zdjęcia: odsłanianie „kurtyną” od dołu + powolne zmniejszanie */
 .js [data-reveal="clip"] {
   opacity: 1;
   transform: none;
   clip-path: inset(100% 0 0 0);
-  transition: clip-path 1.3s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: clip-path 1.3s var(--ease-curtain);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
@@ -2298,56 +2293,21 @@ em {
   clip-path: inset(0 0 0 0);
 }
 
-.js .media-reveal img {
-  transform: scale(1.18);
-  transition: transform 2s var(--ease-out);
-  transition-delay: var(--reveal-delay, 0ms);
+/* Zdjęcie w odsłanianej ramce dodatkowo powoli się zmniejsza */
+.js figure[data-reveal="clip"].is-visible > img {
+  animation: reveal-zoom 2s var(--ease-out) var(--reveal-delay, 0ms) backwards;
 }
 
-.js .media-reveal.is-visible img {
-  transform: none;
-}
-
-/* Parallax: JS ustawia zmienną --parallax (w pikselach), przesuwamy osobną właściwością translate */
+/* 12.5 Parallax: JS ustawia --parallax (px); osobna właściwość translate nie koliduje z transform */
 [data-parallax] {
   translate: 0 var(--parallax, 0px);
   will-change: translate;
 }
 
-.cta__image[data-parallax] {
-  top: -8%;
-  height: 116%;
-}
-
-/* 11.4 Nagłówek: chowa się przy przewijaniu w dół, wraca przy przewijaniu w górę */
-.site-header {
-  transition: background-color var(--dur-med) var(--ease-soft), color var(--dur-med) var(--ease-soft), box-shadow var(--dur-med) var(--ease-soft), transform 0.6s var(--ease-out);
-}
-
-.site-header.is-hidden {
-  transform: translateY(-100%);
-}
-
-.scroll-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--color-accent);
-  transform: scaleX(var(--progress, 0));
-  transform-origin: left;
-  opacity: 0;
-  transition: opacity var(--dur-med) var(--ease-soft);
-}
-
-.site-header.is-scrolled .scroll-progress {
-  opacity: 1;
-}
-
-/* ---------- 12. Preferencje dostępności ---------- */
+/* ---------- 13. Ograniczenie ruchu (prefers-reduced-motion) ---------- */
 /* Gdy system prosi o ograniczenie ruchu (np. w Windows wyłączone „Efekty animacji”),
-   usuwamy przesunięcia, powiększenia i parallax, ale zostawiamy łagodne pojawianie się. */
+   usuwamy przesunięcia, powiększenia i parallax, ale zostawiamy łagodne pojawianie się.
+   Film w hero gra nadal (decyzja projektowa) — można go zatrzymać przyciskiem. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -2357,7 +2317,10 @@ em {
     display: none;
   }
 
-  .js .hero__image {
+  .js .hero__image,
+  .js .hero__title .word__inner,
+  .js figure[data-reveal="clip"].is-visible > img,
+  .hero__discover:hover .hero__discover-icon .icon {
     animation: none;
   }
 
@@ -2367,11 +2330,6 @@ em {
   .js .hero__discover,
   .js .booking {
     animation: fade 0.8s var(--ease-soft) both;
-  }
-
-  .js .hero__title .word__inner,
-  .hero__discover:hover .hero__discover-icon .icon {
-    animation: none;
   }
 
   .js [data-reveal],
@@ -2387,7 +2345,6 @@ em {
     opacity: 1;
   }
 
-  .js .media-reveal img,
   .js [data-split] .word__inner {
     transform: none;
     transition: none;

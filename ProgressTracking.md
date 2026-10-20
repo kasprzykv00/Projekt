@@ -14,7 +14,7 @@ Stan: 2026-10-20. Etap 1 (strona główna) gotowy do akceptacji, bez commita.
 - `prefers-reduced-motion`: zamiast wyłączenia wszystkiego — tylko fade (bez transform/clip/parallax). Na maszynie dewelopera Windows ma wyłączone „Efekty animacji” → przeglądarka zgłasza reduce.
 - Kurtyna intro: czysty CSS, raz na sesję (`sessionStorage 'es-intro'` → klasa `no-intro`), opóźnienia hero przez `--intro-delay`. Działa bez main.js.
 - Formularz: hidden inputs `arrival`/`departure` + własny kalendarz (zamiast `input type=date`) — wzór Patina. Pole pokoju zachowane (wymóg 5.4 `wymagania.md`). Maks. 30 nocy, zakres do 365 dni.
-- Bootstrap: dropdowny dat/gości z `data-bs-display="static"` (pozycja CSS nad paskiem). Strzałki w kalendarzu obsługiwane na `window` w fazie capture (Bootstrap przechwytuje je na `document`).
+- Bootstrap: dropdowny dat/gości z `data-bs-display="staw` w fazie capture (Bootstrap przechwytuje je na `document`).
 - Menu mobilne: offcanvas z `data-bs-backdrop="false"` (offcanvas w `fixed-top` trafiał pod backdrop).
 - Reveal `clip`: IntersectionObserver obserwuje rodzica (element z `clip-path: inset(100%)` jest niewidoczny dla IO); leniwe obrazy przełączane na `eager` 800 px wcześniej.
 - Parallax przez właściwość `translate` (niezależną od `transform`), liczony co klatkę, limit ±8% wysokości rodzica.
@@ -23,6 +23,11 @@ Stan: 2026-10-20. Etap 1 (strona główna) gotowy do akceptacji, bez commita.
 - Logo / „Do góry”: `href="index.html"` + JS scroll do góry (`#top` wskazywał na fixed header).
 - Treści bez weryfikacji: opinie oznaczone „Przykład” (bez ocen), linki do stron głównych platform; kontakt „do uzupełnienia”; metraże pokoi przykładowe; JSON-LD bez adresu/kontaktu/ocen; języki EN/ES — tylko toast „wkrótce”.
 - `og:image` i JSON-LD `image`/`logo` mają ścieżki względne — do zamiany na absolutne po publikacji.
+- Fokus: wspólna reguła `:focus-visible` nadpisuje `outline: 0` Bootstrapa w `.btn`, `.nav-link`, `.navbar-toggler`.
+- Kolory przycisków przez zmienne `--bs-btn-*` (bez `!important`).
+- Wspólne klasy: `.icon-btn` (okrągły przycisk 44 px), `.text-btn` („Zamknij”), `.media-frame` (zdjęcie cover), `.eyebrow--center`.
+- Zoom przy odsłanianiu zdjęć: animacja właściwości `scale`, `fill-mode: backwards` — nie koliduje z `transform` hover.
+- CSS i JS celowo w jednym pliku każdy (brak build; `@import`/moduły ES = więcej żądań / nie działa z `file://`); podział sekcjami + spis treści w `styles.css`.
 
 ## 2. Wykonane
 
@@ -33,6 +38,7 @@ Stan: 2026-10-20. Etap 1 (strona główna) gotowy do akceptacji, bez commita.
 - Zasoby: `assets/images` (22 WebP + `og-image.jpg`), `assets/video` (`hero-desktop.mp4` 3 MB, `hero-mobile.mp4` 2 MB), `assets/logo`.
 - `README.md`: uruchomienie, struktura, komponenty, treści demo, źródła (ID Pexels).
 - Testy (Edge headless + puppeteer, skrypty w scratchpadzie): 360/390/768/1200/1440 px — brak overflow-x, błędów konsoli, 1×H1, alt, label, cele ≥44 px, linki; scenariusze interakcji; html-validate OK.
+- Audyt i refaktor kodu: usunięte martwe atrybuty/klasy/reguły, scalone duplikaty, tokeny (`--tap`, `--radius-pill`, kolory błędów), helpery JS (`onScrollFrame`, `afterMenuClosed`, `closeDropdown`). Naprawione: brak widocznego fokusu (język, menu, „Wybierz”), niedziałający hover-zoom pokoi. Weryfikacja: zrzuty przed/po identyczne (0 px, 3 szerokości, oba tryby ruchu, 8 stanów interakcji).
 - Lighthouse (lokalny serwer Python): dostępność 100, SEO 100, wydajność desktop 87 / mobile 60, CLS < 0.06. Best Practices obniża brak HTTPS (środowisko lokalne).
 
 ## Otwarte
