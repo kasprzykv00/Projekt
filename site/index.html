@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-spania — hotel w Hiszpanii | Pokoje, pobyt i rezerwacja</title>
+  <meta name="description" content="e-spania to hotel w Hiszpanii: jasne pokoje, spokojne patio i śródziemnomorski rytm dnia. Sprawdź dostępność terminu i wybierz pokój dla siebie.">
+  <meta name="theme-color" content="#2B2929">
+
+  <!-- Open Graph. Po publikacji strony podmień ścieżki na pełne adresy URL (https://...). -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:site_name" content="e-spania">
+  <meta property="og:title" content="e-spania — hotel w Hiszpanii">
+  <meta property="og:description" content="Jasne pokoje, spokojne patio i śródziemnomorski rytm dnia. Sprawdź dostępność i zaplanuj pobyt.">
+  <meta property="og:image" content="assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Basen przed bielonym domem z kwitnącą bugenwillą">
+
+  <link rel="icon" type="image/png" href="assets/logo/logo-dark.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="preload" as="image" href="assets/images/hero-mobile.webp" media="(max-width: 767.98px)">
+  <link rel="preload" as="image" href="assets/images/hero-1280.webp" imagesrcset="assets/images/hero-1280.webp 1280w, assets/images/hero-1920.webp 1920w" imagesizes="100vw" media="(min-width: 768px)">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa (bez JS treść jest od razu widoczna). -->
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      if (sessionStorage.getItem('es-intro')) document.documentElement.classList.add('no-intro');
+      sessionStorage.setItem('es-intro', '1');
+    } catch (e) { /* bez sessionStorage kurtyna pokaże się za każdym razem */ }
+  </script>
+
+  <!-- Dane strukturalne: tylko informacje pewne. Adres, kontakt i oceny zostaną dodane po weryfikacji. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Hotel",
+        "@id": "#hotel",
+        "name": "e-spania",
+        "description": "Hotel w Hiszpanii z jasnymi pokojami i spokojnym, śródziemnomorskim charakterem.",
+        "image": "assets/images/og-image.jpg",
+        "logo": "assets/logo/logo-dark.png",
+        "availableLanguage": ["pl", "en", "es"]
+      },
+      {
+        "@type": "WebSite",
+        "name": "e-spania",
+        "inLanguage": "pl",
+        "about": { "@id": "#hotel" }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
+  <!-- Kurtyna przy pierwszym wejściu na stronę (animacja w CSS, raz na sesję) -->
+  <div class="intro" aria-hidden="true">
+    <img class="intro__logo" src="assets/logo/logo-light.png" alt="" width="479" height="270">
+  </div>
+
+  <!-- Ikony SVG używane na stronie (rysunki w stylu Lucide, licencja ISC) -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none" aria-hidden="true">
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-area" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M12 4v6M2 18h20"/></symbol>
+    <symbol id="i-view" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  </svg>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header fixed-top" id="top">
+    <nav class="navbar navbar-expand-lg site-nav" aria-label="Nawigacja główna">
+      <div class="container-fluid site-nav__inner">
+        <a class="navbar-brand site-nav__brand" href="index.html" data-action="scroll-top" aria-label="e-spania — strona główna">
+          <img class="site-nav__logo site-nav__logo--light" src="assets/logo/logo-light.png" alt="" width="479" height="270">
+          <img class="site-nav__logo site-nav__logo--dark" src="assets/logo/logo-dark.png" alt="" width="479" height="270">
+        </a>
+
+        <div class="offcanvas offcanvas-end site-menu" tabindex="-1" id="siteMenu" aria-labelledby="siteMenuLabel" data-bs-backdrop="false">
+          <div class="offcanvas-header site-menu__header">
+            <p class="offcanvas-title site-menu__title" id="siteMenuLabel">Menu</p>
+            <button type="button" class="btn site-menu__close" data-bs-dismiss="offcanvas">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+              <span>Zamknij</span>
+            </button>
+          </div>
+          <div class="offcanvas-body site-menu__body">
+            <ul class="navbar-nav site-menu__list mx-lg-auto">
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#hotel">Hotel</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#pokoje">Pokoje</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#doswiadczenia">Doświadczenia</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#galeria">Galeria</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#opinie">Opinie</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+            </ul>
+            <p class="site-menu__note d-lg-none">Hotel w Hiszpanii · strona demonstracyjna</p>
+          </div>
+        </div>
+
+        <div class="site-nav__actions d-flex align-items-center">
+          <div class="dropdown lang-switch">
+            <button class="btn lang-switch__toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="PL — wybierz język strony">
+              <span>PL</span>
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end lang-switch__menu">
+              <li><button class="dropdown-item lang-switch__item active" type="button" lang="pl" data-lang="pl" aria-current="true">Polski</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="en" data-lang="en">English</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="es" data-lang="es">Español</button></li>
+            </ul>
+          </div>
+
+          <a class="btn btn-accent btn-book" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
+
+          <button class="navbar-toggler site-nav__toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteMenu" aria-controls="siteMenu" aria-label="Otwórz menu">
+            <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <span class="scroll-progress" aria-hidden="true"></span>
+  </header>
+
+  <main id="main">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" aria-labelledby="hero-title">
+      <picture class="hero__media">
+        <source media="(min-width: 768px)" srcset="assets/images/hero-1280.webp 1280w, assets/images/hero-1920.webp 1920w" sizes="100vw" width="1920" height="1150">
+        <img class="hero__image" src="assets/images/hero-mobile.webp" width="828" height="1300" alt="Basen z turkusową mozaiką przed bielonym domem z kamiennym murem, kwitnącą bugenwillą i palmą" fetchpriority="high">
+      </picture>
+      <!-- Film w tle: montaż widoków z Hiszpanii (Pexels). Wersję poziomą lub pionową wybiera JS. -->
+      <video class="hero__video" id="heroVideo" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"
+             data-src-landscape="assets/video/hero-desktop.mp4" data-src-portrait="assets/video/hero-mobile.mp4"></video>
+      <div class="hero__shade" aria-hidden="true"></div>
+
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <p class="eyebrow eyebrow--light hero__eyebrow">e-spania · Hotel w Hiszpanii</p>
+          <h1 class="hero__title" id="hero-title" data-split>Śródziemnomorski rytm, <em>spokojny luksus</em></h1>
+          <a class="hero__discover" href="#hotel">
+            <span>Odkryj e-spania</span>
+            <span class="hero__discover-icon" aria-hidden="true"><svg class="icon icon--sm"><use href="#i-arrow-down"/></svg></span>
+          </a>
+        </div>
+
+        <!-- ===== Moduł sprawdzania dostępności — pasek w stylu glassmorphism ===== -->
+        <form class="booking" id="rezerwacja" novalidate aria-labelledby="booking-title">
+          <h2 class="visually-hidden" id="booking-title">Sprawdź dostępność pobytu</h2>
+          <div class="row g-0 booking__bar">
+            <div class="col-12 col-lg booking__field booking__field--dates dropup">
+              <button class="booking__trigger" type="button" id="datesToggle" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false" aria-describedby="dates-error">
+                <span class="visually-hidden">Daty pobytu: </span>
+                <span class="booking__value" id="datesSummary">Przyjazd / Wyjazd</span>
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+              </button>
+              <div class="dropdown-menu booking-pop calendar" id="calendar" role="dialog" aria-label="Kalendarz — wybierz daty pobytu">
+                <div class="calendar__head">
+                  <button class="calendar__nav" type="button" data-cal-step="-1" aria-label="Poprzedni miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg></button>
+                  <p class="calendar__hint" id="calendarHint" aria-live="polite">Wybierz datę przyjazdu</p>
+                  <button class="calendar__nav" type="button" data-cal-step="1" aria-label="Następny miesiąc"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+                </div>
+                <div class="calendar__months" id="calendarMonths"><!-- miesiące rysuje JS --></div>
+                <div class="booking-pop__foot">
+                  <button class="booking-pop__link" type="button" id="calendarClear">Wyczyść</button>
+                  <button class="booking-pop__link booking-pop__link--strong" type="button" id="calendarDone">Gotowe</button>
+                </div>
+              </div>
+              <input type="hidden" id="arrival" name="arrival" value="">
+              <input type="hidden" id="departure" name="departure" value="">
+              <p class="booking__error" id="dates-error" aria-live="polite"></p>
+            </div>
+
+            <div class="col-6 col-lg-auto booking__field dropup guests">
+              <button class="booking__trigger" type="button" id="guestsToggle" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">
+                <span class="visually-hidden">Liczba gości: </span>
+                <span class="booking__value" id="guestsSummary">2 dorosłych</span>
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+              </button>
+              <div class="dropdown-menu booking-pop guests__menu">
+                <div class="guests__row">
+                  <label class="guests__label" for="adults">Dorośli <small>od 13 lat</small></label>
+                  <div class="stepper">
+                    <button class="stepper__btn" type="button" data-step="-1" data-target="adults" aria-label="Mniej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                    <input class="stepper__input" type="number" id="adults" name="adults" value="2" min="1" max="6" inputmode="numeric">
+                    <button class="stepper__btn" type="button" data-step="1" data-target="adults" aria-label="Więcej dorosłych"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
+                  </div>
+                </div>
+                <div class="guests__row">
+                  <label class="guests__label" for="children">Dzieci <small>0–12 lat</small></label>
+                  <div class="stepper">
+                    <button class="stepper__btn" type="button" data-step="-1" data-target="children" aria-label="Mniej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                    <input class="stepper__input" type="number" id="children" name="children" value="0" min="0" max="4" inputmode="numeric">
+                    <button class="stepper__btn" type="button" data-step="1" data-target="children" aria-label="Więcej dzieci"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"/></svg></button>
+                  </div>
+                </div>
+                <div class="booking-pop__foot">
+                  <span></span>
+                  <button class="booking-pop__link booking-pop__link--strong guests__done" type="button">Gotowe</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-lg-auto booking__field">
+              <button class="booking__trigger" type="button" id="roomTrigger" data-bs-toggle="offcanvas" data-bs-target="#roomPanel" aria-controls="roomPanel" aria-describedby="room-error">
+                <span class="visually-hidden">Pokój: </span>
+                <span class="booking__value" id="roomSummary">Dowolny pokój</span>
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+              </button>
+              <input type="hidden" name="room" id="roomInput" value="">
+              <p class="booking__error" id="room-error" aria-live="polite"></p>
+            </div>
+
+            <div class="col-12 col-lg-auto booking__submit">
+              <button class="btn btn-accent booking__button" type="submit">Sprawdź dostępność</button>
+            </div>
+          </div>
+          <p class="booking__status" id="bookingStatus" aria-live="polite">Wersja demonstracyjna — formularz nie łączy się z systemem rezerwacji.</p>
+        </form>
+      </div>
+
+      <button class="hero__video-toggle" type="button" id="heroVideoToggle" aria-pressed="false" aria-label="Wstrzymaj film w tle" hidden>
+        <svg class="icon icon--sm hero__icon-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+        <svg class="icon icon--sm hero__icon-play" aria-hidden="true"><use href="#i-play"/></svg>
+      </button>
+    </section>
+
+    <!-- ===================== O HOTELU ===================== -->
+    <section class="section about" id="hotel" aria-labelledby="about-title">
+      <div class="container">
+        <div class="row gy-5 align-items-center">
+          <div class="col-lg-5 order-lg-2 offset-xl-1">
+            <p class="eyebrow" data-reveal>01 — Hotel</p>
+            <h2 class="section-title" id="about-title" data-reveal data-split>Miejsce stworzone do <em>zwalniania</em></h2>
+            <p class="lead-text" data-reveal>Wyobraź sobie poranek bez pośpiechu: kawa w cieniu drzewek cytrynowych, lniana pościel i światło, które powoli wędruje po bielonych ścianach.</p>
+            <p data-reveal>e-spania to propozycja pobytu w duchu hiszpańskiej codzienności — prostej, ciepłej i dopracowanej w detalach. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.</p>
+            <ul class="principles" data-reveal>
+              <li class="principles__item"><span class="principles__name">Światło</span><span class="principles__text">jasne wnętrza i naturalne materiały</span></li>
+              <li class="principles__item"><span class="principles__name">Cisza</span><span class="principles__text">kameralna skala i spokojne patio</span></li>
+              <li class="principles__item"><span class="principles__name">Smak</span><span class="principles__text">rytm dnia wyznaczany przez posiłki</span></li>
+            </ul>
+          </div>
+          <div class="col-lg-7 col-xl-6 order-lg-1">
+            <div class="about__media">
+              <figure class="about__figure about__figure--main media-reveal" data-reveal="clip" data-parallax="0.05">
+                <img src="assets/images/about-house.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Bielona fasada z drewnianymi okiennicami i palmą na tle błękitnego nieba">
+              </figure>
+              <figure class="about__figure about__figure--accent media-reveal" data-reveal="clip" data-parallax="-0.08">
+                <img src="assets/images/about-courtyard.webp" width="800" height="1000" loading="lazy" decoding="async" alt="Patio z drzewkami cytrynowymi w terakotowych donicach">
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POKOJE ===================== -->
+    <section class="section rooms" id="pokoje" aria-labelledby="rooms-title">
+      <div class="container">
+        <div class="row align-items-end gy-4 section-head">
+          <div class="col-lg-7">
+            <p class="eyebrow" data-reveal>02 — Pokoje</p>
+            <h2 class="section-title" id="rooms-title" data-reveal data-split>Cztery sposoby na <em>dobry sen</em></h2>
+          </div>
+          <div class="col-lg-5">
+            <p class="mb-0" data-reveal>Od kameralnego pokoju po suitę z balkonem. Kliknij „Wybierz”, aby zobaczyć pokój w panelu i dodać go do wyszukiwania.</p>
+            <p class="demo-note" data-reveal>Nazwy, metraże i wyposażenie pokoi są przykładowe.</p>
+          </div>
+        </div>
+
+        <div class="row gx-lg-5 rooms__grid">
+          <div class="col-md-6 col-lg-7">
+            <article class="room-card" data-room-id="classic" data-room-capacity="2" data-reveal>
+              <figure class="room-card__media media-reveal" data-reveal="clip">
+                <img src="assets/images/room-classic.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Jasny pokój z podwójnym łóżkiem, białą pościelą i dekoracyjnymi kapeluszami na ścianie">
+              </figure>
+              <div class="room-card__body">
+                <span class="room-card__index" aria-hidden="true">01</span>
+                <h3 class="room-card__title">Pokój Classic</h3>
+                <p class="room-card__text">Jasne wnętrze z naturalnymi tkaninami i rękodziełem. Proste, wygodne i pełne światła.</p>
+                <ul class="room-meta">
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 2 gości</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 22 m²</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>łóżko podwójne</li>
+                </ul>
+                <button class="btn link-arrow" type="button" data-open-room="classic">Wybierz <span class="visually-hidden">pokój Classic</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+              </div>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-5 rooms__offset">
+            <article class="room-card" data-room-id="deluxe" data-room-capacity="2" data-reveal>
+              <figure class="room-card__media room-card__media--tall media-reveal" data-reveal="clip">
+                <img src="assets/images/room-deluxe.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Przestronny pokój z lnianą pościelą, rzeźbionym panelem nad łóżkiem i jutowym dywanem">
+              </figure>
+              <div class="room-card__body">
+                <span class="room-card__index" aria-hidden="true">02</span>
+                <h3 class="room-card__title">Pokój Deluxe</h3>
+                <p class="room-card__text">Więcej przestrzeni, rzeźbione detale i len w odcieniach piasku. Na dłuższy, niespieszny pobyt.</p>
+                <ul class="room-meta">
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 2 gości</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 30 m²</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>łóżko king-size</li>
+                </ul>
+                <button class="btn link-arrow" type="button" data-open-room="deluxe">Wybierz <span class="visually-hidden">pokój Deluxe</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+              </div>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-5">
+            <article class="room-card" data-room-id="junior" data-room-capacity="3" data-reveal>
+              <figure class="room-card__media room-card__media--tall media-reveal" data-reveal="clip">
+                <img src="assets/images/room-junior.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Sypialnia z łukowymi oknami wychodzącymi na zieleń i kutym żyrandolem">
+              </figure>
+              <div class="room-card__body">
+                <span class="room-card__index" aria-hidden="true">03</span>
+                <h3 class="room-card__title">Junior Suite</h3>
+                <p class="room-card__text">Łukowe okna, grube ściany i strefa wypoczynku na leniwe popołudnia z książką.</p>
+                <ul class="room-meta">
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 3 gości</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 38 m²</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>king-size + sofa</li>
+                </ul>
+                <button class="btn link-arrow" type="button" data-open-room="junior">Wybierz <span class="visually-hidden">Junior Suite</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+              </div>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-7 rooms__offset">
+            <article class="room-card" data-room-id="suite" data-room-capacity="4" data-reveal>
+              <figure class="room-card__media media-reveal" data-reveal="clip">
+                <img src="assets/images/room-suite.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Otwarte drzwi balkonowe z widokiem na morze o zmierzchu">
+              </figure>
+              <div class="room-card__body">
+                <span class="room-card__index" aria-hidden="true">04</span>
+                <h3 class="room-card__title">Suite z balkonem</h3>
+                <p class="room-card__text">Prywatny balkon, widok na wodę i wieczory, które kończą się dopiero po zachodzie słońca.</p>
+                <ul class="room-meta">
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 4 gości</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 48 m²</li>
+                  <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-view"/></svg>balkon</li>
+                </ul>
+                <button class="btn link-arrow" type="button" data-open-room="suite">Wybierz <span class="visually-hidden">Suite z balkonem</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DOŚWIADCZENIA ===================== -->
+    <section class="section section--dark experiences" id="doswiadczenia" aria-labelledby="experiences-title">
+      <div class="container">
+        <div class="row align-items-end gy-4 section-head">
+          <div class="col-lg-7">
+            <p class="eyebrow eyebrow--light" data-reveal>03 — Doświadczenia</p>
+            <h2 class="section-title" id="experiences-title" data-reveal data-split>Dni, które <em>same się układają</em></h2>
+          </div>
+          <div class="col-lg-5">
+            <p class="mb-0" data-reveal>Kilka inspiracji na pobyt w hiszpańskim rytmie. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.</p>
+            <p class="demo-note demo-note--light" data-reveal>Opisy mają charakter demonstracyjny.</p>
+          </div>
+        </div>
+
+        <div class="row gy-5 gx-lg-5 experiences__list">
+          <div class="col-md-4">
+            <article class="experience" data-reveal>
+              <figure class="experience__media media-reveal" data-reveal="clip">
+                <img src="assets/images/exp-pool.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Zadaszone łoże z białymi zasłonami przy basenie">
+              </figure>
+              <p class="experience__time">Popołudnie</p>
+              <h3 class="experience__title">Czas przy wodzie</h3>
+              <p class="experience__text">Cień białych zasłon, chłodna woda i książka, której nikt nie każe kończyć.</p>
+            </article>
+          </div>
+          <div class="col-md-4 experiences__offset">
+            <article class="experience" data-reveal>
+              <figure class="experience__media media-reveal" data-reveal="clip">
+                <img src="assets/images/exp-table.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Długi stół nakryty białym obrusem na tarasie o zachodzie słońca">
+              </figure>
+              <p class="experience__time">Wieczór</p>
+              <h3 class="experience__title">Kolacja do późna</h3>
+              <p class="experience__text">Hiszpańskie wieczory zaczynają się późno. Wspólny stół i rozmowy, które się nie spieszą.</p>
+            </article>
+          </div>
+          <div class="col-md-4">
+            <article class="experience" data-reveal>
+              <figure class="experience__media media-reveal" data-reveal="clip">
+                <img src="assets/images/exp-coast.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Skaliste wybrzeże opadające do spokojnego morza">
+              </figure>
+              <p class="experience__time">Poranek</p>
+              <h3 class="experience__title">Szlak nad morzem</h3>
+              <p class="experience__text">Wczesny spacer, zanim zrobi się gorąco — sól w powietrzu i cisza skał.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GALERIA ===================== -->
+    <section class="section gallery" id="galeria" aria-labelledby="gallery-title">
+      <div class="container">
+        <div class="row align-items-end gy-4 section-head">
+          <div class="col-lg-7">
+            <p class="eyebrow" data-reveal>04 — Galeria</p>
+            <h2 class="section-title" id="gallery-title" data-reveal data-split>Hiszpania <em>w detalach</em></h2>
+          </div>
+          <div class="col-lg-5">
+            <p class="demo-note mb-0" data-reveal>Zdjęcia poglądowe z serwisu Pexels — nie przedstawiają obiektu e-spania.</p>
+          </div>
+        </div>
+
+        <ul class="gallery__grid">
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="0"><img src="assets/images/gal-pool-arches.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Wąski basen z turkusowymi płytkami prowadzący do mauretańskich łuków"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="1"><img src="assets/images/gal-courtyard-pool.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Zacieniony dziedziniec z basenem, roślinami w donicach i arkadami"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="2"><img src="assets/images/gal-tiles.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Ściana z kolorowymi płytkami azulejos otoczona zielenią"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="3"><img src="assets/images/gal-olive.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Drzewo oliwne w donicy przy kamiennym łuku"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="4"><img src="assets/images/gal-lane.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Bielony zaułek z brukiem w okrągłe wzory i roślinami w donicach"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="5"><img src="assets/images/gal-white-house.webp" width="1200" height="900" loading="lazy" decoding="async" alt="Bielony dom z szarymi drzwiami, kamiennymi schodami i śródziemnomorskim ogrodem"></button></li>
+          <li class="gallery__item gallery__item--wide" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="6"><img src="assets/images/gal-terrace.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Taras z mozaikowym stolikiem i widokiem na morze o zmierzchu"></button></li>
+          <li class="gallery__item" data-reveal="clip"><button class="gallery__button" type="button" data-gallery-index="7"><img src="assets/images/gal-patio.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Słoneczne patio z łukowym przejściem, palmami i czerwonymi kwiatami"></button></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== OPINIE ===================== -->
+    <section class="section section--soft reviews" id="opinie" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="row align-items-end gy-4 section-head">
+          <div class="col-lg-7">
+            <p class="eyebrow" data-reveal>05 — Opinie</p>
+            <h2 class="section-title" id="reviews-title" data-reveal data-split>Głosy <em>gości</em></h2>
+          </div>
+          <div class="col-lg-5">
+            <p class="demo-banner mb-0" data-reveal><strong>Przykładowe treści.</strong> Poniższe wpisy są demonstracyjne i nie są prawdziwymi opiniami. Zweryfikowane recenzje oraz linki do profilu hotelu zostaną dodane później.</p>
+          </div>
+        </div>
+
+        <div class="row gy-4 gx-lg-5">
+          <div class="col-md-4">
+            <figure class="review" data-reveal>
+              <span class="review__tag">Przykład</span>
+              <blockquote class="review__quote"><p>„Tu miejsce na krótką, zweryfikowaną opinię gościa — o atmosferze, obsłudze albo ulubionym momencie pobytu.”</p></blockquote>
+              <figcaption class="review__source">
+                <span class="review__platform">Booking.com</span>
+                <a class="review__link" href="https://www.booking.com/" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Booking.com (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="col-md-4">
+            <figure class="review" data-reveal>
+              <span class="review__tag">Przykład</span>
+              <blockquote class="review__quote"><p>„Miejsce na opinię z Google. Krótki cytat najlepiej oddaje charakter pobytu i pomaga podjąć decyzję.”</p></blockquote>
+              <figcaption class="review__source">
+                <span class="review__platform">Google</span>
+                <a class="review__link" href="https://www.google.com/maps" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Google Maps (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="col-md-4">
+            <figure class="review" data-reveal>
+              <span class="review__tag">Przykład</span>
+              <blockquote class="review__quote"><p>„Miejsce na opinię z Tripadvisora. Po weryfikacji pojawi się tu imię gościa i data pobytu.”</p></blockquote>
+              <figcaption class="review__source">
+                <span class="review__platform">Tripadvisor</span>
+                <a class="review__link" href="https://www.tripadvisor.com/" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Tripadvisor (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="cta" aria-labelledby="cta-title">
+      <img class="cta__image" data-parallax="0.1" src="assets/images/cta-bay.webp" width="1920" height="1000" loading="lazy" decoding="async" alt="Zatoka z łodziami żaglowymi o zachodzie słońca">
+      <div class="cta__shade" aria-hidden="true"></div>
+      <div class="container cta__inner">
+        <p class="eyebrow eyebrow--light" data-reveal>Twój pobyt</p>
+        <h2 class="cta__title" id="cta-title" data-reveal data-split>Zostań, aż zajdzie <em>słońce</em></h2>
+        <p class="cta__text" data-reveal>Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt w e-spania.</p>
+        <div data-reveal>
+          <a class="btn btn-accent btn-lg-pill" href="#rezerwacja" data-action="focus-booking">Sprawdź dostępność</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer" id="kontakt">
+    <div class="container">
+      <div class="row gy-5">
+        <div class="col-lg-4">
+          <img class="site-footer__logo" src="assets/logo/logo-light.png" width="479" height="270" loading="lazy" alt="e-spania — es hotels">
+          <p class="site-footer__claim">Hotel w Hiszpanii. Spokojny rytm, jasne wnętrza i śródziemnomorskie światło.</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+          <h2 class="site-footer__heading">Odkryj</h2>
+          <ul class="site-footer__list">
+            <li><a href="#hotel">Hotel</a></li>
+            <li><a href="#pokoje">Pokoje</a></li>
+            <li><a href="#doswiadczenia">Doświadczenia</a></li>
+            <li><a href="#galeria">Galeria</a></li>
+            <li><a href="#opinie">Opinie</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <h2 class="site-footer__heading">Kontakt</h2>
+          <address class="site-footer__list site-footer__address">
+            <span>Adres: <em>do uzupełnienia</em></span>
+            <span>Telefon: <em>do uzupełnienia</em></span>
+            <span>E-mail: <em>do uzupełnienia</em></span>
+          </address>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <h2 class="site-footer__heading">Rezerwacja</h2>
+          <p class="site-footer__small">Sprawdź termin w kilka sekund.</p>
+          <a class="btn btn-outline-light btn-ghost" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
+        </div>
+      </div>
+      <div class="site-footer__bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <p class="mb-0">© 2026 e-spania · Projekt studencki RWD — treści demonstracyjne</p>
+        <p class="mb-0">Zdjęcia: <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels<span class="visually-hidden"> (otwiera się w nowej karcie)</span></a> · <a href="index.html" data-action="scroll-top">Do góry</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== PANEL WYBORU POKOI (offcanvas) ===================== -->
+  <div class="offcanvas offcanvas-end room-panel" tabindex="-1" id="roomPanel" aria-labelledby="roomPanelTitle">
+    <div class="offcanvas-header room-panel__header">
+      <div>
+        <p class="eyebrow mb-1">Wybór pokoju</p>
+        <h2 class="room-panel__title" id="roomPanelTitle">Pokoje i suity</h2>
+        <p class="room-panel__summary" id="roomPanelSummary" aria-live="polite">Wybierz pokój, a dodamy go do wyszukiwania.</p>
+      </div>
+      <button type="button" class="btn room-panel__close" data-bs-dismiss="offcanvas">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+        <span>Zamknij</span>
+      </button>
+    </div>
+    <div class="offcanvas-body room-panel__body">
+      <div class="row g-0 h-100">
+        <div class="col-lg-5 room-panel__list-col">
+          <ul class="room-list" id="roomList"><!-- uzupełniane przez JS na podstawie sekcji #pokoje --></ul>
+          <p class="demo-note room-panel__note">Dostępność i dane pokoi są demonstracyjne. Wybór pokoju nie jest rezerwacją.</p>
+        </div>
+        <div class="col-lg-7 d-none d-lg-block room-panel__preview-col">
+          <figure class="room-preview" id="roomPreview">
+            <img class="room-preview__image" id="roomPreviewImage" src="assets/images/room-classic.webp" width="1200" height="900" loading="lazy" alt="">
+            <figcaption class="room-preview__caption">
+              <span class="room-preview__name" id="roomPreviewName">Pokój Classic</span>
+              <span class="room-preview__text" id="roomPreviewText"></span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== GALERIA — PODGLĄD (modal) ===================== -->
+  <div class="modal fade lightbox" id="galleryModal" tabindex="-1" aria-labelledby="lightboxCaption" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content lightbox__content">
+        <button type="button" class="btn lightbox__close" data-bs-dismiss="modal">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span>Zamknij</span>
+        </button>
+        <figure class="lightbox__figure">
+          <img class="lightbox__image" id="lightboxImage" src="assets/images/gal-pool-arches.webp" loading="lazy" alt="">
+          <figcaption class="lightbox__caption" id="lightboxCaption" aria-live="polite"></figcaption>
+        </figure>
+        <button type="button" class="btn lightbox__nav lightbox__nav--prev" data-gallery-step="-1" aria-label="Poprzednie zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <button type="button" class="btn lightbox__nav lightbox__nav--next" data-gallery-step="1" aria-label="Następne zdjęcie"><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== POWIADOMIENIA (toast) ===================== -->
+  <div class="toast-container position-fixed p-3 es-toast-container">
+    <div class="toast es-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="es-toast__body">
+        <p class="es-toast__title" id="appToastTitle"></p>
+        <p class="es-toast__text" id="appToastText"></p>
+      </div>
+      <button type="button" class="btn es-toast__close" data-bs-dismiss="toast" aria-label="Zamknij powiadomienie"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
