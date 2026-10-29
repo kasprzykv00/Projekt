@@ -1,5 +1,5 @@
 /* =========================================================
-   e-spania — interakcje strony głównej
+   e-spania — interakcje (strona główna i blog)
    Bez frameworków: czysty JavaScript + komponenty Bootstrap 5.
    Rezerwacja jest demonstracyjna — nic nie jest wysyłane.
    ========================================================= */
@@ -130,13 +130,15 @@
     });
 
     // Link w otwartym menu mobilnym: przewijamy dopiero po zamknięciu panelu
-    // (na desktopie menu nie jest panelem — działa zwykły link #sekcja)
+    // (na desktopie menu nie jest panelem — działa zwykły link #sekcja).
+    // Linki do innej podstrony (np. blog.html, index.html#hotel) działają zwyczajnie.
     qsa('.site-menu__link', menuEl).forEach((link) => {
       link.addEventListener('click', (event) => {
-        if (!menuEl.classList.contains('show')) return;
+        const target = link.pathname === window.location.pathname && link.hash ? qs(link.hash) : null;
+        if (!menuEl.classList.contains('show') || !target) return;
         event.preventDefault();
         afterMenuClosed(() => {
-          qs(link.hash).scrollIntoView({ behavior: scrollBehavior() });
+          target.scrollIntoView({ behavior: scrollBehavior() });
           history.pushState(null, '', link.hash);
         });
       });
@@ -212,7 +214,7 @@
     else window.addEventListener('load', load, { once: true });
   }
 
-  /* ---------- Formularz dostępności ---------- */
+  /* ---------- Formularz dostępności (tylko strona główna) ---------- */
   const form = qs('#rezerwacja');
   const arrival = qs('#arrival');
   const departure = qs('#departure');
@@ -222,7 +224,7 @@
   const roomInput = qs('#roomInput');
   const roomTrigger = qs('#roomTrigger');
   const status = qs('#bookingStatus');
-  const defaultStatus = status.textContent;
+  const defaultStatus = status ? status.textContent : '';
   const MAX_NIGHTS = 30;
 
   const rooms = new Map(); // id -> dane pokoju (wypełniane w initRoomPanel)
@@ -554,11 +556,17 @@
     });
 
     updateGuests();
+
+    // Przycisk „Rezerwuj” z podstron prowadzi do index.html#rezerwacja.
+    // Po wczytaniu przeglądarka sama przewija do kotwicy (i zdejmuje fokus), więc czekamy na „load”.
+    if (window.location.hash === '#rezerwacja') {
+      window.addEventListener('load', () => window.setTimeout(focusBooking, 0), { once: true });
+    }
   }
 
-  /* ---------- Panel wyboru pokoi (Bootstrap Offcanvas) ---------- */
+  /* ---------- Panel wyboru pokoi (Bootstrap Offcanvas, tylko strona główna) ---------- */
   const panelEl = qs('#roomPanel');
-  const panel = bootstrap.Offcanvas.getOrCreateInstance(panelEl);
+  const panel = panelEl ? bootstrap.Offcanvas.getOrCreateInstance(panelEl) : null;
   const list = qs('#roomList');
   const previewImage = qs('#roomPreviewImage');
   let panelContext = { fromSearch: false, focusId: null, returnFocus: null };
@@ -739,6 +747,50 @@
     modalEl.addEventListener('hidden.bs.modal', () => buttons[index].focus());
   }
 
+  /* ---------- Blog (blog.html, single.html) — elementy demonstracyjne ---------- */
+  function initBlog() {
+    // Wyszukiwarka i formularz komentarza: walidacja Bootstrapa, potem komunikat demo (nic nie jest wysyłane)
+    qsa('[data-demo-form]').forEach((demoForm) => {
+      demoForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!demoForm.checkValidity()) {
+          demoForm.classList.add('was-validated');
+          qs(':invalid', demoForm).focus();
+          return;
+        }
+        demoForm.classList.remove('was-validated');
+        notify(demoForm.dataset.demoTitle, demoForm.dataset.demoText);
+        demoForm.reset();
+      });
+    });
+
+    // Paginacja: kolejne strony archiwum nie istnieją jeszcze — link zostaje w obrębie bloga
+    qsa('[data-demo-page]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        notify(`Strona ${link.dataset.demoPage} archiwum`, 'Wersja demonstracyjna — kolejne strony archiwum pojawią się wraz z nowymi wpisami.');
+      });
+    });
+
+    // Udostępnianie: adres i tytuł bieżącej strony wstawiamy do linków serwisów
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(document.title);
+    qsa('[data-share]').forEach((link) => {
+      link.href = link.dataset.share.replace('{url}', url).replace('{title}', title);
+    });
+
+    qsa('[data-copy-link]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const copied = () => notify('Skopiowano link', 'Adres artykułu jest w schowku — możesz go wkleić w wiadomości.');
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(window.location.href).then(copied, () => notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.'));
+        } else {
+          notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.');
+        }
+      });
+    });
+  }
+
   /* ---------- Animacje ---------- */
 
   // Dzieli tytuły na słowa (maska + przesunięcie). Kursywa <em> zostaje zachowana.
@@ -847,10 +899,14 @@
   splitWords();
   initHeader();
   initLanguage();
-  initHeroVideo();
-  initRoomPanel();
-  initBooking();
-  initGallery();
+  // Hero, rezerwacja, panel pokoi i galeria istnieją tylko na stronie głównej
+  if (form) {
+    initHeroVideo();
+    initRoomPanel();
+    initBooking();
+    initGallery();
+  }
+  initBlog();
   initReveal();
   initParallax();
 })();

@@ -1,5 +1,5 @@
 /* =========================================================
-   e-spania — style strony głównej
+   e-spania — wspólny arkusz stylów (strona główna i blog)
 
    Mobile first: style bazowe są dla telefonu, media queries
    (min-width) rozbudowują układ na większych ekranach.
@@ -20,6 +20,11 @@
    11. Powiadomienia (toast)
    12. Animacje
    13. Ograniczenie ruchu (prefers-reduced-motion)
+   14. Moduł bloga (zajawka na stronie głównej, blog.html, single.html)
+       14.1 Karta wpisu (card, badge)  14.2 Nagłówek podstrony  14.3 Breadcrumb
+       14.4 Układ archiwum i paginacja  14.5 Pasek boczny (wyszukiwarka, kategorie, polecane)
+       14.6 Artykuł  14.7 Stopka artykułu (tagi, udostępnianie, autor)
+       14.8 Nawigacja między wpisami i komentarze  14.9 Ograniczenie ruchu w module bloga
    ========================================================= */
 
 /* ---------- 1. Zmienne (design tokens) ---------- */
@@ -146,6 +151,9 @@ a {
 .cta,
 .lightbox,
 .es-toast,
+.page-header,
+.post-crumbs,
+.post-header,
 .site-header:not(.is-scrolled) {
   --focus-ring: #FFFFFF;
 }
@@ -631,7 +639,8 @@ a {
   color: var(--color-on-dark-muted);
 }
 
-.site-menu__link:hover {
+.site-menu__link:hover,
+.site-menu__link[aria-current] {
   font-style: italic;
 }
 
@@ -683,12 +692,15 @@ a {
     transition: transform var(--dur-med) var(--ease-out);
   }
 
-  .site-menu__link:hover {
+  .site-menu__link:hover,
+  .site-menu__link[aria-current] {
     font-style: normal;
   }
 
+  /* Bieżąca podstrona (Blog) — podkreślenie widoczne na stałe */
   .site-menu__link:hover::after,
-  .site-menu__link:focus-visible::after {
+  .site-menu__link:focus-visible::after,
+  .site-menu__link[aria-current]::after {
     transform: scaleX(1);
     transform-origin: left;
   }
@@ -2399,5 +2411,1033 @@ a {
   .offcanvas,
   .modal.fade .modal-dialog {
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- 14. Moduł bloga (zajawka na stronie głównej, blog.html, single.html) ---------- */
+/* Wszystkie klasy bloga w jednym miejscu. Komponenty Bootstrapa z własnym wyglądem:
+   card, badge, breadcrumb, pagination, list-group, form-control, table, blockquote. */
+
+/* 14.1 Karta wpisu (card) i etykieta kategorii (badge) */
+.post-card {
+  --bs-card-bg: transparent;
+  --bs-card-color: var(--color-text);
+  --bs-card-border-width: 0;
+  --bs-card-border-radius: 0;
+  --bs-card-inner-border-radius: 0;
+  --bs-card-spacer-x: 0;
+  --bs-card-spacer-y: 0;
+  height: 100%;
+}
+
+.post-card__media {
+  aspect-ratio: 4 / 3;
+  background-color: var(--color-primary-deep);
+}
+
+.post-card__media img {
+  transition: transform 1.4s var(--ease-out);
+}
+
+.post-card:hover .post-card__media img {
+  transform: scale(1.04);
+}
+
+.post-card__body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.5rem;
+}
+
+.post-card__title {
+  margin: 1rem 0 0.75rem;
+  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+  font-weight: 300;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Podkreślenie tytułu rysowane od lewej po najechaniu na kartę */
+.post-card__title a {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) left 100% / 0 1px no-repeat;
+  transition: background-size var(--dur-med) var(--ease-out);
+}
+
+.post-card:hover .post-card__title a,
+.post-card__title a:focus-visible {
+  background-size: 100% 1px;
+}
+
+.post-card__lead {
+  flex-grow: 1;
+  margin-bottom: 1.25rem;
+  color: var(--color-muted);
+}
+
+.post-card .link-arrow {
+  align-self: flex-start;
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.post-badge {
+  --bs-badge-padding-x: 0.75rem;
+  --bs-badge-padding-y: 0.4375rem;
+  --bs-badge-font-size: 0.6875rem;
+  --bs-badge-font-weight: 600;
+  --bs-badge-color: var(--color-accent-hover);
+  --bs-badge-border-radius: var(--radius-pill);
+  border: 1px solid currentColor;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.blog-teaser__more {
+  margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+}
+
+/* 14.2 Nagłówek podstrony (blog.html) — zdjęcie pod przezroczystym nagłówkiem strony */
+.page-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(30rem, 70vh, 40rem);
+  padding: calc(var(--header-h) + 3rem) 0 clamp(3rem, 2rem + 4vw, 5rem);
+  background-color: var(--color-secondary);
+  color: #FFFFFF;
+}
+
+.page-header__image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-header__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(22, 20, 20, 0.6) 0%, rgba(22, 20, 20, 0.3) 40%, rgba(22, 20, 20, 0.8) 100%);
+}
+
+.page-header__title {
+  max-width: 16ch;
+  margin-bottom: 1.25rem;
+  font-size: clamp(2.5rem, 1.5rem + 4.4vw, 5rem);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.page-header__title em {
+  color: var(--color-accent-on-dark);
+}
+
+.page-header__text {
+  max-width: 36rem;
+  margin: 0;
+  font-size: 1.0625rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 14.3 Nawigacja okruszkowa (breadcrumb) na ciemnym tle */
+.blog-breadcrumb {
+  --bs-breadcrumb-margin-bottom: 1.5rem;
+  --bs-breadcrumb-font-size: 0.75rem;
+  --bs-breadcrumb-item-padding-x: 0.75rem;
+  --bs-breadcrumb-divider: "→";
+  --bs-breadcrumb-divider-color: var(--color-on-dark-muted);
+  --bs-breadcrumb-item-active-color: var(--color-on-dark-muted);
+  align-items: center;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.blog-breadcrumb .breadcrumb-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.blog-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  color: var(--color-on-dark);
+  text-decoration: none;
+}
+
+.blog-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* 14.4 Układ archiwum i paginacja */
+.blog-layout {
+  padding-block: clamp(4rem, 3rem + 4vw, 7rem);
+}
+
+.blog-heading {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-line);
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  font-weight: 300;
+}
+
+.blog-pagination {
+  --bs-pagination-padding-x: 0.875rem;
+  --bs-pagination-padding-y: 0.5rem;
+  --bs-pagination-font-size: 0.8125rem;
+  --bs-pagination-color: var(--color-text);
+  --bs-pagination-bg: transparent;
+  --bs-pagination-border-width: 0;
+  --bs-pagination-border-radius: var(--radius-pill);
+  --bs-pagination-hover-color: var(--color-accent-hover);
+  --bs-pagination-hover-bg: var(--color-primary-deep);
+  --bs-pagination-focus-color: var(--color-accent-hover);
+  --bs-pagination-focus-bg: transparent;
+  --bs-pagination-focus-box-shadow: none;
+  --bs-pagination-active-color: var(--color-on-dark);
+  --bs-pagination-active-bg: var(--color-secondary);
+  --bs-pagination-disabled-color: var(--color-muted);
+  --bs-pagination-disabled-bg: transparent;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: clamp(3rem, 2rem + 3vw, 4.5rem) 0 0;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.blog-pagination .page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* Bootstrap zeruje outline w .page-link:focus — przywracamy spójną ramkę fokusu */
+.blog-pagination .page-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Na telefonie przy strzałkach zostają same ikony (tekst dalej czytają czytniki ekranu) */
+@media (max-width: 575.98px) {
+  .blog-pagination__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* 14.5 Pasek boczny: wyszukiwarka, kategorie, polecane artykuły */
+.blog-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.sidebar-block__title,
+.post-footer__title {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sidebar-block__title {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+/* Wyszukiwarka: pole (form-control) i okrągły przycisk w jednej „pigułce” */
+.blog-search {
+  --bs-form-invalid-color: #B3261E;
+  --bs-form-invalid-border-color: #B3261E;
+}
+
+.blog-search__group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background-color: #FFFFFF;
+  transition: border-color var(--dur-fast) var(--ease-soft);
+}
+
+.blog-search__group:focus-within {
+  border-color: var(--color-secondary);
+}
+
+/* Ramkę fokusu rysuje cała „pigułka”, gdy fokus jest w polu tekstowym */
+.blog-search__group:has(.blog-search__input:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.blog-search__input.form-control {
+  min-height: var(--tap);
+  padding: 0.5rem 1rem;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  font-size: 0.9375rem;
+}
+
+.blog-search__input.form-control:focus,
+.blog-search__input.form-control:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+.blog-search__button {
+  flex-shrink: 0;
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+}
+
+.blog-search__button:hover {
+  background-color: var(--color-accent-strong);
+  color: #FFFFFF;
+}
+
+.was-validated .blog-search__group:has(:invalid) {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.was-validated .blog-search__group:has(:invalid) + .invalid-feedback {
+  display: block;
+}
+
+/* Lista kategorii (list-group) z licznikiem wpisów (badge) */
+.category-list {
+  --bs-list-group-bg: transparent;
+  --bs-list-group-color: var(--color-text);
+  --bs-list-group-border-color: var(--color-line);
+  --bs-list-group-border-radius: 0;
+  --bs-list-group-item-padding-x: 0;
+  --bs-list-group-item-padding-y: 0;
+}
+
+.category-list .list-group-item {
+  border-inline: 0;
+}
+
+.category-list .list-group-item:first-child {
+  border-top: 0;
+}
+
+.category-list__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-soft), padding var(--dur-med) var(--ease-out);
+}
+
+.category-list__link:hover {
+  padding-left: 0.5rem;
+  color: var(--color-accent-hover);
+}
+
+.count-badge {
+  --bs-badge-padding-x: 0.625rem;
+  --bs-badge-padding-y: 0.375rem;
+  --bs-badge-font-size: 0.75rem;
+  --bs-badge-font-weight: 500;
+  --bs-badge-color: var(--color-text);
+  --bs-badge-border-radius: var(--radius-pill);
+  min-width: 2rem;
+  background-color: var(--color-primary-deep);
+  transition: background-color var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft);
+}
+
+.category-list__link:hover .count-badge {
+  background-color: var(--color-accent-strong);
+  color: #FFFFFF;
+}
+
+/* Polecane artykuły: miniatura + tytuł */
+.featured-list {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.featured-post {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+}
+
+.featured-post__thumb {
+  display: block;
+  aspect-ratio: 1;
+}
+
+.featured-post__thumb img {
+  transition: transform 1.2s var(--ease-out);
+}
+
+.featured-post:hover .featured-post__thumb img {
+  transform: scale(1.06);
+}
+
+.featured-post__title {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.featured-post:hover .featured-post__title {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.featured-post__date {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* 14.6 Artykuł (single.html) */
+.post-crumbs {
+  padding-top: calc(var(--header-h) + 2rem);
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+}
+
+.post-crumbs .blog-breadcrumb {
+  --bs-breadcrumb-margin-bottom: 0;
+}
+
+/* Ciemny nagłówek artykułu — zdjęcie wiodące zachodzi na jego dolną część */
+.post-header {
+  padding: 1.5rem 0 clamp(6rem, 4rem + 8vw, 10rem);
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+}
+
+.post-header__title {
+  margin-bottom: 0;
+  font-size: clamp(2.25rem, 1.4rem + 3.6vw, 4.25rem);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.post-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin: 2rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--color-line-dark);
+  list-style: none;
+}
+
+.post-meta-bar li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.post-meta-bar__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-on-dark-muted);
+}
+
+.post-meta-bar__value {
+  font-size: 0.9375rem;
+  color: var(--color-on-dark);
+}
+
+.post-cover {
+  margin-top: calc(-1 * clamp(4.5rem, 3rem + 6vw, 8rem));
+}
+
+.post-cover img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background-color: var(--color-primary-deep);
+}
+
+.post-cover__caption,
+.post-figure figcaption {
+  margin-top: 0.875rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-accent);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.post-content {
+  margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.post-content p,
+.post-content ul {
+  margin-bottom: 1.25rem;
+}
+
+/* Wyróżniony lead: większy krój nagłówkowy */
+.post-lead {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--color-line);
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  font-weight: 350;
+  line-height: 1.5;
+}
+
+.post-content h2 {
+  margin: 3.5rem 0 1.25rem;
+  font-size: clamp(1.75rem, 1.4rem + 1.3vw, 2.375rem);
+  font-weight: 350;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.post-content h3 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  font-weight: 400;
+}
+
+/* Wypunktowanie: krótkie akcentowe kreski zamiast kropek */
+.post-content ul {
+  padding: 0;
+  list-style: none;
+}
+
+.post-content li {
+  position: relative;
+  margin-bottom: 0.625rem;
+  padding-left: 1.75rem;
+}
+
+.post-content li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.9em;
+  width: 1rem;
+  height: 1px;
+  background-color: var(--color-accent);
+}
+
+.post-content strong {
+  font-weight: 600;
+}
+
+/* Cytat blokowy (blockquote Bootstrapa) */
+.post-quote {
+  margin: 3rem 0;
+  padding: 0.5rem 0 0.5rem clamp(1.25rem, 1rem + 1vw, 2rem);
+  border-left: 2px solid var(--color-accent);
+}
+
+.post-quote .blockquote {
+  margin-bottom: 1rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+.post-quote .blockquote p {
+  margin: 0;
+}
+
+.post-quote .blockquote-footer {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+/* Tabela danych (table Bootstrapa); na wąskim ekranie przewija się tylko sama tabela */
+.post-table-wrap {
+  margin: 2rem 0 2.5rem;
+}
+
+.post-table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--color-text);
+  --bs-table-border-color: var(--color-line);
+  min-width: 36rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.post-table caption {
+  caption-side: top;
+  padding: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.post-table th,
+.post-table td {
+  padding: 1rem 0.75rem;
+  vertical-align: top;
+}
+
+.post-table thead th {
+  padding-block: 0.875rem;
+  border-bottom: 1px solid var(--color-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.post-table tbody th {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+/* Telefon: każdy wiersz jako blok, a nazwy kolumn (data-label) nad wartościami */
+@media (max-width: 767.98px) {
+  .post-table {
+    min-width: 0;
+  }
+
+  .post-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .post-table,
+  .post-table caption,
+  .post-table tbody,
+  .post-table tr,
+  .post-table th,
+  .post-table td {
+    display: block;
+  }
+
+  .post-table tr {
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .post-table tbody th,
+  .post-table td {
+    padding: 0.25rem 0;
+    border: 0;
+  }
+
+  .post-table tbody th {
+    font-size: 1.375rem;
+  }
+
+  .post-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+}
+
+.post-figure {
+  margin: 2.5rem 0;
+}
+
+.post-figure img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background-color: var(--color-primary-deep);
+}
+
+/* 14.7 Stopka artykułu: tagi, udostępnianie, autor */
+.post-footer {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.tag-list,
+.share-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-badge {
+  --bs-badge-padding-x: 1rem;
+  --bs-badge-padding-y: 0;
+  --bs-badge-font-size: 0.8125rem;
+  --bs-badge-font-weight: 500;
+  --bs-badge-color: var(--color-text);
+  --bs-badge-border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  border: 1px solid var(--color-line);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
+}
+
+.tag-badge::before {
+  content: "#";
+  margin-right: 0.125rem;
+  color: var(--color-accent-hover);
+}
+
+.tag-badge:hover {
+  border-color: var(--color-secondary);
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+}
+
+.tag-badge:hover::before {
+  color: var(--color-accent-on-dark);
+}
+
+.share-btn {
+  --bs-btn-padding-x: 1.125rem;
+  --bs-btn-font-size: 0.75rem;
+  --bs-btn-font-weight: 600;
+  --bs-btn-color: var(--color-text);
+  --bs-btn-border-color: var(--color-line);
+  --bs-btn-border-radius: var(--radius-pill);
+  --bs-btn-hover-color: var(--color-on-dark);
+  --bs-btn-hover-bg: var(--color-secondary);
+  --bs-btn-hover-border-color: var(--color-secondary);
+  --bs-btn-active-color: var(--color-on-dark);
+  --bs-btn-active-bg: var(--color-ink);
+  --bs-btn-active-border-color: var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.author-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+  background-color: var(--color-primary-deep);
+}
+
+.author-box__avatar,
+.comment__avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+  font-family: var(--font-heading);
+  font-style: italic;
+}
+
+.author-box__avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 1.5rem;
+}
+
+.author-box__label {
+  margin-bottom: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.author-box__name {
+  margin-bottom: 0.625rem;
+  font-size: 1.625rem;
+  font-weight: 400;
+}
+
+.author-box__bio {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+@media (min-width: 576px) {
+  .author-box {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* 14.8 Nawigacja między wpisami i komentarze */
+.post-after {
+  padding-bottom: var(--section-space);
+}
+
+.post-nav {
+  margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+}
+
+.post-nav__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-secondary);
+  text-decoration: none;
+}
+
+.post-nav__dir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.post-nav__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  font-weight: 300;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.post-nav__link:hover .post-nav__title {
+  color: var(--color-accent-hover);
+}
+
+.post-nav__link .icon {
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.post-nav__link:hover .icon {
+  transform: translateX(-0.25rem);
+}
+
+.post-nav__link--next:hover .icon {
+  transform: translateX(0.25rem);
+}
+
+@media (min-width: 768px) {
+  .post-nav__link--next {
+    align-items: flex-end;
+    text-align: right;
+  }
+}
+
+.comments {
+  margin-top: clamp(4rem, 3rem + 4vw, 6rem);
+}
+
+.comments__title {
+  margin-bottom: 1.25rem;
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  font-weight: 300;
+}
+
+.comments__count {
+  color: var(--color-muted);
+}
+
+.comment-list {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment-list--replies {
+  margin: 0 0 0 clamp(1.5rem, 1rem + 4vw, 4rem);
+}
+
+.comment {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  padding-block: 1.75rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.comment__avatar {
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--color-primary-deep);
+  color: var(--color-text);
+  font-size: 1.125rem;
+}
+
+.comment__avatar--author {
+  background-color: var(--color-secondary);
+  color: var(--color-on-dark);
+  font-size: 1rem;
+}
+
+.comment__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.comment__author {
+  font-weight: 600;
+}
+
+.comment__role {
+  color: var(--color-accent-hover);
+  font-weight: 500;
+}
+
+.comment__date {
+  color: var(--color-muted);
+}
+
+.comment__tag {
+  padding: 0.125rem 0.625rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.comment__text {
+  margin: 0;
+}
+
+/* Formularz komentarza (form-control Bootstrapa z własnym wyglądem) */
+.comment-form {
+  --bs-form-invalid-color: #B3261E;
+  --bs-form-invalid-border-color: #B3261E;
+  margin-top: 3rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  background-color: var(--color-primary-deep);
+}
+
+.comment-form__title {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+  font-weight: 300;
+}
+
+.comment-form__intro {
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.comment-form .form-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.comment-form .form-control {
+  min-height: var(--tap);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background-color: #FFFFFF;
+  transition: border-color var(--dur-fast) var(--ease-soft);
+}
+
+/* Bootstrap zeruje outline pól — przywracamy spójną ramkę fokusu */
+.comment-form .form-control:focus {
+  border-color: var(--color-secondary);
+  box-shadow: none;
+}
+
+.comment-form .form-control:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.comment-form .invalid-feedback,
+.blog-search .invalid-feedback {
+  margin: 0.375rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* 14.9 Ograniczenie ruchu w module bloga */
+@media (prefers-reduced-motion: reduce) {
+  .post-card:hover .post-card__media img,
+  .featured-post:hover .featured-post__thumb img,
+  .post-nav__link:hover .icon {
+    transform: none;
+  }
+
+  .category-list__link:hover {
+    padding-left: 0;
   }
 }
