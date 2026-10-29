@@ -26,7 +26,9 @@ Plik `index.html` można też otworzyć bezpośrednio z dysku, ale zalecany jest
 ```
 site/
   index.html          strona główna (z zajawką 3 najnowszych wpisów)
-  blog.html           archiwum bloga: 6 wpisów, paginacja, pasek boczny
+  blog.html           archiwum bloga, strona 1: 6 najnowszych wpisów, paginacja, pasek boczny
+  blog-2.html         archiwum bloga, strona 2 (6 wpisów)
+  blog-3.html         archiwum bloga, strona 3 (3 wpisy)
   single.html         szablon artykułu (wpis „Kiedy jechać do Hiszpanii?”)
   css/styles.css      wspólny arkusz wszystkich podstron; style bloga w sekcji 14
   js/main.js          menu, formularz dostępności, panel pokoi, galeria, animacje, elementy demo bloga
@@ -60,8 +62,8 @@ list-group (`.category-list`), table (`.post-table` — na telefonie wiersze jak
 - Opinie są oznaczone jako przykładowe; linki prowadzą do stron głównych platform, nie do profilu hotelu.
 - Adres, telefon i e-mail w stopce czekają na uzupełnienie.
 - Przełącznik języka pokazuje komunikat — wersje EN/ES nie istnieją jeszcze.
-- Blog: wszystkie karty prowadzą do jednego szablonu `single.html`. Wyszukiwarka, strony 2–3 paginacji i formularz komentarza
-  pokazują komunikat demo (nic nie jest wysyłane). Komentarze są oznaczone jako przykładowe.
+- Blog: wszystkie karty prowadzą do jednego szablonu `single.html`. Archiwum ma 15 wpisów na 3 stronach.
+  Wyszukiwarka i formularz komentarza pokazują komunikat demo (nic nie jest wysyłane). Komentarze są oznaczone jako przykładowe.
 
 ## Zdjęcia
 
@@ -69,7 +71,9 @@ Zdjęcia poglądowe z [Pexels](https://www.pexels.com/) (licencja Pexels — dar
 Nie przedstawiają prawdziwego obiektu. Numery zdjęć: 37911536 (hero, OG), 28243788, 13888606, 18078646, 29086914, 8440280,
 30221505, 20975734, 36900313, 37549439, 20852906, 27945047, 19733194, 18355893, 31933142, 12891613, 19075381, 4947223, 12755879.
 Blog: 29837765 (wybrzeże, OG artykułu), 33389174 (tapas), 33524255 (Alhambra), 30875644 (ulica w Madrycie), 8212231 (walizka),
-18489894 (Marbella), 14797463 (łuk Alhambry — nagłówek bloga, OG), 6603519 (Plaza de España).
+18489894 (Marbella), 14797463 (łuk Alhambry — nagłówek bloga, OG), 6603519 (Plaza de España),
+998736 (Sagrada Família), 32629172 (paella), 10550304 (Teide), 28603797 (flamenco), 22744005 (dworzec w Madrycie),
+35417806 (Gran Vía), 16926806 (winnica), 10293706 (górskie miasteczko), 106052 (La Rambla).
 
 Wideo w hero to montaż klipów z [Pexels](https://www.pexels.com/videos/) (ta sama licencja), przycięty i skompresowany
 (H.264, bez dźwięku). Klipy — desktop: 31978239, 34549899, 18326569, 36229344, 31805421 (Mallorca, Ronda);
@@ -77,5 +81,5 @@ telefon: 35675134, 39544848, 37015145, 39243752 (biały dom z basenem, patio, Ge
 
 ## Po publikacji
 
-W `index.html`, `blog.html` i `single.html` podmień względne ścieżki w `og:image`, `og:url` i JSON-LD (`image`, `logo`, `url`, `item`, `@id`)
+W `index.html`, `blog.html`, `blog-2.html`, `blog-3.html` i `single.html` podmień względne ścieżki w `og:image`, `og:url` i JSON-LD (`image`, `logo`, `url`, `item`, `@id`)
 na pełne adresy URL (`https://...`).

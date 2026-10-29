@@ -764,14 +764,6 @@
       });
     });
 
-    // Paginacja: kolejne strony archiwum nie istnieją jeszcze — link zostaje w obrębie bloga
-    qsa('[data-demo-page]').forEach((link) => {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        notify(`Strona ${link.dataset.demoPage} archiwum`, 'Wersja demonstracyjna — kolejne strony archiwum pojawią się wraz z nowymi wpisami.');
-      });
-    });
-
     // Udostępnianie: adres i tytuł bieżącej strony wstawiamy do linków serwisów
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(document.title);

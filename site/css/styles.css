@@ -2547,6 +2547,18 @@ a {
   color: var(--color-accent-on-dark);
 }
 
+/* Numer strony archiwum (blog-2.html, blog-3.html) — część H1, ale w mniejszym stopniu */
+.page-header__page {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-on-dark-muted);
+}
+
 .page-header__text {
   max-width: 36rem;
   margin: 0;
