@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>e-spania — hotel w Hiszpanii | Pokoje, pobyt i rezerwacja</title>
-  <meta name="description" content="e-spania to hotel w Hiszpanii: jasne pokoje, spokojne patio i śródziemnomorski rytm dnia. Sprawdź dostępność terminu i wybierz pokój dla siebie.">
+  <title>e-spania — hotele w Barcelonie, Maladze i Madrycie | Rezerwacja</title>
+  <meta name="description" content="e-spania to hotele w Barcelonie, Maladze i Madrycie: jasne pokoje i spokojny, hiszpański rytm dnia. Wybierz miasto, sprawdź termin i wybierz pokój.">
   <meta name="theme-color" content="#2B2929">
 
   <!-- Open Graph. Po publikacji strony podmień ścieżki na pełne adresy URL (https://...). -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pl_PL">
   <meta property="og:site_name" content="e-spania">
-  <meta property="og:title" content="e-spania — hotel w Hiszpanii">
-  <meta property="og:description" content="Jasne pokoje, spokojne patio i śródziemnomorski rytm dnia. Sprawdź dostępność i zaplanuj pobyt.">
+  <meta property="og:title" content="e-spania — hotele w Barcelonie, Maladze i Madrycie">
+  <meta property="og:description" content="Jasne pokoje i spokojny, hiszpański rytm dnia w trzech miastach. Wybierz hotel, sprawdź dostępność i zaplanuj pobyt.">
   <meta property="og:image" content="assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -38,27 +38,58 @@
       if (sessionStorage.getItem('es-intro')) document.documentElement.classList.add('no-intro');
       sessionStorage.setItem('es-intro', '1');
     } catch (e) { /* bez sessionStorage kurtyna pokaże się za każdym razem */ }
+    // Zapamiętane miasto inne niż domyślna Barcelona: teksty zależne od miasta czekają
+    // ukryte, aż main.js je podmieni (bez mignięcia treści barcelońskiej)
+    try {
+      const city = localStorage.getItem('es-city');
+      if (city && city !== 'barcelona') document.documentElement.classList.add('city-pending');
+    } catch (e) { /* bez localStorage zawsze startuje Barcelona */ }
   </script>
 
-  <!-- Dane strukturalne: tylko informacje pewne. Adres, kontakt i oceny zostaną dodane po weryfikacji. -->
+  <!-- Dane strukturalne: tylko informacje pewne (marka i miasta). Adresy, kontakt i oceny zostaną dodane po weryfikacji. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Hotel",
-        "@id": "#hotel",
+        "@type": "Organization",
+        "@id": "#e-spania",
         "name": "e-spania",
-        "description": "Hotel w Hiszpanii z jasnymi pokojami i spokojnym, śródziemnomorskim charakterem.",
+        "description": "Hotele w Barcelonie, Maladze i Madrycie z jasnymi pokojami i spokojnym, hiszpańskim charakterem.",
+        "logo": "assets/logo/logo-dark.png"
+      },
+      {
+        "@type": "Hotel",
+        "@id": "#hotel-barcelona",
+        "name": "e-spania Barcelona",
         "image": "assets/images/og-image.jpg",
-        "logo": "assets/logo/logo-dark.png",
+        "address": { "@type": "PostalAddress", "addressLocality": "Barcelona", "addressCountry": "ES" },
+        "parentOrganization": { "@id": "#e-spania" },
+        "availableLanguage": ["pl", "en", "es"]
+      },
+      {
+        "@type": "Hotel",
+        "@id": "#hotel-malaga",
+        "name": "e-spania Malaga",
+        "image": "assets/images/og-image.jpg",
+        "address": { "@type": "PostalAddress", "addressLocality": "Málaga", "addressCountry": "ES" },
+        "parentOrganization": { "@id": "#e-spania" },
+        "availableLanguage": ["pl", "en", "es"]
+      },
+      {
+        "@type": "Hotel",
+        "@id": "#hotel-madryt",
+        "name": "e-spania Madryt",
+        "image": "assets/images/og-image.jpg",
+        "address": { "@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES" },
+        "parentOrganization": { "@id": "#e-spania" },
         "availableLanguage": ["pl", "en", "es"]
       },
       {
         "@type": "WebSite",
         "name": "e-spania",
         "inLanguage": "pl",
-        "about": { "@id": "#hotel" }
+        "about": { "@id": "#e-spania" }
       }
     ]
   }
@@ -92,6 +123,7 @@
     <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
   </svg>
 
   <!-- ===================== HEADER ===================== -->
@@ -121,7 +153,7 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="blog.html">Blog</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
             </ul>
-            <p class="site-menu__note d-lg-none">Hotel w Hiszpanii · strona demonstracyjna</p>
+            <p class="site-menu__note d-lg-none">Barcelona · Malaga · Madryt — strona demonstracyjna</p>
           </div>
         </div>
 
@@ -163,10 +195,11 @@
 
       <div class="container hero__inner">
         <div class="hero__content">
-          <p class="eyebrow eyebrow--light eyebrow--center hero__eyebrow">e-spania · Hotel w Hiszpanii</p>
-          <h1 class="hero__title" id="hero-title" data-split>Śródziemnomorski rytm, <em>spokojny luksus</em></h1>
+          <!-- Teksty z data-city podmienia main.js po wyborze miasta (w HTML: Barcelona, miasto domyślne) -->
+          <p class="eyebrow eyebrow--light eyebrow--center hero__eyebrow" data-city="heroEyebrow">e-spania · Barcelona</p>
+          <h1 class="hero__title" id="hero-title" data-split data-city="heroTitle">Barcelona, gdzie miasto <em>spotyka morze</em></h1>
           <a class="hero__discover" href="#hotel">
-            <span>Odkryj e-spania</span>
+            <span data-city="heroDiscover">Odkryj hotel w Barcelonie</span>
             <span class="hero__discover-icon" aria-hidden="true"><svg class="icon icon--sm"><use href="#i-arrow-down"/></svg></span>
           </a>
         </div>
@@ -174,6 +207,20 @@
         <!-- ===== Moduł sprawdzania dostępności — pasek w stylu glassmorphism ===== -->
         <form class="booking" id="rezerwacja" novalidate aria-labelledby="booking-title">
           <h2 class="visually-hidden" id="booking-title">Sprawdź dostępność pobytu</h2>
+          <!-- Wybór hotelu: przyciski-przełączniki Bootstrapa (radio .btn-check + label .btn) -->
+          <fieldset class="city-switch">
+            <legend class="visually-hidden">Wybierz hotel</legend>
+            <div class="d-inline-flex align-items-center city-switch__group">
+              <svg class="icon icon--sm city-switch__icon" aria-hidden="true"><use href="#i-pin"/></svg>
+              <input class="btn-check" type="radio" name="city" id="city-barcelona" value="barcelona" checked>
+              <label class="btn city-switch__option" for="city-barcelona">Barcelona</label>
+              <input class="btn-check" type="radio" name="city" id="city-malaga" value="malaga">
+              <label class="btn city-switch__option" for="city-malaga">Malaga</label>
+              <input class="btn-check" type="radio" name="city" id="city-madryt" value="madryt">
+              <label class="btn city-switch__option" for="city-madryt">Madryt</label>
+            </div>
+          </fieldset>
+          <p class="visually-hidden" id="cityAnnounce" aria-live="polite"></p>
           <div class="row g-0 booking__bar">
             <div class="col-12 col-lg booking__field booking__field--dates dropup">
               <button class="booking__trigger" type="button" id="datesToggle" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false" aria-describedby="dates-error">
@@ -257,13 +304,13 @@
         <div class="row gy-5 align-items-center">
           <div class="col-lg-5 order-lg-2 offset-xl-1">
             <p class="eyebrow" data-reveal>01 — Hotel</p>
-            <h2 class="section-title" id="about-title" data-reveal data-split>Miejsce stworzone do <em>zwalniania</em></h2>
-            <p class="lead-text" data-reveal>Wyobraź sobie poranek bez pośpiechu: kawa w cieniu drzewek cytrynowych, lniana pościel i światło, które powoli wędruje po bielonych ścianach.</p>
-            <p data-reveal>e-spania to propozycja pobytu w duchu hiszpańskiej codzienności — prostej, ciepłej i dopracowanej w detalach. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.</p>
-            <ul class="principles" data-reveal>
+            <h2 class="section-title" id="about-title" data-reveal data-split data-city="aboutTitle">Barcelona <em>we własnym tempie</em></h2>
+            <p class="lead-text" data-reveal data-city="aboutLead">Barcelona łączy miejskie plaże, modernistyczne kamienice i wąskie uliczki Dzielnicy Gotyckiej. Po dniu pełnym wrażeń warto mieć miejsce, w którym czas płynie wolniej.</p>
+            <p data-reveal data-city="aboutText">e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.</p>
+            <ul class="principles" data-reveal data-city="principles">
               <li class="principles__item"><span class="principles__name">Światło</span><span class="principles__text">jasne wnętrza i naturalne materiały</span></li>
-              <li class="principles__item"><span class="principles__name">Cisza</span><span class="principles__text">kameralna skala i spokojne patio</span></li>
-              <li class="principles__item"><span class="principles__name">Smak</span><span class="principles__text">rytm dnia wyznaczany przez posiłki</span></li>
+              <li class="principles__item"><span class="principles__name">Morze</span><span class="principles__text">miejskie plaże i nadmorskie promenady</span></li>
+              <li class="principles__item"><span class="principles__name">Modernizm</span><span class="principles__text">architektura Gaudiego i gotyckie zaułki</span></li>
             </ul>
           </div>
           <div class="col-lg-7 col-xl-6 order-lg-1">
@@ -289,7 +336,7 @@
             <h2 class="section-title" id="rooms-title" data-reveal data-split>Cztery sposoby na <em>dobry sen</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="mb-0" data-reveal>Od kameralnego pokoju po suitę z balkonem. Kliknij „Wybierz”, aby zobaczyć pokój w panelu i dodać go do wyszukiwania.</p>
+            <p class="mb-0" data-reveal>Od kameralnego pokoju po suitę z balkonem — te same cztery kategorie w każdym z trzech hoteli. Kliknij „Wybierz”, aby zobaczyć pokój w panelu i dodać go do wyszukiwania.</p>
             <p class="demo-note" data-reveal>Nazwy, metraże i wyposażenie pokoi są przykładowe.</p>
           </div>
         </div>
@@ -357,7 +404,7 @@
               <div class="room-card__body">
                 <span class="room-card__index" aria-hidden="true">04</span>
                 <h3 class="room-card__title">Suite z balkonem</h3>
-                <p class="room-card__text">Prywatny balkon, widok na wodę i wieczory, które kończą się dopiero po zachodzie słońca.</p>
+                <p class="room-card__text">Prywatny balkon, najwięcej przestrzeni i wieczory, które kończą się dopiero po zachodzie słońca.</p>
                 <ul class="room-meta">
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 4 gości</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 48 m²</li>
@@ -380,40 +427,41 @@
             <h2 class="section-title" id="experiences-title" data-reveal data-split>Dni, które <em>same się układają</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="mb-0" data-reveal>Kilka inspiracji na pobyt w hiszpańskim rytmie. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.</p>
-            <p class="demo-note demo-note--light" data-reveal>Opisy mają charakter demonstracyjny.</p>
+            <p class="mb-0" data-reveal data-city="experiencesIntro">Jeden dzień w Barcelonie — od poranka do późnego wieczoru. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.</p>
+            <p class="demo-note demo-note--light" data-reveal>Opisy mają charakter demonstracyjny, zdjęcia są poglądowe.</p>
           </div>
         </div>
 
-        <div class="row gy-5 gx-lg-5">
+        <!-- Treść kart zależy od miasta (data-city="experiences"); pory dnia są wspólne -->
+        <div class="row gy-5 gx-lg-5" data-city="experiences">
           <div class="col-md-4">
             <article class="experience" data-reveal>
               <figure class="experience__media media-frame" data-reveal="clip">
-                <img src="assets/images/exp-pool.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Zadaszone łoże z białymi zasłonami przy basenie">
+                <img src="assets/images/cities/barcelona-guell.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Wieża z mozaiki i pawilon projektu Gaudiego w Parku Güell, w tle panorama Barcelony">
               </figure>
-              <p class="experience__time">Popołudnie</p>
-              <h3 class="experience__title">Czas przy wodzie</h3>
-              <p class="experience__text">Cień białych zasłon, chłodna woda i książka, której nikt nie każe kończyć.</p>
+              <p class="experience__time">Poranek</p>
+              <h3 class="experience__title">Park Güell</h3>
+              <p class="experience__text">Mozaiki Gaudiego i widok na całe miasto — najlepiej rano, zanim zrobi się gorąco.</p>
             </article>
           </div>
           <div class="col-md-4 experiences__offset">
             <article class="experience" data-reveal>
               <figure class="experience__media media-frame" data-reveal="clip">
-                <img src="assets/images/exp-table.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Długi stół nakryty białym obrusem na tarasie o zachodzie słońca">
+                <img src="assets/images/cities/barcelona-beach.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Rdzawa rzeźba z ułożonych sześcianów na plaży Barceloneta, plażowicze i morze">
               </figure>
-              <p class="experience__time">Wieczór</p>
-              <h3 class="experience__title">Kolacja do późna</h3>
-              <p class="experience__text">Hiszpańskie wieczory zaczynają się późno. Wspólny stół i rozmowy, które się nie spieszą.</p>
+              <p class="experience__time">Popołudnie</p>
+              <h3 class="experience__title">Plaża Barceloneta</h3>
+              <p class="experience__text">Nadmorska promenada, piasek pod stopami i chwila odpoczynku po zwiedzaniu.</p>
             </article>
           </div>
           <div class="col-md-4">
             <article class="experience" data-reveal>
               <figure class="experience__media media-frame" data-reveal="clip">
-                <img src="assets/images/exp-coast.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Skaliste wybrzeże opadające do spokojnego morza">
+                <img src="assets/images/cities/barcelona-gothic.webp" width="900" height="1200" loading="lazy" decoding="async" alt="Wąska, mokra od deszczu uliczka Dzielnicy Gotyckiej prowadząca do oświetlonej wieży katedry">
               </figure>
-              <p class="experience__time">Poranek</p>
-              <h3 class="experience__title">Szlak nad morzem</h3>
-              <p class="experience__text">Wczesny spacer, zanim zrobi się gorąco — sól w powietrzu i cisza skał.</p>
+              <p class="experience__time">Wieczór</p>
+              <h3 class="experience__title">Dzielnica Gotycka</h3>
+              <p class="experience__text">Wąskie uliczki wokół katedry i tapas w jednym z barów po drodze.</p>
             </article>
           </div>
         </div>
@@ -429,7 +477,7 @@
             <h2 class="section-title" id="gallery-title" data-reveal data-split>Hiszpania <em>w detalach</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="demo-note mb-0" data-reveal>Zdjęcia poglądowe z serwisu Pexels — nie przedstawiają obiektu e-spania.</p>
+            <p class="demo-note mb-0" data-reveal>Zdjęcia poglądowe z serwisu Pexels — nie przedstawiają hoteli e-spania.</p>
           </div>
         </div>
 
@@ -566,12 +614,12 @@
 
     <!-- ===================== CTA ===================== -->
     <section class="cta" aria-labelledby="cta-title">
-      <img class="cta__image" data-parallax="0.1" src="assets/images/cta-bay.webp" width="1920" height="1000" loading="lazy" decoding="async" alt="Zatoka z łodziami żaglowymi o zachodzie słońca">
+      <img class="cta__image" data-parallax="0.1" data-city="ctaImage" src="assets/images/cta-bay.webp" width="1920" height="1000" loading="lazy" decoding="async" alt="Zatoka z łodziami żaglowymi o zachodzie słońca">
       <div class="cta__shade" aria-hidden="true"></div>
       <div class="container cta__inner">
         <p class="eyebrow eyebrow--light eyebrow--center" data-reveal>Twój pobyt</p>
         <h2 class="cta__title" id="cta-title" data-reveal data-split>Zostań, aż zajdzie <em>słońce</em></h2>
-        <p class="cta__text" data-reveal>Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt w e-spania.</p>
+        <p class="cta__text" data-reveal data-city="ctaText">Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt w Barcelonie.</p>
         <!-- Wrapper: animacja pojawiania ustawia transform, który nadpisałby uniesienie przycisku przy hover -->
         <div data-reveal>
           <a class="btn btn-accent btn-lg-pill" href="#rezerwacja" data-action="focus-booking">Sprawdź dostępność</a>
@@ -586,7 +634,7 @@
       <div class="row gy-5">
         <div class="col-lg-4">
           <img class="site-footer__logo" src="assets/logo/logo-light.png" width="479" height="270" loading="lazy" alt="e-spania — es hotels">
-          <p class="site-footer__claim">Hotel w Hiszpanii. Spokojny rytm, jasne wnętrza i śródziemnomorskie światło.</p>
+          <p class="site-footer__claim">Hotele w Barcelonie, Maladze i Madrycie. Spokojny rytm, jasne wnętrza i hiszpańskie światło.</p>
         </div>
         <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
           <h2 class="site-footer__heading">Odkryj</h2>
@@ -624,7 +672,7 @@
   <div class="offcanvas offcanvas-end room-panel" tabindex="-1" id="roomPanel" aria-labelledby="roomPanelTitle">
     <div class="offcanvas-header room-panel__header">
       <div>
-        <p class="eyebrow mb-1">Wybór pokoju</p>
+        <p class="eyebrow mb-1" data-city="roomPanelEyebrow">Wybór pokoju · Barcelona</p>
         <h2 class="room-panel__title" id="roomPanelTitle">Pokoje i suity</h2>
         <p class="room-panel__summary" id="roomPanelSummary" aria-live="polite">Wybierz pokój, a dodamy go do wyszukiwania.</p>
       </div>
@@ -653,7 +701,7 @@
   </div>
 
   <!-- ===================== GALERIA — PODGLĄD (modal) ===================== -->
-  <div class="modal fade lightbox" id="galleryModal" tabindex="-1" aria-labelledby="lightboxCaption" aria-hidden="true">
+  <div class="modal fade lightbox" id="galleryModal" tabindex="-1" aria-labelledby="lightboxCaption">
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content lightbox__content">
         <button type="button" class="btn text-btn lightbox__close" data-bs-dismiss="modal">

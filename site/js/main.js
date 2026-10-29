@@ -214,6 +214,194 @@
     else window.addEventListener('load', load, { once: true });
   }
 
+  /* ---------- Lokalizacje: Barcelona, Malaga, Madryt (tylko strona główna) ---------- */
+  // Teksty zależne od miasta. Elementy w index.html mają atrybut data-city="klucz".
+  // HTML zawiera wersję barcelońską (miasto domyślne, widoczne także bez JavaScriptu),
+  // dlatego przy zmianie tekstów Barcelony trzeba poprawić oba miejsca.
+  // [tekst, wyróżnienie] — tytuł z kursywą <em> na końcu; principles — pary [nazwa, opis];
+  // { src, alt } — zdjęcie; experiences — karty Poranek / Popołudnie / Wieczór (zdjęcia z Pexels).
+  const DEFAULT_CITY = 'barcelona';
+  const IMG = 'assets/images/cities/';
+  const CTA_BAY = { src: 'assets/images/cta-bay.webp', alt: 'Zatoka z łodziami żaglowymi o zachodzie słońca' };
+  const CITIES = {
+    barcelona: {
+      name: 'Barcelona',
+      locative: 'w Barcelonie',
+      heroTitle: ['Barcelona, gdzie miasto ', 'spotyka morze'],
+      aboutTitle: ['Barcelona ', 'we własnym tempie'],
+      aboutLead: 'Barcelona łączy miejskie plaże, modernistyczne kamienice i wąskie uliczki Dzielnicy Gotyckiej. Po dniu pełnym wrażeń warto mieć miejsce, w którym czas płynie wolniej.',
+      aboutText: 'e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      principles: [
+        ['Światło', 'jasne wnętrza i naturalne materiały'],
+        ['Morze', 'miejskie plaże i nadmorskie promenady'],
+        ['Modernizm', 'architektura Gaudiego i gotyckie zaułki'],
+      ],
+      experiences: [
+        { title: 'Park Güell', text: 'Mozaiki Gaudiego i widok na całe miasto — najlepiej rano, zanim zrobi się gorąco.',
+          src: `${IMG}barcelona-guell.webp`, alt: 'Wieża z mozaiki i pawilon projektu Gaudiego w Parku Güell, w tle panorama Barcelony' },
+        { title: 'Plaża Barceloneta', text: 'Nadmorska promenada, piasek pod stopami i chwila odpoczynku po zwiedzaniu.',
+          src: `${IMG}barcelona-beach.webp`, alt: 'Rdzawa rzeźba z ułożonych sześcianów na plaży Barceloneta, plażowicze i morze' },
+        { title: 'Dzielnica Gotycka', text: 'Wąskie uliczki wokół katedry i tapas w jednym z barów po drodze.',
+          src: `${IMG}barcelona-gothic.webp`, alt: 'Wąska, mokra od deszczu uliczka Dzielnicy Gotyckiej prowadząca do oświetlonej wieży katedry' },
+      ],
+      ctaImage: CTA_BAY,
+    },
+    malaga: {
+      name: 'Malaga',
+      locative: 'w Maladze',
+      heroTitle: ['Malaga w rytmie ', 'andaluzyjskiego słońca'],
+      aboutTitle: ['Andaluzyjski dzień ', 'bez pośpiechu'],
+      aboutLead: 'Malaga to stare miasto u stóp mauretańskiej Alcazaby, nadmorski bulwar i plaże Costa del Sol. Dzień płynie tu w rytmie słońca — od porannej kawy po późną kolację.',
+      aboutText: 'e-spania Malaga to propozycja pobytu w andaluzyjskim stylu — bielone ściany, cień patio i światło, które zmienia kolory przez cały dzień. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      principles: [
+        ['Słońce', 'jasne wnętrza i andaluzyjskie światło'],
+        ['Morze', 'plaże Costa del Sol i nadmorski bulwar'],
+        ['Historia', 'Alcazaba, Gibralfaro i stare miasto'],
+      ],
+      experiences: [
+        { title: 'Wzgórze Alcazaby', text: 'Mauretańska twierdza, ogrody i widok na port — zanim słońce stanie wysoko.',
+          src: `${IMG}malaga-alcazaba.webp`, alt: 'Kamienne mury Alcazaby w Maladze otoczone cyprysami' },
+        { title: 'Stare miasto', text: 'Uliczki wokół katedry, Muzeum Picassa i sjesta w cieniu kamienic.',
+          src: `${IMG}malaga-cathedral.webp`, alt: 'Wąska uliczka starego miasta w Maladze z wieżą katedry w tle' },
+        { title: 'Bulwar nad portem', text: 'Spacer do latarni La Farola i na plażę La Malagueta, gdy upał już odpuszcza.',
+          src: `${IMG}malaga-farola.webp`, alt: 'Biała latarnia La Farola i palmy nad wodą portu w Maladze' },
+      ],
+      ctaImage: CTA_BAY,
+    },
+    madryt: {
+      name: 'Madryt',
+      locative: 'w Madrycie',
+      heroTitle: ['Madryt, stolica ', 'sztuki i późnych wieczorów'],
+      aboutTitle: ['Spokojna baza ', 'w wielkim mieście'],
+      aboutLead: 'Madryt to muzea Paseo del Arte, zielony Park Retiro i ulice, które ożywają dopiero wieczorem. Stolica Hiszpanii żyje intensywnie — tym bardziej warto mieć miejsce, w którym można zwolnić.',
+      aboutText: 'e-spania Madryt to propozycja pobytu w miejskim, ale spokojnym stylu — kameralne wnętrza, naturalne materiały i rytm dnia wyznaczany przez posiłki. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      principles: [
+        ['Sztuka', 'Prado, Reina Sofía i Thyssen-Bornemisza'],
+        ['Zieleń', 'Park Retiro i ogród botaniczny'],
+        ['Smak', 'tapas i późne hiszpańskie kolacje'],
+      ],
+      experiences: [
+        { title: 'Park Retiro', text: 'Pałac Kryształowy nad stawem i aleje, które budzą się razem z miastem.',
+          src: `${IMG}madryt-retiro.webp`, alt: 'Pałac Kryształowy w parku Retiro nad stawem, otoczony drzewami' },
+        { title: 'Pałac Królewski', text: 'Rozległy plac przed pałacem i sąsiednia katedra Almudena.',
+          src: `${IMG}madryt-palace.webp`, alt: 'Fasada Pałacu Królewskiego w Madrycie i rozległy plac przed nim' },
+        { title: 'Plaza Mayor', text: 'Arkady głównego placu, a potem tapas w okolicznych uliczkach — kolacja zaczyna się tu późno.',
+          src: `${IMG}madryt-plaza-mayor.webp`, alt: 'Arkady i ceglane kamienice Plaza Mayor w Madrycie, pod nimi spacerowicze' },
+      ],
+      ctaImage: { src: `${IMG}cta-madryt.webp`, alt: 'Dachy Madrytu i kopuła budynku Metropolis przy Gran Vía o zachodzie słońca' },
+    },
+  };
+
+  const isCity = (id) => Object.prototype.hasOwnProperty.call(CITIES, id);
+
+  function currentCity() {
+    const checked = qs('input[name="city"]:checked');
+    return CITIES[checked && isCity(checked.value) ? checked.value : DEFAULT_CITY];
+  }
+
+  // Teksty budowane z nazwy miasta — wspólny wzór dla wszystkich lokalizacji
+  function cityTexts(city) {
+    return {
+      ...city,
+      heroEyebrow: `e-spania · ${city.name}`,
+      heroDiscover: `Odkryj hotel ${city.locative}`,
+      roomPanelEyebrow: `Wybór pokoju · ${city.name}`,
+      ctaText: `Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt ${city.locative}.`,
+      experiencesIntro: `Jeden dzień ${city.locative} — od poranka do późnego wieczoru. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.`,
+    };
+  }
+
+  function setImage(img, { src, alt }) {
+    img.src = src;
+    img.alt = alt;
+  }
+
+  function fillCityText(el, value) {
+    const key = el.dataset.city;
+    if (typeof value === 'string') {
+      el.textContent = value;
+    } else if (key === 'principles') {
+      qsa('li', el).forEach((item, i) => {
+        qs('.principles__name', item).textContent = value[i][0];
+        qs('.principles__text', item).textContent = value[i][1];
+      });
+    } else if (key === 'experiences') {
+      qsa('.experience', el).forEach((card, i) => {
+        setImage(qs('img', card), value[i]);
+        qs('.experience__title', card).textContent = value[i].title;
+        qs('.experience__text', card).textContent = value[i].text;
+      });
+    } else if (value.src) {
+      setImage(el, value);
+    } else {
+      const em = document.createElement('em');
+      em.textContent = value[1];
+      el.replaceChildren(value[0], em);
+    }
+  }
+
+  function fillCity(id) {
+    const texts = cityTexts(CITIES[id]);
+    qsa('[data-city]').forEach((el) => fillCityText(el, texts[el.dataset.city]));
+  }
+
+  // Zmiana miasta przez użytkownika: widoczne teksty gasną, zmieniają się i wracają.
+  // Szybkie kolejne kliknięcie przerywa poprzednie przejście — wygrywa ostatni wybór.
+  let cityFades = [];
+
+  function changeCity(id) {
+    const city = CITIES[id];
+    qs('#cityAnnounce').textContent = `Wyświetlasz hotel e-spania ${city.locative}.`;
+    // Zdjęcia nowego miasta zaczynają się wczytywać już w trakcie wygaszania
+    [...city.experiences, city.ctaImage].forEach(({ src }) => { new Image().src = src; });
+    try {
+      localStorage.setItem('es-city', id);
+    } catch (e) { /* bez localStorage wybór obowiązuje do odświeżenia strony */ }
+
+    const swap = () => {
+      fillCity(id);
+      qsa('[data-city][data-split]').forEach(splitTitle);
+      updateStatus();
+    };
+
+    cityFades.forEach((animation) => animation.cancel());
+    const visible = qsa('[data-city]').filter((el) => {
+      const box = el.getBoundingClientRect();
+      return box.bottom > 0 && box.top < window.innerHeight && box.height > 0;
+    });
+    if (!visible.length) {
+      swap();
+      return;
+    }
+
+    const fadeOut = visible.map((el) => el.animate({ opacity: [1, 0] }, { duration: 180, easing: 'ease-in', fill: 'forwards' }));
+    cityFades = fadeOut;
+    fadeOut[0].finished.then(() => {
+      swap();
+      cityFades = visible.map((el) => el.animate({ opacity: [0, 1] }, { duration: 420, easing: 'ease-out' }));
+      fadeOut.forEach((animation) => animation.cancel());
+    }, () => { /* przerwane kolejnym wyborem — teksty ustawi nowsze wywołanie */ });
+  }
+
+  function initCity() {
+    let saved = null;
+    try {
+      saved = localStorage.getItem('es-city');
+    } catch (e) { /* brak dostępu do localStorage — zostaje Barcelona */ }
+    const id = isCity(saved) ? saved : DEFAULT_CITY;
+    qs(`#city-${id}`).checked = true;
+    if (id !== DEFAULT_CITY) fillCity(id);
+    document.documentElement.classList.remove('city-pending');
+
+    qsa('input[name="city"]').forEach((input) => {
+      input.addEventListener('change', () => {
+        // Nowy tytuł hero wjeżdża słowo po słowie od razu, bez czekania na kurtynę
+        qs('.hero__title').style.setProperty('--intro-delay', '0s');
+        changeCity(input.value);
+      });
+    });
+  }
+
   /* ---------- Formularz dostępności (tylko strona główna) ---------- */
   const form = qs('#rezerwacja');
   const arrival = qs('#arrival');
@@ -264,9 +452,9 @@
     return true;
   }
 
-  // Krótki opis wybranego pobytu, np. "12 lis – 15 lis · 3 noce · 2 gości"
+  // Krótki opis wybranego pobytu, np. "Barcelona · 12 lis – 15 lis · 3 noce · 2 gości"
   function stayDescription() {
-    const parts = [];
+    const parts = [currentCity().name];
     if (hasValidDates()) {
       const nights = nightsBetween(arrival.value, departure.value);
       parts.push(formatRange(arrival.value, departure.value), `${nights} ${plural(nights, ['noc', 'noce', 'nocy'])}`);
@@ -785,36 +973,34 @@
 
   /* ---------- Animacje ---------- */
 
-  // Dzieli tytuły na słowa (maska + przesunięcie). Kursywa <em> zostaje zachowana.
-  function splitWords() {
-    qsa('[data-split]').forEach((title) => {
-      let index = 0;
-      const wrapText = (node) => {
-        const fragment = document.createDocumentFragment();
-        node.textContent.split(/(\s+)/).forEach((part) => {
-          if (!part) return;
-          if (/^\s+$/.test(part)) {
-            fragment.append(document.createTextNode(' '));
-            return;
-          }
-          const word = document.createElement('span');
-          const inner = document.createElement('span');
-          word.className = 'word';
-          inner.className = 'word__inner';
-          inner.style.setProperty('--i', index);
-          index += 1;
-          inner.textContent = part;
-          word.append(inner);
-          fragment.append(word);
-        });
-        node.replaceWith(fragment);
-      };
-      const walk = (parent) => [...parent.childNodes].forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE) wrapText(node);
-        else if (node.nodeType === Node.ELEMENT_NODE) walk(node);
+  // Dzieli tytuł na słowa (maska + przesunięcie). Kursywa <em> zostaje zachowana.
+  function splitTitle(title) {
+    let index = 0;
+    const wrapText = (node) => {
+      const fragment = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          fragment.append(document.createTextNode(' '));
+          return;
+        }
+        const word = document.createElement('span');
+        const inner = document.createElement('span');
+        word.className = 'word';
+        inner.className = 'word__inner';
+        inner.style.setProperty('--i', index);
+        index += 1;
+        inner.textContent = part;
+        word.append(inner);
+        fragment.append(word);
       });
-      walk(title);
+      node.replaceWith(fragment);
+    };
+    const walk = (parent) => [...parent.childNodes].forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) wrapText(node);
+      else if (node.nodeType === Node.ELEMENT_NODE) walk(node);
     });
+    walk(title);
   }
 
   // Łagodne pojawianie się elementów przy przewijaniu
@@ -888,7 +1074,9 @@
     onScrollFrame(update);
   }
 
-  splitWords();
+  // Miasto ustawiamy przed podziałem tytułów na słowa — dzielony jest już właściwy tekst
+  if (form) initCity();
+  qsa('[data-split]').forEach(splitTitle);
   initHeader();
   initLanguage();
   // Hero, rezerwacja, panel pokoi i galeria istnieją tylko na stronie głównej

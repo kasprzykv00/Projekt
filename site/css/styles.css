@@ -25,6 +25,7 @@
        14.4 Układ archiwum i paginacja  14.5 Pasek boczny (wyszukiwarka, kategorie, polecane)
        14.6 Artykuł  14.7 Stopka artykułu (tagi, udostępnianie, autor)
        14.8 Nawigacja między wpisami i komentarze  14.9 Ograniczenie ruchu w module bloga
+   15. Wybór lokalizacji (Barcelona, Malaga, Madryt — przełącznik nad paskiem rezerwacji)
    ========================================================= */
 
 /* ---------- 1. Zmienne (design tokens) ---------- */
@@ -3452,4 +3453,85 @@ a {
   .category-list__link:hover {
     padding-left: 0;
   }
+}
+
+/* ---------- 15. Wybór lokalizacji (Barcelona, Malaga, Madryt) ---------- */
+/* Komponent Bootstrapa „przyciski-przełączniki” (input.btn-check + label.btn)
+   w wersji szklanej pigułki — ten sam materiał co pasek rezerwacji (sekcja 6). */
+.city-switch {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+}
+
+.city-switch__group {
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+  background-color: rgba(30, 28, 28, 0.48);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .city-switch__group {
+    background-color: rgba(43, 41, 41, 0.92);
+  }
+}
+
+.city-switch__icon {
+  flex-shrink: 0;
+  margin-inline: 0.5rem 0.25rem;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.city-switch__option {
+  --bs-btn-padding-x: 1rem;
+  --bs-btn-padding-y: 0;
+  --bs-btn-font-size: 0.8125rem;
+  --bs-btn-font-weight: 500;
+  --bs-btn-color: rgba(255, 255, 255, 0.88);
+  --bs-btn-border-width: 0;
+  --bs-btn-border-radius: var(--radius-pill);
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
+  --bs-btn-active-color: var(--color-ink);
+  --bs-btn-active-bg: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-soft), background-color var(--dur-fast) var(--ease-soft);
+}
+
+/* Fokus trafia na ukryte pole radio — ramkę rysujemy na jego etykiecie */
+.btn-check:focus-visible + .city-switch__option {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (min-width: 576px) {
+  .city-switch__option {
+    --bs-btn-padding-x: 1.25rem;
+  }
+}
+
+/* Zapamiętane miasto inne niż Barcelona: teksty czekają ukryte na podmianę przez main.js
+   (klasę ustawia skrypt w <head>). Gdyby JS nie zadziałał, po 1,5 s pokazujemy treść domyślną. */
+@keyframes city-fallback {
+  to {
+    visibility: visible;
+  }
+}
+
+.city-pending [data-city] {
+  visibility: hidden;
+  animation: city-fallback 0s 1.5s forwards;
 }

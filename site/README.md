@@ -1,4 +1,4 @@
-# e-spania — strona hotelu z blogiem
+# e-spania — strona hoteli w Barcelonie, Maladze i Madrycie (z blogiem)
 
 Strona statyczna: HTML5 + CSS3 + Bootstrap 5.3.3 (CDN) + czysty JavaScript. Bez backendu i bez kroku budowania.
 
@@ -51,6 +51,7 @@ Jeśli system ma włączone ograniczenie ruchu (np. Windows: Ustawienia → Uła
 ## Komponenty Bootstrapa z własnym wyglądem
 
 Navbar + offcanvas (menu mobilne), offcanvas (panel wyboru pokoi), dropdown (język, liczba gości),
+przyciski-przełączniki `btn-check` (wybór miasta, `.city-switch`),
 przyciski (`.btn-accent`, `.btn-ink`, `.btn-ghost`, `.share-btn`), `form-control` (moduł dostępności, wyszukiwarka, komentarze), modal (podgląd galerii), toast (powiadomienia).
 Blog: card (`.post-card`), badge (`.post-badge`, `.count-badge`, `.tag-badge`), breadcrumb (`.blog-breadcrumb`), pagination (`.blog-pagination`),
 list-group (`.category-list`), table (`.post-table` — na telefonie wiersze jako bloki), blockquote (`.post-quote`).
@@ -58,6 +59,9 @@ list-group (`.category-list`), table (`.post-table` — na telefonie wiersze jak
 ## Treści demonstracyjne
 
 - Rezerwacja nie łączy się z żadnym systemem — wynik wyszukiwania jest demonstracyjny.
+- Wybór miasta (Barcelona, Malaga, Madryt) nad paskiem rezerwacji zmienia teksty hero, sekcji „Hotel”, CTA i opis pobytu
+  w wyszukiwaniu. Dane miast są w `js/main.js` (`CITIES`); w HTML jest wersja barcelońska (domyślna, działa bez JS).
+  Wybór zapamiętuje `localStorage` (`es-city`). Opisy hoteli są demonstracyjne — o miastach tylko ogólne, sprawdzalne fakty.
 - Nazwy, metraże i wyposażenie pokoi są przykładowe.
 - Opinie są oznaczone jako przykładowe; linki prowadzą do stron głównych platform, nie do profilu hotelu.
 - Adres, telefon i e-mail w stopce czekają na uzupełnienie.
@@ -74,6 +78,11 @@ Blog: 29837765 (wybrzeże, OG artykułu), 33389174 (tapas), 33524255 (Alhambra),
 18489894 (Marbella), 14797463 (łuk Alhambry — nagłówek bloga, OG), 6603519 (Plaza de España),
 998736 (Sagrada Família), 32629172 (paella), 10550304 (Teide), 28603797 (flamenco), 22744005 (dworzec w Madrycie),
 35417806 (Gran Vía), 16926806 (winnica), 10293706 (górskie miasteczko), 106052 (La Rambla).
+
+Miasta (`assets/images/cities/`, sekcja „Doświadczenia” i CTA Madrytu): 4947788 (Park Güell), 30838750 (Barceloneta),
+29988784 (Dzielnica Gotycka), 16698250 (Alcazaba), 29325353 (katedra w Maladze), 16715772 (La Farola), 14268479 (Retiro),
+26755990 (Pałac Królewski), 17198171 (Plaza Mayor), 3757144 (Gran Vía z budynkiem Metropolis — CTA Madrytu).
+Dawne zdjęcia sekcji „Doświadczenia” (`exp-pool`, `exp-table`, `exp-coast`) usunięto — są w historii repozytorium.
 
 Wideo w hero to montaż klipów z [Pexels](https://www.pexels.com/videos/) (ta sama licencja), przycięty i skompresowany
 (H.264, bez dźwięku). Klipy — desktop: 31978239, 34549899, 18326569, 36229344, 31805421 (Mallorca, Ronda);

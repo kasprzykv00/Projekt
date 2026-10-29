@@ -1,12 +1,13 @@
 # ProgressTracking — e-spania
 
-Stan na koniec sesji 2026-10-29.
+Stan na koniec drugiej sesji 2026-10-29 (rozbudowa o 3 lokalizacje).
 - Etap 1 RWD (strona główna): zaimplementowany, przetestowany, zrefaktoryzowany (sesja 2026-10-20).
-- Etap 2 RWD (blog wg `e-spania/RWD_CW_4.md`): zaimplementowany i przetestowany (sesja 2026-10-29). Czeka na commit użytkownika.
-- Git: `main` = `origin/main` (github.com/kasprzykv00/Projekt), ostatni commit `ad91c04` „Zakończenie main page 20.10” (zmienił tylko ten plik). Zmiany etapu 2 są NIEZACOMMITOWANE — commity robi wyłącznie użytkownik.
+- Etap 2 RWD (blog wg `e-spania/RWD_CW_4.md`): zaimplementowany, przetestowany i zacommitowany przez użytkownika (`01db6bd`, `85509ff`, `5feb7b7`).
+- Rozbudowa poza harmonogramem: hotele w 3 miastach (Barcelona, Malaga, Madryt) z przełącznikiem na stronie głównej — zaimplementowana, przetestowana, zaakceptowana przez użytkownika. Czeka na commit użytkownika.
+- Git: ostatni commit `5feb7b7` „progres tracking 29.10”. Zmiany lokalizacji są NIEZACOMMITOWANE — commity robi wyłącznie użytkownik.
 - W toku: nic.
 
-Historia: stan na koniec sesji 2026-10-20 — etap 1 gotowy, drzewo czyste, ostatni commit wtedy `ab31f25`.
+Historia: 2026-10-20 — etap 1 gotowy (`ab31f25`); 2026-10-29 (sesja 1) — etap 2 blog.
 
 ## 1. Nieoczywiste decyzje
 
@@ -60,6 +61,21 @@ Historia: stan na koniec sesji 2026-10-20 — etap 1 gotowy, drzewo czyste, osta
 - Zdjęcia bloga (Pexels, ID w `site/README.md`): karty 800×600 WebP, miniatury 240×180 (tylko 3 polecane), grafika wiodąca 900/1600 px, nagłówek archiwum 960/1920 px. Zdjęcie do sjesty wymienione — pierwsze miało szyld innego hotelu (na stronie hotelu tego unikamy).
 - `blog-2.html` i `blog-3.html` wygenerowano jednorazowo skryptem z `blog.html` (skrypt tylko w scratchpadzie, nie w repo) — dalej edytuje się je ręcznie jak zwykłe pliki.
 
+### Lokalizacje (2026-10-29, sesja 2) — decyzje uzgodnione z użytkownikiem
+- e-spania = hotele w 3 miastach. Pisownia polska: Barcelona, Malaga („w Maladze”), Madryt. Domyślna: Barcelona. W JSON-LD `addressLocality` w formie oficjalnej (Málaga, Madrid).
+- Przełącznik: `fieldset.city-switch` w formularzu `#rezerwacja`, nad paskiem; radio `.btn-check` + `label.btn.city-switch__option` (komponent Bootstrapa z własnym wyglądem — szklana pigułka jak pasek). `legend` ukryta („Wybierz hotel”), komunikat `#cityAnnounce` (aria-live). Styl: sekcja 15 w `styles.css`.
+- Film w hero gra ZAWSZE dla wszystkich miast (decyzja użytkownika) — zdjęcie hero wspólne, miasto pokazują teksty.
+- Dane: `CITIES` w `main.js` (moduł „Lokalizacje”), elementy z `data-city="klucz"` wypełnia `fillCityText` (string → tekst; `[tekst, em]` → tytuł z kursywą; `principles`, `experiences`, `{src, alt}` → zdjęcie). Teksty wspólnego wzoru (eyebrow, link „Odkryj hotel w…”, CTA, wstęp Doświadczeń, panel pokoi) buduje `cityTexts()`.
+- HTML zawiera wersję Barcelony (działa bez JS, SEO) — przy zmianie tekstów Barcelony popraw HTML **i** `CITIES` (test porównuje oba).
+- Zależne od miasta: hero (eyebrow, H1, link), sekcja Hotel (tytuł, 2 akapity, 3 zasady), Doświadczenia (wstęp, 3 karty Poranek/Popołudnie/Wieczór ze zdjęciami), CTA (tekst; zdjęcie: zatoka dla Barcelony i Malagi, panorama dla Madrytu), nagłówek panelu pokoi, `stayDescription()` (status, panel, toasty zaczynają się od nazwy miasta). Pokoje wspólne dla 3 hoteli.
+- Zapamiętanie: `localStorage 'es-city'` (try/catch, nieznana wartość → Barcelona). Skrypt w `<head>` dodaje `city-pending` (ukrywa `[data-city]`, awaryjnie widoczne po 1,5 s), `initCity()` podmienia teksty PRZED podziałem tytułów na słowa (`splitTitle`).
+- Zmiana miasta: widoczne elementy `[data-city]` gasną/wracają przez Web Animations API (nie koliduje z przejściami `data-reveal`); kolejne kliknięcie anuluje poprzednie przejście. Tytuł hero dostaje `--intro-delay: 0s`, słowa wjeżdżają od nowa.
+- Treści o miastach: tylko ogólne, sprawdzalne fakty (zabytki, dzielnice, plaże), bez odległości i udogodnień hotelu; opisy oznaczone jako demonstracyjne. Opis Suite neutralny (bez „widoku na wodę”).
+- Zdjęcia miast: `assets/images/cities/` (Pexels, ID w README). Szukane przez wyszukiwarkę (strona wyszukiwania Pexels blokuje automaty — nie obchodzić), pobierane z `images.pexels.com`. Odrzucone: Gran Vía/Carrión (napis Capitol — hotel, reklama Schweppes). Usunięte nieużywane `exp-pool/table/coast.webp`.
+- SEO: title/description/OG o 3 miastach; JSON-LD: `Organization` (#e-spania) + 3 × `Hotel` (nazwa „e-spania Miasto”, `addressLocality`, `addressCountry: ES`, `parentOrganization`) + `WebSite`.
+- 5 plików HTML: notka menu mobilnego „Barcelona · Malaga · Madryt — strona demonstracyjna”, stopka „Hotele w Barcelonie, Maladze i Madrycie…”.
+- Modal galerii: usunięty statyczny `aria-hidden="true"` (html-validate `hidden-focusable`) — za zgodą użytkownika.
+
 ## 2. Działa (zweryfikowane testami w przeglądarce)
 
 ### Strona główna (etap 1)
@@ -78,14 +94,20 @@ Historia: stan na koniec sesji 2026-10-20 — etap 1 gotowy, drzewo czyste, osta
 - html-validate (`html-validate:recommended`): `blog.html`, `blog-2.html`, `blog-3.html`, `single.html` bez błędów.
 - Lighthouse (lokalnie, HTTP): `blog.html` desktop — Performance 94, Accessibility 100, SEO 100; `single.html` desktop 98 / 100 / 100, mobile 81 / 100 / 100; `blog.html` mobile 73 / 100 / 100. Best Practices 81 wszędzie = brak HTTPS + skrypty wstrzykiwane przez antywirus Kaspersky (środowisko, nie kod).
 
+### Lokalizacje (testy 2026-10-29, sesja 2: Edge headless przez puppeteer-core, 47/47)
+- Domyślnie Barcelona; klik i strzałki zmieniają wszystkie treści i zdjęcia (z `alt`); wybór przetrwa odświeżenie; nieznana wartość w localStorage → Barcelona; szybkie klikanie → spójny stan ostatniego wyboru; Barcelona z JS = Barcelona z HTML.
+- Rezerwacja: miasto w statusie, panelu pokoi, toastach; galeria, menu, podstrony bloga bez zmian; reduced-motion OK; konsola czysta.
+- 360/390/768/1200/1440 px × 3 miasta: brak overflow-x, pigułka w 1 rzędzie, przyciski ≥ 44 px, 1×H1.
+- html-validate: wszystkie 5 stron bez błędów. JSON-LD parsuje się.
+
 ## 3. Najważniejsze pliki
 
 - `site/index.html` — strona główna (sekcja `#blog` z 3 zajawkami przed CTA).
 - `site/blog.html`, `site/blog-2.html`, `site/blog-3.html` — archiwum bloga (strony 1–3), wspólny pasek boczny.
 - `site/single.html` — szablon artykułu (jedyny pełny wpis).
 - `site/css/styles.css` — wspólne style; spis treści na początku pliku; blog w sekcji 14.
-- `site/js/main.js` — interakcje (pomocnicze, nagłówek, wideo, formularz, kalendarz, panel pokoi, galeria, `initBlog`, animacje).
-- `site/assets/` — `images/` (22 WebP + `og-image.jpg`), `images/blog/` (zdjęcia bloga + `og-blog.jpg`, `og-pogoda.jpg`), `video/` (2 MP4), `logo/`.
+- `site/js/main.js` — interakcje (pomocnicze, nagłówek, wideo, lokalizacje `CITIES` + `initCity`, formularz, kalendarz, panel pokoi, galeria, `initBlog`, animacje).
+- `site/assets/` — `images/` (18 WebP + `og-image.jpg`), `images/cities/` (10 zdjęć miast), `images/blog/` (zdjęcia bloga + `og-blog.jpg`, `og-pogoda.jpg`), `video/` (2 MP4), `logo/`.
 - `site/README.md` — uruchomienie (`python -m http.server 5500` w `site/`), struktura, komponenty, źródła mediów (ID Pexels).
 - `e-spania/RWD_Projekt.md` — wymagania prowadzącego (nadrzędne), `e-spania/wymagania.md` — opis projektu, `e-spania/RWD_CW_4.md` — instrukcja etapu 2 (blog).
 
@@ -110,7 +132,7 @@ Historia: stan na koniec sesji 2026-10-20 — etap 1 gotowy, drzewo czyste, osta
 ## 5. Znane problemy i elementy niedokończone
 
 - Wydajność mobile w Lighthouse: strona główna ~60–67, `blog.html` 73 (lokalny serwer bez HTTPS/kompresji; render-blocking CDN Bootstrap + Google Fonts; waga hero). Best Practices 81 przez brak HTTPS i wstrzyknięcia antywirusa (środowisko lokalne).
-- html-validate zgłasza 3 błędy `hidden-focusable` w modalu galerii w `index.html` (`aria-hidden="true"` na zamkniętym `#galleryModal`) — istniały już w commicie etapu 1 (wpis „html-validate OK” z 2026-10-20 był nieścisły). Poprawka = usunięcie atrybutu; czeka na zgodę użytkownika.
+- Lokalizacje: treść miast podmieniana przez JS — wyszukiwarki widzą głównie Barcelonę (meta i JSON-LD obejmują 3 miasta). Zdjęcie Suite (balkon z widokiem na morze) wspólne dla 3 hoteli — zostawione za zgodą użytkownika. Brak osobnych adresów URL miast.
 - Blog: pełną treść ma tylko `single.html`; 14 pozostałych wpisów to zajawki prowadzące do tego samego szablonu. Wyszukiwarka i komentarze są demonstracyjne.
 - Placeholdery: kontakt w stopce, opinie (demo), linki do profili hotelu, wersje EN/ES.
 - Ścieżki względne w `og:image`, `og:url` i JSON-LD (wszystkie strony).
@@ -121,13 +143,13 @@ Historia: stan na koniec sesji 2026-10-20 — etap 1 gotowy, drzewo czyste, osta
 
 ## 6. Do zrobienia
 
-- Commit etapu 2 przez użytkownika (pliki: `site/` zmienione i nowe + `e-spania/RWD_CW_4.md`). Proponowany opis: „Etap 2: moduł bloga — archiwum na 3 stronach, szablon artykułu, zajawka na stronie głównej”.
-- Formalny odbiór etapów 1 i 2 przez użytkownika.
-- Wpisać Fraunces/Inter do karty projektu; ujednolicić `claude.md` i `wymagania.md`.
-- Decyzje: logo, klip z zachodem słońca, długość intro, poprawka `aria-hidden` w modalu galerii.
+- Commit lokalizacji przez użytkownika (`site/` zmienione, nowy katalog `site/assets/images/cities/`, usunięte `exp-*.webp`, ten plik). Proponowany opis: „Lokalizacje: przełącznik Barcelona / Malaga / Madryt — treści hero, sekcji Hotel, Doświadczeń i CTA zależne od miasta, zapamiętanie wyboru, SEO dla 3 hoteli”.
+- Zaktualizować kartę projektu w Forms: hotele w Barcelonie, Maladze i Madrycie (zgodność z kartą = 20 pkt) + fonty Fraunces/Inter; ujednolicić `claude.md` i `wymagania.md` (3 miasta, fonty).
+- Propozycje (nie wdrażać bez zgody): `index.html?miasto=malaga` (link do konkretnego hotelu); podstrony miast z własnym SEO (pasuje do etapu 4); blog — zajawki/kategoria wg miasta (brak wpisu o Maladze); kontakt per hotel, gdy będą dane.
+- Decyzje: logo, klip z zachodem słońca, długość intro.
 - Kolejne etapy wg `RWD_Projekt.md`: 3 — sklep, 4 — brakujące podstrony, 5 — audyt Lighthouse i odbiór. Wytyczne przekazuje prowadzący na zajęciach (plik `RWD_CW_N.md` w `e-spania/`).
 - Po publikacji: absolutne URL w OG/JSON-LD (5 plików HTML), ponowny pomiar wydajności na HTTPS.
 
 ## 7. Następny krok
 
-Użytkownik commituje etap 2. Etap 3 (sklep) zaczynać dopiero po otrzymaniu nowej instrukcji prowadzącego i zgodzie użytkownika (plan → akceptacja → implementacja, zgodnie z `claude.md`). Nowe podstrony budować na wzór `blog.html` (header/stopka/toast/sprite skopiowane, `no-intro` w `<head>`, ciemny początek strony pod przezroczystym headerem, link w menu z `aria-current`), a style dopisywać jako kolejną sekcję `styles.css`.
+Użytkownik commituje rozbudowę o lokalizacje. Etap 3 (sklep) zaczynać dopiero po otrzymaniu nowej instrukcji prowadzącego i zgodzie użytkownika (plan → akceptacja → implementacja, zgodnie z `claude.md`). Nowe podstrony budować na wzór `blog.html` (header/stopka/toast/sprite skopiowane, `no-intro` w `<head>`, ciemny początek strony pod przezroczystym headerem, link w menu z `aria-current`), a style dopisywać jako kolejną sekcję `styles.css`.
