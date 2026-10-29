@@ -962,11 +962,13 @@
     qsa('[data-copy-link]').forEach((button) => {
       button.addEventListener('click', () => {
         const copied = () => notify('Skopiowano link', 'Adres artykułu jest w schowku — możesz go wkleić w wiadomości.');
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(window.location.href).then(copied, () => notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.'));
-        } else {
-          notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.');
+        const failed = () => notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.');
+        // Bez Clipboard API (np. strona otwarta przez http w starszej przeglądarce) prosimy o ręczne skopiowanie
+        if (!navigator.clipboard) {
+          failed();
+          return;
         }
+        navigator.clipboard.writeText(window.location.href).then(copied, failed);
       });
     });
   }

@@ -50,7 +50,15 @@
   --color-line-on-image: rgba(255, 255, 255, 0.14);
   --color-error: #FF9C80;           /* obramowanie błędu na ciemnym tle */
   --color-error-text: #FFC9B8;      /* tekst błędu na ciemnym tle */
+  --color-error-on-light: #B3261E;  /* błąd formularza na jasnym tle (blog) */
   --focus-ring: var(--color-accent-strong);
+
+  /* Szkło (glassmorphism): pasek rezerwacji i przełącznik miast */
+  --glass-bg: rgba(30, 28, 28, 0.48);
+  --glass-bg-solid: rgba(43, 41, 41, 0.92);  /* gdy przeglądarka nie obsługuje backdrop-filter */
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(18px) saturate(140%);
 
   --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -271,6 +279,23 @@ a {
 .demo-banner strong {
   color: var(--color-text);
   font-weight: 600;
+}
+
+/* Etykieta „Przykład” przy opiniach i komentarzach; --sm mieści się w wierszu z autorem */
+.demo-tag {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.demo-tag--sm {
+  padding: 0.125rem 0.625rem;
+  letter-spacing: 0.14em;
 }
 
 /* 3.2 Ikony SVG (sprite w index.html) */
@@ -707,6 +732,53 @@ a {
   }
 }
 
+/* Wyróżniony link „Blog” (ostatni w menu). Telefon: kursywa w kolorze akcentu — jak wyróżnione
+   słowa w nagłówkach sekcji. Podwójna klasa, żeby wygrać ze stanami hover i [aria-current]. */
+.site-menu__link.site-menu__link--featured {
+  font-style: italic;
+  color: var(--color-accent-on-dark) !important;   /* !important: tak samo jak w .site-menu__link */
+}
+
+.site-menu__link--featured::before {
+  color: var(--color-accent-on-dark);
+}
+
+/* Desktop: ta sama typografia co pozostałe linki (równa linia), wyróżnia go kolor akcentu
+   i cienka pionowa kreska oddzielająca od reszty menu. */
+@media (min-width: 992px) {
+  .site-menu__link.site-menu__link--featured {
+    --featured-gap: clamp(1rem, 2vw, 2.25rem);     /* taki sam odstęp jak między linkami */
+    padding-left: var(--featured-gap) !important;  /* !important: Bootstrap ustawia padding .nav-link */
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .site-menu__link.site-menu__link--featured::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1px;
+    height: 1rem;
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%);
+  }
+
+  /* Podkreślenie przy najechaniu zaczyna się za kreską */
+  .site-menu__link.site-menu__link--featured::after {
+    left: var(--featured-gap);
+  }
+
+  /* Na jasnym tle (po przewinięciu) ciemniejszy akcent — kontrast 6:1 */
+  .site-header.is-scrolled .site-menu__link.site-menu__link--featured {
+    color: var(--color-accent-hover) !important;
+  }
+
+  .site-header.is-scrolled .site-menu__link.site-menu__link--featured::before {
+    background-color: var(--color-line);
+  }
+}
+
 /* 4.4 Wybór języka (dropdown) */
 .lang-switch__toggle {
   display: inline-flex;
@@ -915,19 +987,25 @@ a {
   text-align: left;
 }
 
-.booking__bar {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  background-color: rgba(30, 28, 28, 0.48);
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
+/* Szklany materiał — wspólny dla paska rezerwacji i przełącznika miast (sekcja 15) */
+.booking__bar,
+.city-switch__group {
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .booking__bar {
-    background-color: rgba(43, 41, 41, 0.92);
+  .booking__bar,
+  .city-switch__group {
+    background-color: var(--glass-bg-solid);
   }
+}
+
+.booking__bar {
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2), var(--glass-highlight);
 }
 
 .booking__field {
@@ -1601,14 +1679,6 @@ a {
 .review__tag {
   align-self: flex-start;
   margin-bottom: 1.5rem;
-  padding: 0.25rem 0.75rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-pill);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-muted);
 }
 
 .review__quote {
@@ -2692,8 +2762,8 @@ a {
 
 /* Wyszukiwarka: pole (form-control) i okrągły przycisk w jednej „pigułce” */
 .blog-search {
-  --bs-form-invalid-color: #B3261E;
-  --bs-form-invalid-border-color: #B3261E;
+  --bs-form-invalid-color: var(--color-error-on-light);
+  --bs-form-invalid-border-color: var(--color-error-on-light);
 }
 
 .blog-search__group {
@@ -2933,8 +3003,7 @@ a {
   line-height: 1.8;
 }
 
-.post-content p,
-.post-content ul {
+.post-content p {
   margin-bottom: 1.25rem;
 }
 
@@ -2965,6 +3034,7 @@ a {
 
 /* Wypunktowanie: krótkie akcentowe kreski zamiast kropek */
 .post-content ul {
+  margin-bottom: 1.25rem;
   padding: 0;
   list-style: none;
 }
@@ -3371,25 +3441,14 @@ a {
   color: var(--color-muted);
 }
 
-.comment__tag {
-  padding: 0.125rem 0.625rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-pill);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
 .comment__text {
   margin: 0;
 }
 
 /* Formularz komentarza (form-control Bootstrapa z własnym wyglądem) */
 .comment-form {
-  --bs-form-invalid-color: #B3261E;
-  --bs-form-invalid-border-color: #B3261E;
+  --bs-form-invalid-color: var(--color-error-on-light);
+  --bs-form-invalid-border-color: var(--color-error-on-light);
   margin-top: 3rem;
   padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
   background-color: var(--color-primary-deep);
@@ -3457,7 +3516,7 @@ a {
 
 /* ---------- 15. Wybór lokalizacji (Barcelona, Malaga, Madryt) ---------- */
 /* Komponent Bootstrapa „przyciski-przełączniki” (input.btn-check + label.btn)
-   w wersji szklanej pigułki — ten sam materiał co pasek rezerwacji (sekcja 6). */
+   w wersji szklanej pigułki — tło, ramkę i rozmycie daje wspólna reguła szkła w sekcji 6.1. */
 .city-switch {
   display: flex;
   justify-content: center;
@@ -3470,18 +3529,8 @@ a {
 .city-switch__group {
   gap: 0.125rem;
   padding: 0.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-pill);
-  background-color: rgba(30, 28, 28, 0.48);
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .city-switch__group {
-    background-color: rgba(43, 41, 41, 0.92);
-  }
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18), var(--glass-highlight);
 }
 
 .city-switch__icon {
