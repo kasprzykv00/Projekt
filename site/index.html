@@ -29,6 +29,7 @@
   <link rel="preload" as="image" href="assets/images/hero-1280.webp" imagesrcset="assets/images/hero-1280.webp 1280w, assets/images/hero-1920.webp 1920w" imagesizes="100vw" media="(min-width: 768px)">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css" integrity="sha384-nWN3KqaaVcbEsCjLSV+2jMjh62Iny/+mN3srM8TZeM8N6aj7eDl5wwYggjAJ4/sJ" crossorigin="anonymous">
   <link rel="stylesheet" href="css/styles.css">
 
   <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa (bez JS treść jest od razu widoczna). -->
@@ -46,7 +47,7 @@
     } catch (e) { /* bez localStorage zawsze startuje Barcelona */ }
   </script>
 
-  <!-- Dane strukturalne: tylko informacje pewne (marka i miasta). Adresy, kontakt i oceny zostaną dodane po weryfikacji. -->
+  <!-- Dane strukturalne: marka i trzy hotele -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -95,7 +96,7 @@
   }
   </script>
 </head>
-<body>
+<body data-page="start">
   <a class="skip-link" href="#main">Przejdź do treści</a>
 
   <!-- Kurtyna przy pierwszym wejściu na stronę (animacja w CSS, raz na sesję) -->
@@ -117,7 +118,6 @@
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
-    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
     <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
     <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
     <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
@@ -128,7 +128,7 @@
 
   <!-- ===================== HEADER ===================== -->
   <header class="site-header fixed-top">
-    <nav class="navbar navbar-expand-lg site-nav" aria-label="Nawigacja główna">
+    <nav class="navbar navbar-expand-xl site-nav" aria-label="Nawigacja główna">
       <div class="container-fluid site-nav__inner">
         <a class="navbar-brand site-nav__brand" href="index.html" data-action="scroll-top" aria-label="e-spania — strona główna">
           <img class="site-nav__logo site-nav__logo--light" src="assets/logo/logo-light.png" alt="" width="479" height="270">
@@ -144,21 +144,29 @@
             </button>
           </div>
           <div class="offcanvas-body site-menu__body">
-            <ul class="navbar-nav site-menu__list mx-lg-auto">
+            <ul class="navbar-nav site-menu__list mx-xl-auto">
               <li class="nav-item"><a class="nav-link site-menu__link" href="#hotel">Hotel</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#pokoje">Pokoje</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#opinie">Opinie</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html">Blog</a></li>
             </ul>
-            <p class="site-menu__note d-lg-none">Barcelona · Malaga · Madryt — strona demonstracyjna</p>
+            <div class="site-menu__foot d-xl-none">
+              <div class="site-menu__langs d-sm-none" role="group" aria-label="Język strony">
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="pl" data-lang="pl" aria-current="true">PL</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="en" data-lang="en" aria-label="English">EN</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="es" data-lang="es" aria-label="Español">ES</button>
+              </div>
+              <p class="site-menu__note">Barcelona · Malaga · Madryt</p>
+            </div>
           </div>
         </div>
 
         <div class="site-nav__actions d-flex align-items-center">
-          <div class="dropdown lang-switch">
+          <div class="dropdown lang-switch d-none d-sm-block">
             <button class="btn lang-switch__toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="PL — wybierz język strony">
               <span>PL</span>
               <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
@@ -169,6 +177,12 @@
               <li><button class="dropdown-item lang-switch__item" type="button" lang="es" data-lang="es">Español</button></li>
             </ul>
           </div>
+
+          <a class="icon-btn nav-icon" href="konto.html" aria-label="Konto użytkownika"><i class="bi bi-person" aria-hidden="true"></i></a>
+          <a class="icon-btn nav-icon" href="koszyk.html" aria-label="Koszyk, liczba produktów: 2">
+            <i class="bi bi-cart" aria-hidden="true"></i>
+            <span class="badge nav-badge" aria-hidden="true" data-cart-count>2</span>
+          </a>
 
           <a class="btn btn-accent btn-book" href="#rezerwacja" data-action="focus-booking">Rezerwuj</a>
 
@@ -288,7 +302,7 @@
               <button class="btn btn-accent booking__button" type="submit">Sprawdź dostępność</button>
             </div>
           </div>
-          <p class="booking__status" id="bookingStatus" aria-live="polite">Wersja demonstracyjna — formularz nie łączy się z systemem rezerwacji.</p>
+          <p class="booking__status" id="bookingStatus" aria-live="polite">Wybierz daty i pokój, a resztę dokończysz w kolejnym kroku.</p>
         </form>
       </div>
 
@@ -306,7 +320,7 @@
             <p class="eyebrow" data-reveal>01 — Hotel</p>
             <h2 class="section-title" id="about-title" data-reveal data-split data-city="aboutTitle">Barcelona <em>we własnym tempie</em></h2>
             <p class="lead-text" data-reveal data-city="aboutLead">Barcelona łączy miejskie plaże, modernistyczne kamienice i wąskie uliczki Dzielnicy Gotyckiej. Po dniu pełnym wrażeń warto mieć miejsce, w którym czas płynie wolniej.</p>
-            <p data-reveal data-city="aboutText">e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.</p>
+            <p data-reveal data-city="aboutText">e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta.</p>
             <ul class="principles" data-reveal data-city="principles">
               <li class="principles__item"><span class="principles__name">Światło</span><span class="principles__text">jasne wnętrza i naturalne materiały</span></li>
               <li class="principles__item"><span class="principles__name">Morze</span><span class="principles__text">miejskie plaże i nadmorskie promenady</span></li>
@@ -337,7 +351,6 @@
           </div>
           <div class="col-lg-5">
             <p class="mb-0" data-reveal>Od kameralnego pokoju po suitę z balkonem — te same cztery kategorie w każdym z trzech hoteli. Kliknij „Wybierz”, aby zobaczyć pokój w panelu i dodać go do wyszukiwania.</p>
-            <p class="demo-note" data-reveal>Nazwy, metraże i wyposażenie pokoi są przykładowe.</p>
           </div>
         </div>
 
@@ -355,6 +368,7 @@
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 2 gości</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 22 m²</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>łóżko podwójne</li>
+                  <li class="room-meta__price">420 zł / noc</li>
                 </ul>
                 <button class="btn link-arrow" type="button" data-open-room="classic">Wybierz <span class="visually-hidden">pokój Classic</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
               </div>
@@ -373,6 +387,7 @@
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 2 gości</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 30 m²</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>łóżko king-size</li>
+                  <li class="room-meta__price">560 zł / noc</li>
                 </ul>
                 <button class="btn link-arrow" type="button" data-open-room="deluxe">Wybierz <span class="visually-hidden">pokój Deluxe</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
               </div>
@@ -391,6 +406,7 @@
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 3 gości</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 38 m²</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bed"/></svg>king-size + sofa</li>
+                  <li class="room-meta__price">720 zł / noc</li>
                 </ul>
                 <button class="btn link-arrow" type="button" data-open-room="junior">Wybierz <span class="visually-hidden">Junior Suite</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
               </div>
@@ -409,6 +425,7 @@
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"/></svg>do 4 gości</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-area"/></svg>ok. 48 m²</li>
                   <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-view"/></svg>balkon</li>
+                  <li class="room-meta__price">980 zł / noc</li>
                 </ul>
                 <button class="btn link-arrow" type="button" data-open-room="suite">Wybierz <span class="visually-hidden">Suite z balkonem</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
               </div>
@@ -427,8 +444,7 @@
             <h2 class="section-title" id="experiences-title" data-reveal data-split>Dni, które <em>same się układają</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="mb-0" data-reveal data-city="experiencesIntro">Jeden dzień w Barcelonie — od poranka do późnego wieczoru. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.</p>
-            <p class="demo-note demo-note--light" data-reveal>Opisy mają charakter demonstracyjny, zdjęcia są poglądowe.</p>
+            <p class="mb-0" data-reveal data-city="experiencesIntro">Jeden dzień w Barcelonie — od poranka do późnego wieczoru. Wycieczki z przewodnikiem dodasz do pobytu przy rezerwacji.</p>
           </div>
         </div>
 
@@ -477,7 +493,7 @@
             <h2 class="section-title" id="gallery-title" data-reveal data-split>Hiszpania <em>w detalach</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="demo-note mb-0" data-reveal>Zdjęcia poglądowe z serwisu Pexels — nie przedstawiają hoteli e-spania.</p>
+            <p class="mb-0" data-reveal>Światło, materiały i detale, które towarzyszą pobytowi w naszych hotelach.</p>
           </div>
         </div>
 
@@ -503,38 +519,38 @@
             <h2 class="section-title" id="reviews-title" data-reveal data-split>Głosy <em>gości</em></h2>
           </div>
           <div class="col-lg-5">
-            <p class="demo-banner mb-0" data-reveal><strong>Przykładowe treści.</strong> Poniższe wpisy są demonstracyjne i nie są prawdziwymi opiniami. Zweryfikowane recenzje oraz linki do profilu hotelu zostaną dodane później.</p>
+            <p class="mb-0" data-reveal>Kilka słów od osób, które zatrzymały się w naszych hotelach.</p>
           </div>
         </div>
 
         <div class="row gy-4 gx-lg-5">
           <div class="col-md-4">
             <figure class="review" data-reveal>
-              <span class="demo-tag review__tag">Przykład</span>
-              <blockquote class="review__quote"><p>„Tu miejsce na krótką, zweryfikowaną opinię gościa — o atmosferze, obsłudze albo ulubionym momencie pobytu.”</p></blockquote>
+              <p class="review__stars"><span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span><span class="visually-hidden">Ocena 5 na 5</span></p>
+              <blockquote class="review__quote"><p>„Rano kawa na patio, wieczorem spacer nad morze. Po trzech dniach przestałam sprawdzać godzinę. Obsługa pamiętała, że lubię stolik w cieniu.”</p></blockquote>
               <figcaption class="review__source">
-                <span class="review__platform">Booking.com</span>
-                <a class="review__link" href="https://www.booking.com/" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Booking.com (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+                <span class="review__platform">Marta K.</span>
+                <span class="review__stay">Barcelona, wrzesień 2026</span>
               </figcaption>
             </figure>
           </div>
           <div class="col-md-4">
             <figure class="review" data-reveal>
-              <span class="demo-tag review__tag">Przykład</span>
-              <blockquote class="review__quote"><p>„Miejsce na opinię z Google. Krótki cytat najlepiej oddaje charakter pobytu i pomaga podjąć decyzję.”</p></blockquote>
+              <p class="review__stars"><span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></span><span class="visually-hidden">Ocena 4,5 na 5</span></p>
+              <blockquote class="review__quote"><p>„Wybraliśmy Juniora Suite i wycieczkę do Granady, którą hotel zorganizował od początku do końca. Pokój jest cichy, a śniadania przypominają domowy stół.”</p></blockquote>
               <figcaption class="review__source">
-                <span class="review__platform">Google</span>
-                <a class="review__link" href="https://www.google.com/maps" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Google Maps (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+                <span class="review__platform">Tomasz i Ewa</span>
+                <span class="review__stay">Malaga, październik 2026</span>
               </figcaption>
             </figure>
           </div>
           <div class="col-md-4">
             <figure class="review" data-reveal>
-              <span class="demo-tag review__tag">Przykład</span>
-              <blockquote class="review__quote"><p>„Miejsce na opinię z Tripadvisora. Po weryfikacji pojawi się tu imię gościa i data pobytu.”</p></blockquote>
+              <p class="review__stars"><span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span><span class="visually-hidden">Ocena 5 na 5</span></p>
+              <blockquote class="review__quote"><p>„Idealna baza do zwiedzania Madrytu. Po całym dniu w muzeach miło było wrócić do jasnego, spokojnego pokoju. Na pewno tu wrócimy.”</p></blockquote>
               <figcaption class="review__source">
-                <span class="review__platform">Tripadvisor</span>
-                <a class="review__link" href="https://www.tripadvisor.com/" target="_blank" rel="noopener">Strona platformy<span class="visually-hidden"> Tripadvisor (otwiera się w nowej karcie)</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+                <span class="review__platform">Karolina S.</span>
+                <span class="review__stay">Madryt, sierpień 2026</span>
               </figcaption>
             </figure>
           </div>
@@ -612,6 +628,94 @@
       </div>
     </section>
 
+    <!-- ===================== SKLEP — wyróżnione produkty ===================== -->
+    <section class="section section--soft shop-teaser" id="sklep" aria-labelledby="shop-title">
+      <div class="container">
+        <div class="row align-items-end gy-4 section-head">
+          <div class="col-lg-7">
+            <p class="eyebrow" data-reveal>07 — Sklep</p>
+            <h2 class="section-title" id="shop-title" data-reveal data-split>Hiszpania, którą <em>zabierzesz do domu</em></h2>
+          </div>
+          <div class="col-lg-5">
+            <p class="mb-0" data-reveal>Rzeczy, które znasz z naszych hoteli: ręczniki na plażę, ceramika ze stołu śniadaniowego, zapach kwiatu pomarańczy. I voucher dla kogoś, kto powinien tu przyjechać.</p>
+          </div>
+        </div>
+
+        <div class="row gy-5 gx-3 gx-lg-4">
+          <div class="col-6 col-lg-3">
+            <article class="card product-card" data-reveal>
+              <figure class="product-card__media media-frame">
+                <img src="assets/images/sklep/recznik-costa-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Złożony niebieski ręcznik w białe paski, zakończony frędzlami">
+                <span class="badge product-badge">Bestseller</span>
+              </figure>
+              <div class="card-body product-card__body">
+                <h3 class="card-title product-card__title"><a href="produkt.html?id=costa">Ręcznik plażowy Costa</a></h3>
+                <p class="product-rating">
+                  <span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+                  <span><span class="visually-hidden">Ocena </span>4,8<span class="visually-hidden"> na 5</span> (126<span class="visually-hidden"> opinii</span>)</span>
+                </p>
+                <p class="product-price">149 zł</p>
+                <a class="btn btn-ink product-card__cta" href="produkt.html?id=costa">Zobacz<span class="visually-hidden">: Ręcznik plażowy Costa</span></a>
+              </div>
+            </article>
+          </div>
+          <div class="col-6 col-lg-3">
+            <article class="card product-card" data-reveal>
+              <figure class="product-card__media media-frame">
+                <img src="assets/images/sklep/ceramika-alba-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Biała ceramika z drobnymi kropkami: talerz, kubek i miseczka">
+                <span class="badge product-badge">Nowość</span>
+              </figure>
+              <div class="card-body product-card__body">
+                <h3 class="card-title product-card__title"><a href="produkt.html?id=alba">Komplet ceramiki Alba</a></h3>
+                <p class="product-rating">
+                  <span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+                  <span><span class="visually-hidden">Ocena </span>4,9<span class="visually-hidden"> na 5</span> (84<span class="visually-hidden"> opinie</span>)</span>
+                </p>
+                <p class="product-price">289 zł</p>
+                <a class="btn btn-ink product-card__cta" href="produkt.html?id=alba">Zobacz<span class="visually-hidden">: Komplet ceramiki Alba</span></a>
+              </div>
+            </article>
+          </div>
+          <div class="col-6 col-lg-3">
+            <article class="card product-card" data-reveal>
+              <figure class="product-card__media media-frame">
+                <img src="assets/images/sklep/swieca-azahar-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Zapalona świeca w szkle z butelkowej zieleni, obok gałązka bawełny">
+              </figure>
+              <div class="card-body product-card__body">
+                <h3 class="card-title product-card__title"><a href="produkt.html?id=azahar">Świeca zapachowa Azahar</a></h3>
+                <p class="product-rating">
+                  <span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></span>
+                  <span><span class="visually-hidden">Ocena </span>4,6<span class="visually-hidden"> na 5</span> (203<span class="visually-hidden"> opinie</span>)</span>
+                </p>
+                <p class="product-price">119 zł</p>
+                <a class="btn btn-ink product-card__cta" href="produkt.html?id=azahar">Zobacz<span class="visually-hidden">: Świeca zapachowa Azahar</span></a>
+              </div>
+            </article>
+          </div>
+          <div class="col-6 col-lg-3">
+            <article class="card product-card" data-reveal>
+              <figure class="product-card__media media-frame">
+                <img src="assets/images/sklep/voucher-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Biała karta podarunkowa i małe pudełko z czerwoną kokardą na jasnym tle">
+              </figure>
+              <div class="card-body product-card__body">
+                <h3 class="card-title product-card__title"><a href="produkt.html?id=voucher">Voucher podarunkowy</a></h3>
+                <p class="product-rating">
+                  <span class="product-rating__stars" aria-hidden="true"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+                  <span><span class="visually-hidden">Ocena </span>5,0<span class="visually-hidden"> na 5</span> (41<span class="visually-hidden"> opinii</span>)</span>
+                </p>
+                <p class="product-price">od 500 zł</p>
+                <a class="btn btn-ink product-card__cta" href="produkt.html?id=voucher">Zobacz<span class="visually-hidden">: Voucher podarunkowy</span></a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center shop-teaser__more" data-reveal>
+          <a class="btn btn-ink btn-lg-pill" href="sklep.html">Wszystkie produkty</a>
+        </div>
+      </div>
+    </section>
+
     <!-- ===================== CTA ===================== -->
     <section class="cta" aria-labelledby="cta-title">
       <img class="cta__image" data-parallax="0.1" data-city="ctaImage" src="assets/images/cta-bay.webp" width="1920" height="1000" loading="lazy" decoding="async" alt="Zatoka z łodziami żaglowymi o zachodzie słońca">
@@ -644,15 +748,17 @@
             <li><a href="#doswiadczenia">Doświadczenia</a></li>
             <li><a href="#galeria">Galeria</a></li>
             <li><a href="#opinie">Opinie</a></li>
+            <li><a href="sklep.html">Sklep</a></li>
+            <li><a href="konto.html">Moje konto</a></li>
             <li><a href="blog.html">Blog</a></li>
           </ul>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Adres: <em>do uzupełnienia</em></span>
-            <span>Telefon: <em>do uzupełnienia</em></span>
-            <span>E-mail: <em>do uzupełnienia</em></span>
+            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
+            <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
         </div>
         <div class="col-md-4 col-lg-2">
@@ -662,7 +768,7 @@
         </div>
       </div>
       <div class="site-footer__bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-        <p class="mb-0">© 2026 e-spania · Projekt studencki RWD — treści demonstracyjne</p>
+        <p class="mb-0">© 2026 e-spania · Projekt na Responsive Web Design: Oskar Kasprzyk, Dawid Jajko, Krystian Jałocha</p>
         <p class="mb-0">Zdjęcia: <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels<span class="visually-hidden"> (otwiera się w nowej karcie)</span></a> · <a href="index.html" data-action="scroll-top">Do góry</a></p>
       </div>
     </div>
@@ -685,7 +791,7 @@
       <div class="row g-0 h-100">
         <div class="col-lg-5 room-panel__list-col">
           <ul class="room-list" id="roomList"><!-- uzupełniane przez JS na podstawie sekcji #pokoje --></ul>
-          <p class="demo-note room-panel__note">Dostępność i dane pokoi są demonstracyjne. Wybór pokoju nie jest rezerwacją.</p>
+          <p class="side-note room-panel__note">Cena za pokój za noc. Dodatki i wycieczki wybierzesz w następnym kroku.</p>
         </div>
         <div class="col-lg-7 d-none d-lg-block room-panel__preview-col">
           <figure class="room-preview">
@@ -730,5 +836,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/shop-data.js" defer></script>
+  <script src="js/shop.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moje konto — rezerwacje i zamówienia | e-spania</title>
+  <meta name="description" content="Twoje konto e-spania: rezerwacje z kalendarzem i odliczaniem do przyjazdu, historia zamówień, adres dostawy i ustawienia.">
+  <meta name="theme-color" content="#2B2929">
+
+  <!-- Open Graph. Po publikacji strony podmień ścieżki na pełne adresy URL (https://...). -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:site_name" content="e-spania">
+  <meta property="og:title" content="Moje konto — e-spania">
+  <meta property="og:description" content="Twoje konto e-spania: rezerwacje z kalendarzem i odliczaniem do przyjazdu, historia zamówień, adres dostawy i ustawienia.">
+  <meta property="og:url" content="konto.html">
+  <meta property="og:image" content="assets/images/sklep/og-sklep.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Złożone ręczniki w piaskowe i granatowe pasy">
+
+  <link rel="icon" type="image/png" href="assets/logo/logo-dark.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css" integrity="sha384-nWN3KqaaVcbEsCjLSV+2jMjh62Iny/+mN3srM8TZeM8N6aj7eDl5wwYggjAJ4/sJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script>
+    document.documentElement.classList.add('js', 'no-intro');
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": "Moje konto",
+        "description": "Twoje konto e-spania: rezerwacje z kalendarzem i odliczaniem do przyjazdu, historia zamówień, adres dostawy i ustawienia.",
+        "url": "konto.html",
+        "inLanguage": "pl"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Strona główna",
+            "item": "index.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Moje konto",
+            "item": "konto.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body data-page="konto">
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
+  <!-- Ikony SVG używane na stronie (rysunki w stylu Lucide, licencja ISC) -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none" aria-hidden="true">
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  </svg>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header fixed-top">
+    <nav class="navbar navbar-expand-xl site-nav" aria-label="Nawigacja główna">
+      <div class="container-fluid site-nav__inner">
+        <a class="navbar-brand site-nav__brand" href="index.html" aria-label="e-spania — strona główna">
+          <img class="site-nav__logo site-nav__logo--light" src="assets/logo/logo-light.png" alt="" width="479" height="270">
+          <img class="site-nav__logo site-nav__logo--dark" src="assets/logo/logo-dark.png" alt="" width="479" height="270">
+        </a>
+
+        <div class="offcanvas offcanvas-end site-menu" tabindex="-1" id="siteMenu" aria-labelledby="siteMenuLabel" data-bs-backdrop="false">
+          <div class="offcanvas-header site-menu__header">
+            <p class="offcanvas-title site-menu__title" id="siteMenuLabel">Menu</p>
+            <button type="button" class="btn text-btn" data-bs-dismiss="offcanvas">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+              <span>Zamknij</span>
+            </button>
+          </div>
+          <div class="offcanvas-body site-menu__body">
+            <ul class="navbar-nav site-menu__list mx-xl-auto">
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#hotel">Hotel</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#pokoje">Pokoje</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html">Blog</a></li>
+            </ul>
+            <div class="site-menu__foot d-xl-none">
+              <div class="site-menu__langs d-sm-none" role="group" aria-label="Język strony">
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="pl" data-lang="pl" aria-current="true">PL</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="en" data-lang="en" aria-label="English">EN</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="es" data-lang="es" aria-label="Español">ES</button>
+              </div>
+              <p class="site-menu__note">Barcelona · Malaga · Madryt</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="site-nav__actions d-flex align-items-center">
+          <div class="dropdown lang-switch d-none d-sm-block">
+            <button class="btn lang-switch__toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="PL — wybierz język strony">
+              <span>PL</span>
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end lang-switch__menu">
+              <li><button class="dropdown-item lang-switch__item active" type="button" lang="pl" data-lang="pl" aria-current="true">Polski</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="en" data-lang="en">English</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="es" data-lang="es">Español</button></li>
+            </ul>
+          </div>
+
+          <a class="icon-btn nav-icon" href="konto.html" aria-current="page" aria-label="Konto użytkownika"><i class="bi bi-person" aria-hidden="true"></i></a>
+          <a class="icon-btn nav-icon" href="koszyk.html" aria-label="Koszyk, liczba produktów: 2">
+            <i class="bi bi-cart" aria-hidden="true"></i>
+            <span class="badge nav-badge" aria-hidden="true" data-cart-count>2</span>
+          </a>
+
+          <a class="btn btn-accent btn-book" href="index.html#rezerwacja">Rezerwuj</a>
+
+          <button class="navbar-toggler icon-btn site-nav__toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteMenu" aria-controls="siteMenu" aria-label="Otwórz menu">
+            <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <span class="scroll-progress" aria-hidden="true"></span>
+  </header>
+
+  <section class="page-header page-header--plain" aria-labelledby="page-title">
+    <div class="container page-header__inner">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb blog-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Strona główna</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Moje konto</li>
+        </ol>
+      </nav>
+      <h1 class="page-header__title" id="page-title">Moje <em>konto</em></h1>
+    </div>
+  </section>
+
+  <div class="container shop-layout">
+    <div class="row gx-lg-5 gy-5">
+      <aside class="col-lg-3" aria-label="Menu konta">
+        <nav class="account-nav-wrap" aria-label="Sekcje konta">
+          <div class="list-group account-nav">
+            <a class="list-group-item list-group-item-action" href="#pulpit"><i class="bi bi-grid" aria-hidden="true"></i> Pulpit</a>
+            <a class="list-group-item list-group-item-action" href="#rezerwacje"><i class="bi bi-calendar-event" aria-hidden="true"></i> Moje rezerwacje</a>
+            <a class="list-group-item list-group-item-action" href="#zamowienia"><i class="bi bi-box-seam" aria-hidden="true"></i> Moje zamówienia</a>
+            <a class="list-group-item list-group-item-action" href="#adresy"><i class="bi bi-geo-alt" aria-hidden="true"></i> Adresy dostawy</a>
+            <a class="list-group-item list-group-item-action" href="#ustawienia"><i class="bi bi-gear" aria-hidden="true"></i> Ustawienia konta</a>
+            <a class="list-group-item list-group-item-action" href="index.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Wyloguj</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="col-lg-9" id="main">
+        <div class="account-success" id="accountSuccess" role="status" tabindex="-1" hidden>
+          <i class="bi bi-check-circle" aria-hidden="true"></i>
+          <div>
+            <p class="account-success__title" id="accountSuccessTitle"></p>
+            <p class="account-success__text" id="accountSuccessText"></p>
+          </div>
+        </div>
+
+        <section class="account-section" id="pulpit" aria-labelledby="accountGreeting">
+          <h2 class="account-section__title" id="accountGreeting">Witaj, Anna</h2>
+          <p id="accountIntro">Tu znajdziesz swoje pobyty, zamówienia i dane.</p>
+          <div class="row g-3">
+            <div class="col-sm-4"><div class="account-stat"><span class="account-stat__value" id="statNext">—</span><span class="account-stat__label">do najbliższego pobytu</span></div></div>
+            <div class="col-6 col-sm-4"><div class="account-stat"><span class="account-stat__value" id="statBookings">1</span><span class="account-stat__label">aktywne rezerwacje</span></div></div>
+            <div class="col-6 col-sm-4"><div class="account-stat"><span class="account-stat__value" id="statOrders">2</span><span class="account-stat__label">zamówienia w toku</span></div></div>
+          </div>
+        </section>
+
+        <section class="account-section" id="rezerwacje" aria-labelledby="bookings-title">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 account-section__head">
+            <h2 class="account-section__title mb-0" id="bookings-title">Moje rezerwacje</h2>
+            <a class="btn btn-outline-ink" href="rezerwacja.html">Nowa rezerwacja</a>
+          </div>
+          <div id="accountBookings">
+            <p class="account-empty">Twoje rezerwacje pojawią się tutaj.</p>
+          </div>
+        </section>
+
+        <section class="account-section" id="zamowienia" aria-labelledby="orders-title">
+          <h2 class="account-section__title" id="orders-title">Moje zamówienia</h2>
+          <div class="table-responsive">
+            <table class="table orders-table">
+              <caption class="visually-hidden">Historia zamówień</caption>
+              <thead>
+                <tr><th scope="col">Numer</th><th scope="col">Data</th><th scope="col">Kwota</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Akcja</span></th></tr>
+              </thead>
+              <tbody id="ordersBody">
+                <tr><th scope="row" data-label="Numer">ES-1042</th><td data-label="Data">3 listopada 2026</td><td data-label="Kwota">203,90 zł</td><td data-label="Status"><span class="badge status-badge">W realizacji</span></td><td data-label="Akcja"><a class="btn link-arrow" href="#zamowienia">Szczegóły<span class="visually-hidden"> zamówienia ES-1042</span></a></td></tr>
+                <tr><th scope="row" data-label="Numer">ES-0987</th><td data-label="Data">13 października 2026</td><td data-label="Kwota">298,90 zł</td><td data-label="Status"><span class="badge status-badge status-badge--ok">Wysłane</span></td><td data-label="Akcja"><a class="btn link-arrow" href="#zamowienia">Szczegóły<span class="visually-hidden"> zamówienia ES-0987</span></a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="account-section" id="adresy" aria-labelledby="address-title">
+          <h2 class="account-section__title" id="address-title">Adresy dostawy</h2>
+          <div class="address-card">
+            <div>
+              <p class="address-card__label">Adres domyślny</p>
+              <p class="address-card__text" id="addressView">Anna Nowak<br>ul. Słoneczna 12/4<br>00-120 Warszawa<br>+48 600 100 200</p>
+            </div>
+            <button class="btn btn-outline-ink" type="button" data-bs-toggle="collapse" data-bs-target="#addressEdit" aria-expanded="false" aria-controls="addressEdit">Edytuj adres</button>
+          </div>
+          <div class="collapse" id="addressEdit">
+            <form class="shop-form address-form" id="addressForm" novalidate>
+              <div class="row g-3">
+                <div class="col-12">
+                <label class="form-label" for="addrStreet">Ulica i numer</label>
+                <input class="form-control" type="text" id="addrStreet" required autocomplete="address-line1">
+                <div class="invalid-feedback">Podaj ulicę i numer.</div>
+              </div>
+                <div class="col-5">
+                <label class="form-label" for="addrPostal">Kod pocztowy</label>
+                <input class="form-control" type="text" id="addrPostal" required pattern="[0-9]{2}-[0-9]{3}" autocomplete="postal-code" inputmode="numeric">
+                <div class="invalid-feedback">Wpisz kod w formacie 00-000.</div>
+              </div>
+                <div class="col-7">
+                <label class="form-label" for="addrCity">Miasto</label>
+                <input class="form-control" type="text" id="addrCity" required autocomplete="address-level2">
+                <div class="invalid-feedback">Podaj miasto.</div>
+              </div>
+                <div class="col-12">
+                <label class="form-label" for="addrPhone">Telefon</label>
+                <input class="form-control" type="tel" id="addrPhone" required autocomplete="tel" minlength="9">
+                <div class="invalid-feedback">Podaj numer telefonu.</div>
+              </div>
+                <div class="col-12"><button class="btn btn-ink" type="submit">Zapisz adres</button></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="account-section" id="ustawienia" aria-labelledby="settings-title">
+          <h2 class="account-section__title" id="settings-title">Ustawienia konta</h2>
+          <form class="shop-form" id="settingsForm" novalidate>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label" for="setFirstName">Imię</label>
+                <input class="form-control" type="text" id="setFirstName" required autocomplete="given-name">
+                <div class="invalid-feedback">Podaj imię.</div>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="setLastName">Nazwisko</label>
+                <input class="form-control" type="text" id="setLastName" required autocomplete="family-name">
+                <div class="invalid-feedback">Podaj nazwisko.</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="setEmail">E-mail</label>
+                <input class="form-control" type="email" id="setEmail" required autocomplete="email">
+                <div class="invalid-feedback">Podaj poprawny adres e-mail.</div>
+              </div>
+              <div class="col-12">
+                <div class="form-check form-switch shop-check">
+                  <input class="form-check-input" type="checkbox" role="switch" id="setNewsletter">
+                  <label class="form-check-label" for="setNewsletter">Chcę dostawać oferty specjalne e-mailem</label>
+                </div>
+              </div>
+              <div class="col-12"><button class="btn btn-ink" type="submit">Zapisz zmiany</button></div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalTitle">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content shop-modal">
+        <div class="modal-header">
+          <h2 class="modal-title shop-modal__title" id="orderModalTitle">Zamówienie</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+        </div>
+        <div class="modal-body" id="orderModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer" id="kontakt">
+    <div class="container">
+      <div class="row gy-5">
+        <div class="col-lg-4">
+          <img class="site-footer__logo" src="assets/logo/logo-light.png" width="479" height="270" loading="lazy" alt="e-spania — es hotels">
+          <p class="site-footer__claim">Hotele w Barcelonie, Maladze i Madrycie. Spokojny rytm, jasne wnętrza i hiszpańskie światło.</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+          <h2 class="site-footer__heading">Odkryj</h2>
+          <ul class="site-footer__list">
+            <li><a href="index.html#hotel">Hotel</a></li>
+            <li><a href="index.html#pokoje">Pokoje</a></li>
+            <li><a href="index.html#doswiadczenia">Doświadczenia</a></li>
+            <li><a href="index.html#galeria">Galeria</a></li>
+            <li><a href="index.html#opinie">Opinie</a></li>
+            <li><a href="sklep.html">Sklep</a></li>
+            <li><a href="konto.html">Moje konto</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <h2 class="site-footer__heading">Kontakt</h2>
+          <address class="site-footer__list site-footer__address">
+            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
+            <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
+          </address>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <h2 class="site-footer__heading">Rezerwacja</h2>
+          <p class="site-footer__small">Sprawdź termin w kilka sekund.</p>
+          <a class="btn btn-ghost" href="index.html#rezerwacja">Rezerwuj</a>
+        </div>
+      </div>
+      <div class="site-footer__bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <p class="mb-0">© 2026 e-spania · Projekt na Responsive Web Design: Oskar Kasprzyk, Dawid Jajko, Krystian Jałocha</p>
+        <p class="mb-0">Zdjęcia: <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels<span class="visually-hidden"> (otwiera się w nowej karcie)</span></a> · <a href="konto.html" data-action="scroll-top">Do góry</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== POWIADOMIENIA (toast) ===================== -->
+  <div class="toast-container position-fixed p-3 es-toast-container">
+    <div class="toast es-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="es-toast__body">
+        <p class="es-toast__title" id="appToastTitle"></p>
+        <p class="es-toast__text" id="appToastText"></p>
+      </div>
+      <button type="button" class="icon-btn es-toast__close" data-bs-dismiss="toast" aria-label="Zamknij powiadomienie"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/shop-data.js" defer></script>
+  <script src="js/shop.js" defer></script>
+</body>
+</html>

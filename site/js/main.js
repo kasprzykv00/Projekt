@@ -1,7 +1,7 @@
 /* =========================================================
-   e-spania — interakcje (strona główna i blog)
+   e-spania — interakcje wspólne (nagłówek, strona główna, blog)
    Bez frameworków: czysty JavaScript + komponenty Bootstrap 5.
-   Rezerwacja jest demonstracyjna — nic nie jest wysyłane.
+   Sklep, rezerwacja, płatność i konto są w shop.js (korzysta z window.ES).
    ========================================================= */
 (() => {
   'use strict';
@@ -230,7 +230,7 @@
       heroTitle: ['Barcelona, gdzie miasto ', 'spotyka morze'],
       aboutTitle: ['Barcelona ', 'we własnym tempie'],
       aboutLead: 'Barcelona łączy miejskie plaże, modernistyczne kamienice i wąskie uliczki Dzielnicy Gotyckiej. Po dniu pełnym wrażeń warto mieć miejsce, w którym czas płynie wolniej.',
-      aboutText: 'e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      aboutText: 'e-spania Barcelona to propozycja pobytu w katalońskim rytmie — jasne wnętrza, naturalne materiały i spokojne poranki przed wyjściem do miasta.',
       principles: [
         ['Światło', 'jasne wnętrza i naturalne materiały'],
         ['Morze', 'miejskie plaże i nadmorskie promenady'],
@@ -252,7 +252,7 @@
       heroTitle: ['Malaga w rytmie ', 'andaluzyjskiego słońca'],
       aboutTitle: ['Andaluzyjski dzień ', 'bez pośpiechu'],
       aboutLead: 'Malaga to stare miasto u stóp mauretańskiej Alcazaby, nadmorski bulwar i plaże Costa del Sol. Dzień płynie tu w rytmie słońca — od porannej kawy po późną kolację.',
-      aboutText: 'e-spania Malaga to propozycja pobytu w andaluzyjskim stylu — bielone ściany, cień patio i światło, które zmienia kolory przez cały dzień. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      aboutText: 'e-spania Malaga to propozycja pobytu w andaluzyjskim stylu — bielone ściany, cień patio i światło, które zmienia kolory przez cały dzień.',
       principles: [
         ['Słońce', 'jasne wnętrza i andaluzyjskie światło'],
         ['Morze', 'plaże Costa del Sol i nadmorski bulwar'],
@@ -274,7 +274,7 @@
       heroTitle: ['Madryt, stolica ', 'sztuki i późnych wieczorów'],
       aboutTitle: ['Spokojna baza ', 'w wielkim mieście'],
       aboutLead: 'Madryt to muzea Paseo del Arte, zielony Park Retiro i ulice, które ożywają dopiero wieczorem. Stolica Hiszpanii żyje intensywnie — tym bardziej warto mieć miejsce, w którym można zwolnić.',
-      aboutText: 'e-spania Madryt to propozycja pobytu w miejskim, ale spokojnym stylu — kameralne wnętrza, naturalne materiały i rytm dnia wyznaczany przez posiłki. Ten opis ma charakter demonstracyjny i zostanie zastąpiony właściwą prezentacją hotelu.',
+      aboutText: 'e-spania Madryt to propozycja pobytu w miejskim, ale spokojnym stylu — kameralne wnętrza, naturalne materiały i rytm dnia wyznaczany przez posiłki.',
       principles: [
         ['Sztuka', 'Prado, Reina Sofía i Thyssen-Bornemisza'],
         ['Zieleń', 'Park Retiro i ogród botaniczny'],
@@ -306,8 +306,8 @@
       heroEyebrow: `e-spania · ${city.name}`,
       heroDiscover: `Odkryj hotel ${city.locative}`,
       roomPanelEyebrow: `Wybór pokoju · ${city.name}`,
-      ctaText: `Wybierz daty i pokój — pokażemy, jak mógłby wyglądać Twój pobyt ${city.locative}.`,
-      experiencesIntro: `Jeden dzień ${city.locative} — od poranka do późnego wieczoru. Szczegółowa oferta hotelu pojawi się w kolejnych etapach projektu.`,
+      ctaText: `Wybierz daty i pokój — zaplanuj swój pobyt ${city.locative}.`,
+      experiencesIntro: `Jeden dzień ${city.locative} — od poranka do późnego wieczoru. Wycieczki z przewodnikiem dodasz do pobytu przy rezerwacji.`,
     };
   }
 
@@ -465,7 +465,7 @@
   }
 
   function updateStatus() {
-    status.textContent = hasValidDates() ? `${stayDescription()} — wersja demonstracyjna` : defaultStatus;
+    status.textContent = hasValidDates() ? stayDescription() : defaultStatus;
   }
 
   function updateGuests() {
@@ -499,6 +499,19 @@
     roomInput.value = room ? id : '';
     qs('#roomSummary').textContent = room ? room.name : 'Dowolny pokój';
     validateRoom();
+  }
+
+  // Przekazuje wybrany pobyt do pełnego formularza rezerwacji
+  function goToReservation(roomId) {
+    const params = new URLSearchParams({
+      miasto: qs('input[name="city"]:checked').value,
+      przyjazd: arrival.value,
+      wyjazd: departure.value,
+      dorosli: adults.value,
+      dzieci: children.value,
+      pokoj: roomId,
+    });
+    window.location.href = `rezerwacja.html?${params}`;
   }
 
   function focusBooking() {
@@ -599,7 +612,7 @@
       arrival.value = iso;
       departure.value = '';
     } else if (nightsBetween(arrival.value, iso) > MAX_NIGHTS) {
-      calendar.hint.textContent = `W wersji demo pobyt może trwać maks. ${MAX_NIGHTS} nocy.`;
+      calendar.hint.textContent = `Pobyt może trwać maks. ${MAX_NIGHTS} nocy.`;
       return;
     } else {
       departure.value = iso;
@@ -733,7 +746,7 @@
         openRoomPanel({ fromSearch: true });
         return;
       }
-      notify('Wynik wyszukiwania (demo)', `${room.name} · ${stayDescription()}. W gotowym serwisie pojawi się tu realna dostępność i cena — nie dokonano rezerwacji.`);
+      goToReservation(room.id);
     });
 
     qsa('[data-action="focus-booking"]').forEach((link) => {
@@ -782,7 +795,7 @@
   function refreshPanel() {
     const total = guestsTotal();
     qs('#roomPanelSummary').textContent = hasValidDates()
-      ? `${stayDescription()}. Dostępność demonstracyjna.`
+      ? `${stayDescription()}. Wybierz pokój, a przejdziemy do rezerwacji.`
       : `${stayDescription()}. Wybierz pokój, a dodamy go do wyszukiwania.`;
 
     qsa('.room-option', list).forEach((option) => {
@@ -836,7 +849,7 @@
       panelContext.returnFocus = roomTrigger;
       panel.hide();
       if (fromSearch && hasValidDates()) {
-        notify(`Wybrano: ${room.name}`, `${stayDescription()}. Wersja demonstracyjna — nie sprawdzono realnej dostępności i nie dokonano rezerwacji.`);
+        goToReservation(room.id);
       } else if (!hasValidDates()) {
         notify(`Dodano: ${room.name}`, 'Wybierz daty przyjazdu i wyjazdu, a następnie kliknij „Sprawdź dostępność”.');
       }
@@ -1075,6 +1088,9 @@
     update();
     onScrollFrame(update);
   }
+
+  // Wspólne narzędzia dla shop.js
+  window.ES = { qs, qsa, plural, toISO, fromISO, addDays, nightsBetween, notify };
 
   // Miasto ustawiamy przed podziałem tytułów na słowa — dzielony jest już właściwy tekst
   if (form) initCity();

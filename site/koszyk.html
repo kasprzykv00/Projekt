@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koszyk | Sklep e-spania</title>
+  <meta name="description" content="Twój koszyk w sklepie e-spania: sprawdź produkty, zmień ilość, wpisz kod rabatowy i przejdź do kasy.">
+  <meta name="theme-color" content="#2B2929">
+
+  <!-- Open Graph. Po publikacji strony podmień ścieżki na pełne adresy URL (https://...). -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:site_name" content="e-spania">
+  <meta property="og:title" content="Koszyk — sklep e-spania">
+  <meta property="og:description" content="Twój koszyk w sklepie e-spania: sprawdź produkty, zmień ilość, wpisz kod rabatowy i przejdź do kasy.">
+  <meta property="og:url" content="koszyk.html">
+  <meta property="og:image" content="assets/images/sklep/og-sklep.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Złożone ręczniki w piaskowe i granatowe pasy">
+
+  <link rel="icon" type="image/png" href="assets/logo/logo-dark.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css" integrity="sha384-nWN3KqaaVcbEsCjLSV+2jMjh62Iny/+mN3srM8TZeM8N6aj7eDl5wwYggjAJ4/sJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script>
+    document.documentElement.classList.add('js', 'no-intro');
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": "Koszyk",
+        "description": "Twój koszyk w sklepie e-spania: sprawdź produkty, zmień ilość, wpisz kod rabatowy i przejdź do kasy.",
+        "url": "koszyk.html",
+        "inLanguage": "pl"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Strona główna",
+            "item": "index.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Sklep",
+            "item": "sklep.html"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Koszyk",
+            "item": "koszyk.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body data-page="koszyk">
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
+  <!-- Ikony SVG używane na stronie (rysunki w stylu Lucide, licencja ISC) -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none" aria-hidden="true">
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  </svg>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header fixed-top">
+    <nav class="navbar navbar-expand-xl site-nav" aria-label="Nawigacja główna">
+      <div class="container-fluid site-nav__inner">
+        <a class="navbar-brand site-nav__brand" href="index.html" aria-label="e-spania — strona główna">
+          <img class="site-nav__logo site-nav__logo--light" src="assets/logo/logo-light.png" alt="" width="479" height="270">
+          <img class="site-nav__logo site-nav__logo--dark" src="assets/logo/logo-dark.png" alt="" width="479" height="270">
+        </a>
+
+        <div class="offcanvas offcanvas-end site-menu" tabindex="-1" id="siteMenu" aria-labelledby="siteMenuLabel" data-bs-backdrop="false">
+          <div class="offcanvas-header site-menu__header">
+            <p class="offcanvas-title site-menu__title" id="siteMenuLabel">Menu</p>
+            <button type="button" class="btn text-btn" data-bs-dismiss="offcanvas">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+              <span>Zamknij</span>
+            </button>
+          </div>
+          <div class="offcanvas-body site-menu__body">
+            <ul class="navbar-nav site-menu__list mx-xl-auto">
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#hotel">Hotel</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#pokoje">Pokoje</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html">Blog</a></li>
+            </ul>
+            <div class="site-menu__foot d-xl-none">
+              <div class="site-menu__langs d-sm-none" role="group" aria-label="Język strony">
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="pl" data-lang="pl" aria-current="true">PL</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="en" data-lang="en" aria-label="English">EN</button>
+                <button class="btn lang-switch__item site-menu__lang" type="button" lang="es" data-lang="es" aria-label="Español">ES</button>
+              </div>
+              <p class="site-menu__note">Barcelona · Malaga · Madryt</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="site-nav__actions d-flex align-items-center">
+          <div class="dropdown lang-switch d-none d-sm-block">
+            <button class="btn lang-switch__toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="PL — wybierz język strony">
+              <span>PL</span>
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end lang-switch__menu">
+              <li><button class="dropdown-item lang-switch__item active" type="button" lang="pl" data-lang="pl" aria-current="true">Polski</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="en" data-lang="en">English</button></li>
+              <li><button class="dropdown-item lang-switch__item" type="button" lang="es" data-lang="es">Español</button></li>
+            </ul>
+          </div>
+
+          <a class="icon-btn nav-icon" href="konto.html" aria-label="Konto użytkownika"><i class="bi bi-person" aria-hidden="true"></i></a>
+          <a class="icon-btn nav-icon" href="koszyk.html" aria-current="page" aria-label="Koszyk, liczba produktów: 2">
+            <i class="bi bi-cart" aria-hidden="true"></i>
+            <span class="badge nav-badge" aria-hidden="true" data-cart-count>2</span>
+          </a>
+
+          <a class="btn btn-accent btn-book" href="index.html#rezerwacja">Rezerwuj</a>
+
+          <button class="navbar-toggler icon-btn site-nav__toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteMenu" aria-controls="siteMenu" aria-label="Otwórz menu">
+            <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <span class="scroll-progress" aria-hidden="true"></span>
+  </header>
+
+  <section class="page-header page-header--plain" aria-labelledby="page-title">
+    <div class="container page-header__inner">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb blog-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Strona główna</a></li>
+          <li class="breadcrumb-item"><a href="sklep.html">Sklep</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Koszyk</li>
+        </ol>
+      </nav>
+      <h1 class="page-header__title" id="page-title">Twój <em>koszyk</em></h1>
+    </div>
+  </section>
+
+  <main id="main" class="container shop-layout">
+    <div class="row gx-lg-5 gy-5">
+      <div class="col-lg-8">
+        <h2 class="visually-hidden">Produkty w koszyku</h2>
+        <div class="table-responsive" id="cartTableWrap">
+          <table class="table cart-table">
+            <caption class="visually-hidden">Produkty w koszyku</caption>
+            <thead>
+              <tr>
+                <th scope="col">Produkt</th>
+                <th scope="col">Cena jednostkowa</th>
+                <th scope="col">Ilość</th>
+                <th scope="col">Wartość łączna</th>
+                <th scope="col"><span class="visually-hidden">Akcja</span></th>
+              </tr>
+            </thead>
+            <tbody id="cartBody">
+              <tr>
+                <td class="cart-table__product" data-label="Produkt"><a class="cart-item" href="produkt.html?id=costa"><img class="cart-item__thumb" src="assets/images/sklep/recznik-costa-800.webp" width="800" height="800" alt=""><span><span class="cart-item__name">Ręcznik plażowy Costa</span><span class="cart-item__variant">Niebieski</span></span></a></td>
+                <td data-label="Cena jednostkowa">149 zł</td>
+                <td data-label="Ilość"><label class="visually-hidden" for="qty-0">Ilość: Ręcznik plażowy Costa</label><input class="form-control cart-qty" type="number" id="qty-0" min="1" max="10" value="1" inputmode="numeric"></td>
+                <td class="cart-table__total" data-label="Wartość łączna">149 zł</td>
+                <td class="cart-table__action" data-label="Akcja"><button class="icon-btn cart-remove" type="button" aria-label="Usuń z koszyka: Ręcznik plażowy Costa"><i class="bi bi-trash" aria-hidden="true"></i></button></td>
+              </tr>
+              <tr>
+                <td class="cart-table__product" data-label="Produkt"><a class="cart-item" href="produkt.html?id=alba"><img class="cart-item__thumb" src="assets/images/sklep/ceramika-alba-800.webp" width="800" height="800" alt=""><span><span class="cart-item__name">Komplet ceramiki Alba</span><span class="cart-item__variant">Na 1 osobę</span></span></a></td>
+                <td data-label="Cena jednostkowa">289 zł</td>
+                <td data-label="Ilość"><label class="visually-hidden" for="qty-1">Ilość: Komplet ceramiki Alba</label><input class="form-control cart-qty" type="number" id="qty-1" min="1" max="10" value="1" inputmode="numeric"></td>
+                <td class="cart-table__total" data-label="Wartość łączna">289 zł</td>
+                <td class="cart-table__action" data-label="Akcja"><button class="icon-btn cart-remove" type="button" aria-label="Usuń z koszyka: Komplet ceramiki Alba"><i class="bi bi-trash" aria-hidden="true"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="shop-empty" id="cartEmpty" hidden>
+          <p>Twój koszyk jest pusty.</p>
+          <a class="btn btn-ink" id="cartEmptyLink" href="sklep.html">Przejdź do sklepu</a>
+        </div>
+
+        <form class="discount-form shop-form" id="discountForm" novalidate>
+          <label class="form-label" for="discountCode">Kod rabatowy</label>
+          <div class="discount-form__row">
+            <input class="form-control" type="text" id="discountCode" autocomplete="off" aria-describedby="discountHint discountMessage">
+            <button class="btn btn-outline-ink" type="submit">Aktywuj</button>
+          </div>
+          <p class="discount-form__hint" id="discountHint">Pierwsze zakupy? Kod HOLA10 daje 10% rabatu.</p>
+          <p class="discount-form__message" id="discountMessage" role="status"></p>
+        </form>
+      </div>
+
+      <div class="col-lg-4">
+        <section class="card summary-card" aria-labelledby="summary-title">
+          <div class="card-body">
+            <h2 class="summary-card__title" id="summary-title">Podsumowanie</h2>
+            <ul class="summary-list">
+              <li class="summary-item"><span>Suma częściowa</span><span id="sumSubtotal">438 zł</span></li>
+              <li class="summary-item summary-item--discount" id="sumDiscountRow" hidden><span>Rabat</span><span id="sumDiscount"></span></li>
+              <li class="summary-item"><span>Szacowany koszt dostawy</span><span id="sumShipping">14,90 zł</span></li>
+            </ul>
+            <p class="summary-total"><span>Razem brutto</span><strong id="sumTotal">452,90 zł</strong></p>
+            <a class="btn btn-accent btn-lg-pill w-100" id="goToCheckout" href="zamowienie.html">Przejdź do kasy</a>
+            <a class="summary-card__back" href="sklep.html">Wróć do sklepu</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer" id="kontakt">
+    <div class="container">
+      <div class="row gy-5">
+        <div class="col-lg-4">
+          <img class="site-footer__logo" src="assets/logo/logo-light.png" width="479" height="270" loading="lazy" alt="e-spania — es hotels">
+          <p class="site-footer__claim">Hotele w Barcelonie, Maladze i Madrycie. Spokojny rytm, jasne wnętrza i hiszpańskie światło.</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+          <h2 class="site-footer__heading">Odkryj</h2>
+          <ul class="site-footer__list">
+            <li><a href="index.html#hotel">Hotel</a></li>
+            <li><a href="index.html#pokoje">Pokoje</a></li>
+            <li><a href="index.html#doswiadczenia">Doświadczenia</a></li>
+            <li><a href="index.html#galeria">Galeria</a></li>
+            <li><a href="index.html#opinie">Opinie</a></li>
+            <li><a href="sklep.html">Sklep</a></li>
+            <li><a href="konto.html">Moje konto</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <h2 class="site-footer__heading">Kontakt</h2>
+          <address class="site-footer__list site-footer__address">
+            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
+            <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
+          </address>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <h2 class="site-footer__heading">Rezerwacja</h2>
+          <p class="site-footer__small">Sprawdź termin w kilka sekund.</p>
+          <a class="btn btn-ghost" href="index.html#rezerwacja">Rezerwuj</a>
+        </div>
+      </div>
+      <div class="site-footer__bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <p class="mb-0">© 2026 e-spania · Projekt na Responsive Web Design: Oskar Kasprzyk, Dawid Jajko, Krystian Jałocha</p>
+        <p class="mb-0">Zdjęcia: <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels<span class="visually-hidden"> (otwiera się w nowej karcie)</span></a> · <a href="koszyk.html" data-action="scroll-top">Do góry</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== POWIADOMIENIA (toast) ===================== -->
+  <div class="toast-container position-fixed p-3 es-toast-container">
+    <div class="toast es-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="es-toast__body">
+        <p class="es-toast__title" id="appToastTitle"></p>
+        <p class="es-toast__text" id="appToastText"></p>
+      </div>
+      <button type="button" class="icon-btn es-toast__close" data-bs-dismiss="toast" aria-label="Zamknij powiadomienie"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/shop-data.js" defer></script>
+  <script src="js/shop.js" defer></script>
+</body>
+</html>
