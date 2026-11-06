@@ -26,7 +26,7 @@ Projekt będzie rozwijany etapami. Każdy etap musi zostać sprawdzony i zaakcep
 7. Po każdym etapie uruchom stronę, sprawdź jej działanie i pokaż mi rezultat do akceptacji.
 8. Nie przechodź do następnego etapu bez mojej wyraźnej zgody.
 9. Nie dodawaj funkcji, które nie są wymagane, jeśli komplikują projekt lub odciągają uwagę od jakości strony.
-10. Nie wymyślaj faktów o hotelu, jego lokalizacji, cenach, wyposażeniu, ocenach ani opiniach gości.
+10. e-spania to fikcyjny hotel na zaliczenie: ceny, opinie, oceny, komentarze i dane kontaktowe mogą być wymyślone i nie są oznaczane jako demonstracyjne. W stopce widnieje informacja o projekcie na Responsive Web Design i jego autorach.
 
 ## 3. Marka i kierunek wizualny
 
@@ -100,14 +100,12 @@ Zachowaj odpowiedni kontrast tekstu i elementów interfejsu. Nie stosuj akcentow
 
 ### Typografia
 
-- Font nagłówków: Google Sans.
-- Font tekstu podstawowego: Noto Sans Symbols 2.
+- Font nagłówków: Fraunces.
+- Font tekstu podstawowego: Inter.
 
-Przed implementacją sprawdź dostępność fontów, wymagane warianty oraz obsługę polskich i hiszpańskich znaków.
+Oba fonty są dostępne w Google Fonts i obsługują polskie oraz hiszpańskie znaki.
 
-Noto Sans Symbols 2 jest krojem przeznaczonym przede wszystkim do symboli, dlatego należy sprawdzić, czy rzeczywiście nadaje się do pełnych tekstów. Jeśli nie, poinformuj mnie o ograniczeniu i zaproponuj rozwiązanie przed zmianą.
 
-Google Sans również należy zweryfikować pod kątem możliwości legalnego osadzenia na stronie.
 
 Typografia powinna mieć wyraźną hierarchię:
 - duże nagłówki główne;
@@ -175,9 +173,8 @@ Wymagania funkcjonalne:
 - formularz powinien reagować na nieprawidłowe dane;
 - przycisk wyszukiwania musi wywoływać odpowiednią reakcję interfejsu.
 
-Na tym etapie nie ma prawdziwego backendu ani połączenia z systemem rezerwacyjnym. Dostępność i ceny, jeśli będą prezentowane, muszą być wyraźnie traktowane jako demonstracyjne.
+Nie ma prawdziwego backendu ani płatności. Pasek prowadzi do pełnej rezerwacji (`rezerwacja.html`), a opłacony pobyt zapisuje się na koncie klienta w pamięci przeglądarki.
 
-Nie wolno sugerować, że termin został rzeczywiście zarezerwowany.
 
 ### 5.4. Boczne menu wyboru pokoi
 
@@ -210,7 +207,7 @@ Sekcja powinna:
 - mieć indywidualną kompozycję;
 - zachować spójność z całą stroną.
 
-Nie twórz fikcyjnych informacji o historii, lokalizacji ani standardzie obiektu. Jeśli nie otrzymałeś odpowiednich danych, użyj neutralnych treści demonstracyjnych lub placeholderów, które później zastąpimy.
+Opis hotelu może być fikcyjny i nie jest oznaczany jako demonstracyjny.
 
 ### 5.6. Prezentacja pokoi
 
@@ -231,7 +228,7 @@ Przygotuj sekcję przedstawiającą wybrane udogodnienia lub doświadczenia zwi�
 
 Może zawierać zdjęcia i krótkie opisy, ale jej ostateczna kompozycja powinna wynikać z inspiracji oraz charakteru hotelu.
 
-Nie dodawaj niepotwierdzonych informacji o restauracji, basenie, spa ani innych usługach jako faktów.
+Opisy usług i doświadczeń mogą być fikcyjne.
 
 ### 5.8. Galeria zdjęć
 
@@ -249,20 +246,17 @@ Dopuszczalne są subtelne interakcje po najechaniu kursorem. Nie stosuj efektów
 
 ### 5.9. Opinie gości
 
-Homepage powinna zawierać sekcję opinii gości z odwołaniami do popularnych platform, takich jak Booking.com, Google lub Tripadvisor, zależnie od dostępności materiałów.
+Homepage powinna zawierać sekcję opinii gości. Opinie są fikcyjne i podpisane imieniem gościa oraz miastem, bez nazw prawdziwych serwisów, takich jak Booking.com, Google czy Tripadvisor.
 
 Wymagania:
 - czytelna prezentacja opinii;
-- nazwa źródła;
-- możliwość przejścia do źródłowej platformy;
+- imię gościa, miasto i termin pobytu;
+- ocena w gwiazdkach;
 - spójność wizualna z projektem;
 - responsywny układ.
 
-**Nie wymyślaj prawdziwych recenzji, ocen, liczby opinii ani ocen platform.**
 
-Jeśli nie dostarczono zweryfikowanych materiałów, przygotuj komponent demonstracyjny z wyraźnie oznaczonymi przykładowymi danymi. Nie przedstawiaj ich jako rzeczywistych opinii gości.
 
-Linki zewnętrzne muszą prowadzić do właściwych stron hotelu lub odpowiednich profili, jeśli takie profile istnieją i zostały zweryfikowane.
 
 ### 5.10. Końcowe CTA i footer
 
@@ -275,7 +269,7 @@ Stopka powinna zawierać:
 - odnośniki do odpowiednich profili zewnętrznych, jeśli istnieją;
 - informacje prawne, jeśli zostaną dostarczone.
 
-Nie wymyślaj adresu hotelu, numeru telefonu ani innych danych kontaktowych.
+Adres, telefon i e-mail są fikcyjne.
 
 ## 6. Animacje i mikrointerakcje
 
@@ -367,7 +361,7 @@ Dla strony głównej przygotuj:
 - poprawne linki wewnętrzne;
 - dane strukturalne Schema.org w JSON-LD, adekwatne do charakteru projektu.
 
-Nie umieszczaj niezweryfikowanych danych hotelu w danych strukturalnych. Dane demonstracyjne należy wyraźnie odróżnić od informacji rzeczywistych.
+Dane strukturalne mogą zawierać fikcyjne dane projektu, np. cenę i ocenę produktu.
 
 ### Jakość kodu
 
@@ -442,7 +436,7 @@ Strona główna zostanie zaakceptowana, jeśli:
 - wykorzystuje prawidłowe logo, kolory i fonty;
 - posiada dopracowany header i hero;
 - moduł dostępności jest widoczny na pierwszym ekranie;
-- panel wyboru pokoi działa zgodnie z zakresem demonstracyjnym;
+- panel wyboru pokoi działa i prowadzi do rezerwacji;
 - pozostałe zaplanowane sekcje są kompletne;
 - animacje są subtelne i nie przeszkadzają w obsłudze;
 - strona działa na desktopie, tablecie i telefonie;

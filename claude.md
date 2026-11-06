@@ -36,7 +36,7 @@ Przestrzegaj wymagań zaliczeniowych dotyczących wykorzystania Bootstrapa, siat
 
 Nie wprowadzaj Reacta, Next.js, Tailwinda, dodatkowych frameworków ani zbędnych bibliotek bez mojej wcześniejszej zgody.
 
-Nie dodawaj backendu, bazy danych ani prawdziwego systemu rezerwacji. Na obecnym etapie funkcjonalności rezerwacyjne mają być demonstracyjne, zgodnie z `wymagania.md`.
+Nie dodawaj backendu, bazy danych ani prawdziwych płatności. Rezerwacja, koszyk, płatność i konto klienta działają w przeglądarce (localStorage) na fikcyjnych danych.
 
 ## 4. Zasady projektowania UI/UX
 
@@ -47,8 +47,8 @@ Przestrzegaj ustalonej identyfikacji wizualnej:
 - kolor dodatkowy: `#2B2929`;
 - kolor akcentowy i CTA: `#E34B24`;
 - kolor tekstu: `#000000`;
-- font nagłówków: Google Sans;
-- font tekstu podstawowego: Noto Sans Symbols 2 — sprawdź jego przydatność do dłuższych tekstów i poprawne wyświetlanie polskich znaków, zanim zastosujesz go globalnie.
+- font nagłówków: Fraunces;
+- font tekstu podstawowego: Inter.
 
 Nie zmieniaj samodzielnie kolorów, fontów ani logo. Jeśli font nie jest dostępny do legalnego osadzania w witrynie lub nie nadaje się do danej roli, poinformuj mnie i zaproponuj alternatywę do akceptacji.
 
@@ -113,9 +113,9 @@ Uwzględniaj wymagania SEO z `RWD_Projekt.md`, w szczególności:
 - optymalizację rozmiaru i ładowania zdjęć;
 - unikanie zbędnego kodu i niepotrzebnych zasobów.
 
-Nie wymyślaj danych o hotelu, jego lokalizacji, cenach, ocenach, nagrodach ani opiniach klientów. Jeśli brakuje informacji, użyj jawnego placeholdera albo zapytaj mnie.
+e-spania to fikcyjny hotel na zaliczenie, więc możesz wymyślać ceny, opinie, oceny, komentarze i dane kontaktowe. Nie oznaczaj ich jako „demo” ani „przykład”. W stopce zostaje informacja o projekcie na Responsive Web Design i jego autorach.
 
-Nie przedstawiaj fikcyjnych opinii ani ocen jako prawdziwych recenzji z Booking.com lub innych serwisów.
+Nie podpisuj fikcyjnych opinii ani ocen nazwami prawdziwych serwisów, takich jak Booking.com. Podpisuj je imieniem gościa i miastem.
 
 ## 8. Zasady etapowej realizacji
 
