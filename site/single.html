@@ -42,6 +42,15 @@
   <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa. Kurtyna intro jest tylko na stronie głównej. -->
   <script>
     document.documentElement.classList.add('js', 'no-intro');
+    // Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty (najwyżej 3 s)
+    try {
+      const lang = localStorage.getItem('es-lang');
+      if (lang === 'en' || lang === 'es') {
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('i18n-pending');
+        setTimeout(() => document.documentElement.classList.remove('i18n-pending'), 3000);
+      }
+    } catch (e) { /* bez localStorage strona zostaje po polsku */ }
   </script>
 
   <!-- Dane strukturalne: artykuł blogowy i ścieżka nawigacji -->
@@ -128,8 +137,8 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
-              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured site-menu__link--divider" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html" aria-current="true">Blog</a></li>
             </ul>
             <div class="site-menu__foot d-xl-none">
@@ -198,7 +207,7 @@
               <h1 class="post-header__title">Kiedy jechać do Hiszpanii? Pogoda i najlepszy termin na wyjazd</h1>
               <ul class="post-meta-bar">
                 <li><span class="post-meta-bar__label">Data publikacji</span><time class="post-meta-bar__value" datetime="2026-10-20">20 października 2026</time></li>
-                <li><span class="post-meta-bar__label">Autor</span><a class="post-meta-bar__value" href="#autor">Oskar Kasprzyk</a></li>
+                <li><span class="post-meta-bar__label">Autor</span><a class="post-meta-bar__value" href="#autor" data-post-author="name">Oskar Kasprzyk</a></li>
                 <li><span class="post-meta-bar__label">Czas czytania</span><span class="post-meta-bar__value">ok. 5 min</span></li>
                 <li><span class="post-meta-bar__label">Kategoria</span><a class="post-meta-bar__value" href="blog.html#wpisy">Planowanie podróży</a></li>
               </ul>
@@ -347,11 +356,11 @@
               </div>
 
               <section class="author-box" id="autor" aria-labelledby="author-name">
-                <span class="author-box__avatar" aria-hidden="true">OK</span>
+                <span class="author-box__avatar" aria-hidden="true" data-post-author="initials">OK</span>
                 <div>
                   <p class="author-box__label">O autorze</p>
-                  <h2 class="author-box__name" id="author-name">Oskar Kasprzyk</h2>
-                  <p class="author-box__bio">Współtwórca serwisu e-spania. Na blogu zbiera praktyczne wskazówki dla osób, które planują pierwszy lub kolejny wyjazd do Hiszpanii — od wyboru terminu po plan zwiedzania.</p>
+                  <h2 class="author-box__name" id="author-name" data-post-author="name">Oskar Kasprzyk</h2>
+                  <p class="author-box__bio" data-post-author="bio">Współtwórca serwisu e-spania. Na blogu zbiera praktyczne wskazówki dla osób, które planują pierwszy lub kolejny wyjazd do Hiszpanii — od wyboru terminu po plan zwiedzania.</p>
                 </div>
               </section>
             </footer>
@@ -368,13 +377,13 @@
           <nav class="post-nav" aria-label="Sąsiednie wpisy">
             <div class="row gy-3 gx-4">
               <div class="col-md-6">
-                <a class="post-nav__link" href="single.html" rel="prev">
+                <a class="post-nav__link" href="single.html?autor=dawid" rel="prev">
                   <span class="post-nav__dir"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>Poprzedni wpis</span>
                   <span class="post-nav__title">Andaluzja w tydzień: Sewilla, Granada i Kordoba — plan zwiedzania</span>
                 </a>
               </div>
               <div class="col-md-6">
-                <a class="post-nav__link post-nav__link--next" href="single.html" rel="next">
+                <a class="post-nav__link post-nav__link--next" href="single.html?autor=krystian" rel="next">
                   <span class="post-nav__dir">Następny wpis<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></span>
                   <span class="post-nav__title">Co zjeść w Hiszpanii? Dania kuchni hiszpańskiej, których warto spróbować</span>
                 </a>
@@ -401,10 +410,10 @@
                 <ol class="comment-list comment-list--replies">
                   <li>
                     <article class="comment" aria-labelledby="comment-2-author">
-                      <span class="comment__avatar comment__avatar--author" aria-hidden="true">OK</span>
+                      <span class="comment__avatar comment__avatar--author" aria-hidden="true" data-post-author="initials">OK</span>
                       <div>
                         <header class="comment__header">
-                          <span class="comment__author" id="comment-2-author">Oskar Kasprzyk</span>
+                          <span class="comment__author" id="comment-2-author" data-post-author="name">Oskar Kasprzyk</span>
                           <span class="comment__role">Autor</span>
                           <time class="comment__date" datetime="2026-10-22">22 października 2026</time>
                         </header>
@@ -471,7 +480,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <span data-city="address">Passeig de la Llum 12, 08003 Barcelona</span>
             <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
             <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
@@ -501,6 +510,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/i18n-en.js" defer></script>
+  <script src="js/i18n-es.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/shop-data.js" defer></script>
   <script src="js/shop.js" defer></script>

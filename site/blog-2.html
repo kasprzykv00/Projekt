@@ -37,6 +37,15 @@
   <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa. Kurtyna intro jest tylko na stronie głównej. -->
   <script>
     document.documentElement.classList.add('js', 'no-intro');
+    // Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty (najwyżej 3 s)
+    try {
+      const lang = localStorage.getItem('es-lang');
+      if (lang === 'en' || lang === 'es') {
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('i18n-pending');
+        setTimeout(() => document.documentElement.classList.remove('i18n-pending'), 3000);
+      }
+    } catch (e) { /* bez localStorage strona zostaje po polsku */ }
   </script>
 
   <!-- Dane strukturalne: strona 2 archiwum bloga z listą wpisów i ścieżka nawigacji -->
@@ -188,8 +197,8 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
-              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured site-menu__link--divider" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html" aria-current="true">Blog</a></li>
             </ul>
             <div class="site-menu__foot d-xl-none">
@@ -267,10 +276,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Zwiedzanie</span>
                   <time datetime="2026-09-15">15 września 2026</time>
+                  <span class="post-meta__author">Dawid Jajko</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Barcelona w 3 dni: co zobaczyć i jak zaplanować zwiedzanie</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=dawid">Barcelona w 3 dni: co zobaczyć i jak zaplanować zwiedzanie</a></h3>
                 <p class="card-text post-card__lead">Sagrada Família, Park Güell, Dzielnica Gotycka i plaża Barceloneta — w trzy dni można zobaczyć najważniejsze miejsca stolicy Katalonii. Podpowiadamy, jak ułożyć plan, żeby nie spędzić wakacji w kolejkach.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Barcelona w 3 dni</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=dawid">Czytaj dalej<span class="visually-hidden">: Barcelona w 3 dni</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -283,10 +293,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Kuchnia</span>
                   <time datetime="2026-09-08">8 września 2026</time>
+                  <span class="post-meta__author">Krystian Jałocha</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Paella: skąd pochodzi i jak rozpoznać dobrą paellę?</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=krystian">Paella: skąd pochodzi i jak rozpoznać dobrą paellę?</a></h3>
                 <p class="card-text post-card__lead">Paella narodziła się w okolicach Walencji, a jej tradycyjna wersja zawiera kurczaka, królika i fasolkę, a nie owoce morza. Wyjaśniamy, czym różnią się odmiany tego dania i na co zwrócić uwagę w restauracji.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Paella</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=krystian">Czytaj dalej<span class="visually-hidden">: Paella</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -299,10 +310,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Planowanie podróży</span>
                   <time datetime="2026-09-01">1 września 2026</time>
+                  <span class="post-meta__author">Oskar Kasprzyk</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Wyspy Kanaryjskie zimą: którą wyspę wybrać na urlop?</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=oskar">Wyspy Kanaryjskie zimą: którą wyspę wybrać na urlop?</a></h3>
                 <p class="card-text post-card__lead">Teneryfa, Gran Canaria, Lanzarote czy Fuerteventura — każda z wysp kanaryjskich ma inny charakter. Porównujemy je pod kątem plaż, krajobrazów i aktywnego wypoczynku zimą.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Wyspy Kanaryjskie zimą</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=oskar">Czytaj dalej<span class="visually-hidden">: Wyspy Kanaryjskie zimą</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -315,10 +327,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Kultura i zwyczaje</span>
                   <time datetime="2026-08-25">25 sierpnia 2026</time>
+                  <span class="post-meta__author">Krystian Jałocha</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Flamenco w Andaluzji: gdzie zobaczyć występ i jak się przygotować</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=krystian">Flamenco w Andaluzji: gdzie zobaczyć występ i jak się przygotować</a></h3>
                 <p class="card-text post-card__lead">Flamenco, wpisane na listę niematerialnego dziedzictwa UNESCO, najlepiej poznać w Andaluzji. Podpowiadamy, czym różnią się tablao i festiwale oraz jak wybrać występ, który nie jest tylko pokazem dla turystów.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Flamenco w Andaluzji</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=krystian">Czytaj dalej<span class="visually-hidden">: Flamenco w Andaluzji</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -331,10 +344,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Praktyczne porady</span>
                   <time datetime="2026-08-18">18 sierpnia 2026</time>
+                  <span class="post-meta__author">Dawid Jajko</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Jak poruszać się po Hiszpanii? Pociągi, autobusy i wynajem auta</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=dawid">Jak poruszać się po Hiszpanii? Pociągi, autobusy i wynajem auta</a></h3>
                 <p class="card-text post-card__lead">Szybkie pociągi łączą największe miasta Hiszpanii w kilka godzin, a autobusy dojeżdżają tam, gdzie nie ma kolei. Porównujemy środki transportu i podpowiadamy, kiedy warto wynająć samochód.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Jak poruszać się po Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=dawid">Czytaj dalej<span class="visually-hidden">: Jak poruszać się po Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -347,10 +361,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Zwiedzanie</span>
                   <time datetime="2026-08-11">11 sierpnia 2026</time>
+                  <span class="post-meta__author">Oskar Kasprzyk</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Madryt dla początkujących: muzea, parki i najciekawsze dzielnice</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=oskar">Madryt dla początkujących: muzea, parki i najciekawsze dzielnice</a></h3>
                 <p class="card-text post-card__lead">Prado, Reina Sofía i Thyssen-Bornemisza tworzą jeden z najsłynniejszych muzealnych szlaków Europy, a park Retiro to idealne miejsce na odpoczynek. Pokazujemy, jak zaplanować pierwszy pobyt w stolicy Hiszpanii.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Madryt dla początkujących</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=oskar">Czytaj dalej<span class="visually-hidden">: Madryt dla początkujących</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -402,7 +417,7 @@
           <h2 class="sidebar-block__title" id="featured-title">Polecane artykuły</h2>
           <ul class="featured-list">
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=oskar">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/pogoda-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: skaliste wybrzeże Morza Śródziemnego"></span>
                 <span>
                   <span class="featured-post__title">Kiedy jechać do Hiszpanii? Pogoda i najlepszy termin</span>
@@ -411,7 +426,7 @@
               </a>
             </li>
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=dawid">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/andaluzja-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: Alhambra w Granadzie"></span>
                 <span>
                   <span class="featured-post__title">Andaluzja w tydzień: plan zwiedzania</span>
@@ -420,7 +435,7 @@
               </a>
             </li>
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=oskar">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/pakowanie-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: spakowana walizka i kapelusz"></span>
                 <span>
                   <span class="featured-post__title">Co zabrać do Hiszpanii? Lista rzeczy do spakowania</span>
@@ -459,7 +474,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <span data-city="address">Passeig de la Llum 12, 08003 Barcelona</span>
             <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
             <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
@@ -489,6 +504,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/i18n-en.js" defer></script>
+  <script src="js/i18n-es.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/shop-data.js" defer></script>
   <script src="js/shop.js" defer></script>

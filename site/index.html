@@ -35,6 +35,15 @@
   <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa (bez JS treść jest od razu widoczna). -->
   <script>
     document.documentElement.classList.add('js');
+    // Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty (najwyżej 3 s)
+    try {
+      const lang = localStorage.getItem('es-lang');
+      if (lang === 'en' || lang === 'es') {
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('i18n-pending');
+        setTimeout(() => document.documentElement.classList.remove('i18n-pending'), 3000);
+      }
+    } catch (e) { /* bez localStorage strona zostaje po polsku */ }
     try {
       if (sessionStorage.getItem('es-intro')) document.documentElement.classList.add('no-intro');
       sessionStorage.setItem('es-intro', '1');
@@ -150,8 +159,8 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#opinie">Opinie</a></li>
-              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured site-menu__link--divider" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html">Blog</a></li>
             </ul>
             <div class="site-menu__foot d-xl-none">
@@ -581,10 +590,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Kuchnia</span>
                   <time datetime="2026-10-27">27 października 2026</time>
+                  <span class="post-meta__author">Krystian Jałocha</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Co zjeść w Hiszpanii? Dania kuchni hiszpańskiej, których warto spróbować</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=krystian">Co zjeść w Hiszpanii? Dania kuchni hiszpańskiej, których warto spróbować</a></h3>
                 <p class="card-text post-card__lead">Tapas, paella czy tortilla de patatas — kuchnia hiszpańska to znacznie więcej niż kilka znanych nazw. Podpowiadamy, które dania zamówić i czym różnią się smaki poszczególnych regionów.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Co zjeść w Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=krystian">Czytaj dalej<span class="visually-hidden">: Co zjeść w Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -597,10 +607,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Planowanie podróży</span>
                   <time datetime="2026-10-20">20 października 2026</time>
+                  <span class="post-meta__author">Oskar Kasprzyk</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Kiedy jechać do Hiszpanii? Pogoda i najlepszy termin na wyjazd</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=oskar">Kiedy jechać do Hiszpanii? Pogoda i najlepszy termin na wyjazd</a></h3>
                 <p class="card-text post-card__lead">Pogoda w Hiszpanii mocno zależy od regionu: gdy w Andaluzji panuje upał, na północy bywa chłodno i deszczowo. Sprawdź, która pora roku najlepiej pasuje do plażowania, zwiedzania miast i aktywnego wypoczynku.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Kiedy jechać do Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=oskar">Czytaj dalej<span class="visually-hidden">: Kiedy jechać do Hiszpanii?</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -613,10 +624,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Zwiedzanie</span>
                   <time datetime="2026-10-13">13 października 2026</time>
+                  <span class="post-meta__author">Dawid Jajko</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Andaluzja w tydzień: Sewilla, Granada i Kordoba — plan zwiedzania</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=dawid">Andaluzja w tydzień: Sewilla, Granada i Kordoba — plan zwiedzania</a></h3>
                 <p class="card-text post-card__lead">Trzy miasta, zabytki z listy UNESCO i tydzień, który wystarczy, by poznać serce południowej Hiszpanii. Proponujemy plan dzień po dniu z czasem na przejazdy i odpoczynek.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Andaluzja w tydzień</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=dawid">Czytaj dalej<span class="visually-hidden">: Andaluzja w tydzień</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -756,7 +768,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <span data-city="address">Passeig de la Llum 12, 08003 Barcelona</span>
             <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
             <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
@@ -835,6 +847,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/i18n-en.js" defer></script>
+  <script src="js/i18n-es.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/shop-data.js" defer></script>
   <script src="js/shop.js" defer></script>

@@ -32,6 +32,15 @@
 
   <script>
     document.documentElement.classList.add('js', 'no-intro');
+    // Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty (najwyżej 3 s)
+    try {
+      const lang = localStorage.getItem('es-lang');
+      if (lang === 'en' || lang === 'es') {
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('i18n-pending');
+        setTimeout(() => document.documentElement.classList.remove('i18n-pending'), 3000);
+      }
+    } catch (e) { /* bez localStorage strona zostaje po polsku */ }
   </script>
 
   <script type="application/ld+json">
@@ -103,8 +112,8 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
-              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured site-menu__link--divider" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html">Blog</a></li>
             </ul>
             <div class="site-menu__foot d-xl-none">
@@ -413,7 +422,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <span data-city="address">Passeig de la Llum 12, 08003 Barcelona</span>
             <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
             <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
@@ -443,6 +452,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/i18n-en.js" defer></script>
+  <script src="js/i18n-es.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/shop-data.js" defer></script>
   <script src="js/shop.js" defer></script>

@@ -492,13 +492,28 @@ a {
    chowa się przy przewijaniu w dół (klasy ustawia JS) */
 .site-header {
   color: #FFFFFF;
-  transition: background-color var(--dur-med) var(--ease-soft), color var(--dur-med) var(--ease-soft), box-shadow var(--dur-med) var(--ease-soft), transform 0.6s var(--ease-out);
+  transition: color var(--dur-med) var(--ease-soft), box-shadow var(--dur-med) var(--ease-soft), transform 0.6s var(--ease-out);
+}
+
+/* Tło i rozmycie po przewinięciu leżą na osobnej warstwie pod treścią nagłówka.
+   backdrop-filter na samym .site-header sprawiłby, że menu mobilne (offcanvas, position: fixed,
+   jest w środku nagłówka) liczyłoby wysokość od nagłówka (72 px) zamiast od ekranu. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  transition: background-color var(--dur-med) var(--ease-soft);
 }
 
 .site-header.is-scrolled {
-  background-color: rgba(247, 242, 242, 0.92);
   color: var(--color-secondary);
   box-shadow: 0 1px 0 var(--color-line);
+}
+
+.site-header.is-scrolled::before {
+  background-color: rgba(247, 242, 242, 0.92);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
@@ -732,8 +747,8 @@ a {
   }
 }
 
-/* Wyróżniony link „Blog” (ostatni w menu). Telefon: kursywa w kolorze akcentu — jak wyróżnione
-   słowa w nagłówkach sekcji. Podwójna klasa, żeby wygrać ze stanami hover i [aria-current]. */
+/* Wyróżnione linki „Sklep” i „Blog” (para na końcu menu). Telefon: kursywa w kolorze akcentu — jak
+   wyróżnione słowa w nagłówkach sekcji. Podwójna klasa, żeby wygrać ze stanami hover i [aria-current]. */
 .site-menu__link.site-menu__link--featured {
   font-style: italic;
   color: var(--color-accent-on-dark) !important;   /* !important: tak samo jak w .site-menu__link */
@@ -743,17 +758,20 @@ a {
   color: var(--color-accent-on-dark);
 }
 
-/* Desktop: ta sama typografia co pozostałe linki (równa linia), wyróżnia go kolor akcentu
-   i cienka pionowa kreska oddzielająca od reszty menu. */
+/* Desktop: ta sama typografia co pozostałe linki (równa linia), wyróżnia je kolor akcentu.
+   Cienka pionowa kreska (--divider, tylko na pierwszym linku pary) oddziela je od reszty menu. */
 @media (min-width: 1200px) {
   .site-menu__link.site-menu__link--featured {
-    --featured-gap: clamp(1rem, 2vw, 2.25rem);     /* taki sam odstęp jak między linkami */
-    padding-left: var(--featured-gap) !important;  /* !important: Bootstrap ustawia padding .nav-link */
     font-style: normal;
     font-weight: 600;
   }
 
-  .site-menu__link.site-menu__link--featured::before {
+  .site-menu__link.site-menu__link--divider {
+    --featured-gap: clamp(1rem, 2vw, 2.25rem);     /* taki sam odstęp jak między linkami */
+    padding-left: var(--featured-gap) !important;  /* !important: Bootstrap ustawia padding .nav-link */
+  }
+
+  .site-menu__link.site-menu__link--divider::before {
     content: "";
     position: absolute;
     left: 0;
@@ -765,7 +783,7 @@ a {
   }
 
   /* Podkreślenie przy najechaniu zaczyna się za kreską */
-  .site-menu__link.site-menu__link--featured::after {
+  .site-menu__link.site-menu__link--divider::after {
     left: var(--featured-gap);
   }
 
@@ -774,7 +792,7 @@ a {
     color: var(--color-accent-hover) !important;
   }
 
-  .site-header.is-scrolled .site-menu__link.site-menu__link--featured::before {
+  .site-header.is-scrolled .site-menu__link.site-menu__link--divider::before {
     background-color: var(--color-line);
   }
 }
@@ -2550,6 +2568,17 @@ a {
   color: var(--color-muted);
 }
 
+/* Autor wpisu po dacie, oddzielony kropką (kropka pomijana przez czytniki ekranu) */
+.post-meta__author {
+  margin-left: -0.5rem;                   /* kropka bliżej daty niż odstęp gap */
+}
+
+.post-meta__author::before {
+  content: "·";
+  content: "·" / "";
+  margin-right: 0.5rem;
+}
+
 .post-badge {
   --bs-badge-padding-x: 0.75rem;
   --bs-badge-padding-y: 0.4375rem;
@@ -3574,6 +3603,12 @@ a {
 .city-pending [data-city] {
   visibility: hidden;
   animation: city-fallback 0s 1.5s forwards;
+}
+
+/* Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty
+   (bez mignięcia wersji polskiej; skrypt w <head> zdejmuje klasę najpóźniej po 3 s) */
+.i18n-pending body {
+  visibility: hidden;
 }
 
 /* ---------- 16. Moduł e-commerce ---------- */

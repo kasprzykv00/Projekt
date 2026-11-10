@@ -36,6 +36,15 @@
   <!-- Klasa "js" włącza animacje tylko wtedy, gdy JavaScript działa. Kurtyna intro jest tylko na stronie głównej. -->
   <script>
     document.documentElement.classList.add('js', 'no-intro');
+    // Wybrany język EN/ES: strona czeka ukryta, aż main.js podmieni teksty (najwyżej 3 s)
+    try {
+      const lang = localStorage.getItem('es-lang');
+      if (lang === 'en' || lang === 'es') {
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('i18n-pending');
+        setTimeout(() => document.documentElement.classList.remove('i18n-pending'), 3000);
+      }
+    } catch (e) { /* bez localStorage strona zostaje po polsku */ }
   </script>
 
   <!-- Dane strukturalne: strona 3 archiwum bloga z listą wpisów i ścieżka nawigacji -->
@@ -154,8 +163,8 @@
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#doswiadczenia">Doświadczenia</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#galeria">Galeria</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="index.html#opinie">Opinie</a></li>
-              <li class="nav-item"><a class="nav-link site-menu__link" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link" href="#kontakt">Kontakt</a></li>
+              <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured site-menu__link--divider" href="sklep.html">Sklep</a></li>
               <li class="nav-item"><a class="nav-link site-menu__link site-menu__link--featured" href="blog.html" aria-current="true">Blog</a></li>
             </ul>
             <div class="site-menu__foot d-xl-none">
@@ -233,10 +242,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Kuchnia</span>
                   <time datetime="2026-08-04">4 sierpnia 2026</time>
+                  <span class="post-meta__author">Krystian Jałocha</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Hiszpańskie wina: Rioja, Ribera del Duero i cava — krótki przewodnik</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=krystian">Hiszpańskie wina: Rioja, Ribera del Duero i cava — krótki przewodnik</a></h3>
                 <p class="card-text post-card__lead">Hiszpania należy do największych producentów wina na świecie, a jej regiony winiarskie różnią się klimatem i stylem. Wyjaśniamy, co oznaczają nazwy na etykietach i które wina zamówić do tapas.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Hiszpańskie wina</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=krystian">Czytaj dalej<span class="visually-hidden">: Hiszpańskie wina</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -249,10 +259,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Zwiedzanie</span>
                   <time datetime="2026-07-28">28 lipca 2026</time>
+                  <span class="post-meta__author">Dawid Jajko</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Majorka poza plażą: górskie miasteczka i Serra de Tramuntana</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=dawid">Majorka poza plażą: górskie miasteczka i Serra de Tramuntana</a></h3>
                 <p class="card-text post-card__lead">Pasmo Serra de Tramuntana, wpisane na listę UNESCO, kryje kamienne miasteczka, gaje oliwne i widokowe szlaki. Podpowiadamy, jak zaplanować wycieczkę w głąb wyspy, gdy masz już dość leżenia na plaży.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Majorka poza plażą</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=dawid">Czytaj dalej<span class="visually-hidden">: Majorka poza plażą</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -265,10 +276,11 @@
                 <div class="post-meta">
                   <span class="badge post-badge">Praktyczne porady</span>
                   <time datetime="2026-07-21">21 lipca 2026</time>
+                  <span class="post-meta__author">Oskar Kasprzyk</span>
                 </div>
-                <h3 class="card-title post-card__title"><a href="single.html">Bezpieczeństwo w Hiszpanii: jak uniknąć kieszonkowców w dużych miastach</a></h3>
+                <h3 class="card-title post-card__title"><a href="single.html?autor=oskar">Bezpieczeństwo w Hiszpanii: jak uniknąć kieszonkowców w dużych miastach</a></h3>
                 <p class="card-text post-card__lead">Hiszpania to bezpieczny kierunek, ale w zatłoczonych miejscach turystycznych zdarzają się kradzieże kieszonkowe. Zebraliśmy proste zasady, które pomogą zadbać o portfel, telefon i dokumenty.</p>
-                <a class="btn link-arrow" href="single.html">Czytaj dalej<span class="visually-hidden">: Bezpieczeństwo w Hiszpanii</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <a class="btn link-arrow" href="single.html?autor=oskar">Czytaj dalej<span class="visually-hidden">: Bezpieczeństwo w Hiszpanii</span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </div>
@@ -320,7 +332,7 @@
           <h2 class="sidebar-block__title" id="featured-title">Polecane artykuły</h2>
           <ul class="featured-list">
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=oskar">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/pogoda-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: skaliste wybrzeże Morza Śródziemnego"></span>
                 <span>
                   <span class="featured-post__title">Kiedy jechać do Hiszpanii? Pogoda i najlepszy termin</span>
@@ -329,7 +341,7 @@
               </a>
             </li>
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=dawid">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/andaluzja-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: Alhambra w Granadzie"></span>
                 <span>
                   <span class="featured-post__title">Andaluzja w tydzień: plan zwiedzania</span>
@@ -338,7 +350,7 @@
               </a>
             </li>
             <li>
-              <a class="featured-post" href="single.html">
+              <a class="featured-post" href="single.html?autor=oskar">
                 <span class="featured-post__thumb media-frame"><img src="assets/images/blog/pakowanie-thumb.webp" width="240" height="180" loading="lazy" decoding="async" alt="Miniatura: spakowana walizka i kapelusz"></span>
                 <span>
                   <span class="featured-post__title">Co zabrać do Hiszpanii? Lista rzeczy do spakowania</span>
@@ -377,7 +389,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <h2 class="site-footer__heading">Kontakt</h2>
           <address class="site-footer__list site-footer__address">
-            <span>Passeig de la Llum 12, 08003 Barcelona</span>
+            <span data-city="address">Passeig de la Llum 12, 08003 Barcelona</span>
             <a href="tel:+34900000123">+34&nbsp;900&nbsp;000&nbsp;123</a>
             <a href="mailto:kontakt@e-spania.example">kontakt@e-spania.example</a>
           </address>
@@ -407,6 +419,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+  <script src="js/i18n-en.js" defer></script>
+  <script src="js/i18n-es.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/shop-data.js" defer></script>
   <script src="js/shop.js" defer></script>

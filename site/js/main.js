@@ -11,6 +11,86 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scrollBehavior = () => (reduceMotion.matches ? 'auto' : 'smooth');
 
+  /* ---------- Wersje językowe (PL / EN / ES) ---------- */
+  // Słowniki: js/i18n-en.js i js/i18n-es.js w formacie { 'tekst po polsku': 'tłumaczenie' }.
+  // Przy wczytaniu strony podmieniamy teksty i atrybuty (alt, aria-label, title), które są w słowniku;
+  // teksty tworzone w JS przechodzą przez t() i tn(). Wybór języka zapisujemy w localStorage
+  // ('es-lang') i przeładowujemy stronę — tłumaczenie dzieje się zanim ruszą pozostałe moduły.
+  const LOCALES = { pl: 'pl-PL', en: 'en-GB', es: 'es-ES' };
+  const lang = (() => {
+    try {
+      const saved = localStorage.getItem('es-lang');
+      return saved === 'en' || saved === 'es' ? saved : 'pl';
+    } catch (e) {
+      return 'pl';
+    }
+  })();
+  const locale = LOCALES[lang];
+  const dict = (lang !== 'pl' && window.ES_I18N && window.ES_I18N[lang]) || {};
+  // Atrybuty z tekstem dla użytkownika (data-label — nagłówki tabel w widoku mobilnym,
+  // data-demo-* — komunikaty formularzy bloga)
+  const TRANSLATED_ATTRS = ['alt', 'aria-label', 'title', 'placeholder', 'data-label', 'data-demo-title', 'data-demo-text'];
+
+  const lookup = (text) => (Object.prototype.hasOwnProperty.call(dict, text) ? dict[text] : undefined);
+
+  // Daty w treści, np. „27 października 2026”, zapisujemy w formacie wybranego języka
+  const MONTHS_PL = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+  const DATE_PL = new RegExp(`^(\\d{1,2}) (${MONTHS_PL.join('|')}) (\\d{4})$`);
+  const longDateFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  // …oraz miesiące z rokiem, np. „wrzesień 2026” (data pobytu w opiniach)
+  const MONTHS_NOM_PL = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'];
+  const MONTH_PL = new RegExp(`^(${MONTHS_NOM_PL.join('|')}) (\\d{4})$`);
+  const monthYearFormat = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
+
+  // Tłumaczy tekst z zachowaniem spacji na początku i końcu; brak wpisu → tekst bez zmian
+  function translate(text) {
+    const [, before, core, after] = text.match(/^(\s*)([\s\S]*?)(\s*)$/);
+    const key = core.replace(/\s+/g, ' ');
+    if (!key || lang === 'pl') return text;
+    let out = lookup(key);
+    const date = out === undefined && key.match(DATE_PL);
+    if (date) out = longDateFormat.format(new Date(Number(date[3]), MONTHS_PL.indexOf(date[2]), Number(date[1])));
+    const month = out === undefined && key.match(MONTH_PL);
+    if (month) out = monthYearFormat.format(new Date(Number(month[2]), MONTHS_NOM_PL.indexOf(month[1]), 1));
+    return out === undefined || typeof out !== 'string' ? text : before + out + after;
+  }
+
+  // t('Dodano: {room}', { room }) — tekst z JS z miejscami na wartości
+  function t(text, vars = {}) {
+    return translate(text).replace(/\{(\w+)\}/g, (match, name) => (name in vars ? vars[name] : match));
+  }
+
+  // tw(3, ['noc', 'noce', 'nocy']) → samo słowo: „noce” / „nights” / „noches”
+  function tw(n, forms) {
+    const entry = lookup(forms.join('|'));
+    return entry ? entry[n === 1 ? 0 : 1] : plural(n, forms);
+  }
+
+  // tn(3, ['noc', 'noce', 'nocy']) → „3 noce” / „3 nights” / „3 noches”
+  const tn = (n, forms) => `${n} ${tw(n, forms)}`;
+
+  function translatePage() {
+    const root = document.documentElement;
+    if (lang !== 'pl') {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (node.parentElement.closest('script, style')) continue;
+        const translated = translate(node.nodeValue);
+        if (translated !== node.nodeValue) node.nodeValue = translated;
+      }
+      qsa(TRANSLATED_ATTRS.map((attr) => `[${attr}]`).join(', ')).forEach((el) => {
+        TRANSLATED_ATTRS.forEach((attr) => {
+          if (el.hasAttribute(attr)) el.setAttribute(attr, translate(el.getAttribute(attr)));
+        });
+      });
+      document.title = translate(document.title);
+      root.lang = lang;
+    }
+    root.classList.remove('i18n-pending');
+  }
+
+  translatePage();
+
   /* ---------- Pomocnicze: polska odmiana i daty ---------- */
 
   // plural(5, ['noc', 'noce', 'nocy']) -> "nocy"
@@ -45,7 +125,7 @@
     return Math.round((fromISO(end) - fromISO(start)) / 86400000);
   }
 
-  const dateFormat = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short' });
+  const dateFormat = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' });
   const formatRange = (start, end) => `${dateFormat.format(fromISO(start))} – ${dateFormat.format(fromISO(end))}`;
 
   /* ---------- Pomocnicze: przewijanie i dropdowny ---------- */
@@ -145,13 +225,30 @@
     });
   }
 
-  /* ---------- Wybór języka (wersja demonstracyjna) ---------- */
+  /* ---------- Wybór języka ---------- */
   function initLanguage() {
+    const code = lang.toUpperCase();
+    const toggle = qs('.lang-switch__toggle');
+    if (toggle) {
+      qs('span', toggle).textContent = code;
+      toggle.setAttribute('aria-label', t('{lang} — wybierz język strony', { lang: code }));
+    }
+
     qsa('.lang-switch__item').forEach((item) => {
+      const current = item.dataset.lang === lang;
+      if (item.classList.contains('dropdown-item')) item.classList.toggle('active', current);
+      if (current) item.setAttribute('aria-current', 'true');
+      else item.removeAttribute('aria-current');
+
       item.addEventListener('click', () => {
-        if (item.dataset.lang === 'pl') return;
-        const name = item.textContent.trim();
-        notify(`${name} — wkrótce`, 'Ta wersja językowa zostanie dodana w kolejnym etapie. Strona pozostaje w języku polskim.');
+        if (item.dataset.lang === lang) return;
+        try {
+          localStorage.setItem('es-lang', item.dataset.lang);
+        } catch (e) {
+          notify(t('Nie udało się zmienić języka'), t('Przeglądarka blokuje zapis ustawień. Spróbuj w zwykłym oknie.'));
+          return;
+        }
+        window.location.reload();
       });
     });
   }
@@ -227,6 +324,7 @@
     barcelona: {
       name: 'Barcelona',
       locative: 'w Barcelonie',
+      address: 'Passeig de la Llum 12, 08003 Barcelona',
       heroTitle: ['Barcelona, gdzie miasto ', 'spotyka morze'],
       aboutTitle: ['Barcelona ', 'we własnym tempie'],
       aboutLead: 'Barcelona łączy miejskie plaże, modernistyczne kamienice i wąskie uliczki Dzielnicy Gotyckiej. Po dniu pełnym wrażeń warto mieć miejsce, w którym czas płynie wolniej.',
@@ -249,6 +347,7 @@
     malaga: {
       name: 'Malaga',
       locative: 'w Maladze',
+      address: 'Paseo del Sol 18, 29016 Málaga',
       heroTitle: ['Malaga w rytmie ', 'andaluzyjskiego słońca'],
       aboutTitle: ['Andaluzyjski dzień ', 'bez pośpiechu'],
       aboutLead: 'Malaga to stare miasto u stóp mauretańskiej Alcazaby, nadmorski bulwar i plaże Costa del Sol. Dzień płynie tu w rytmie słońca — od porannej kawy po późną kolację.',
@@ -271,6 +370,7 @@
     madryt: {
       name: 'Madryt',
       locative: 'w Madrycie',
+      address: 'Calle de la Luz 21, 28014 Madrid',
       heroTitle: ['Madryt, stolica ', 'sztuki i późnych wieczorów'],
       aboutTitle: ['Spokojna baza ', 'w wielkim mieście'],
       aboutLead: 'Madryt to muzea Paseo del Arte, zielony Park Retiro i ulice, które ożywają dopiero wieczorem. Stolica Hiszpanii żyje intensywnie — tym bardziej warto mieć miejsce, w którym można zwolnić.',
@@ -299,44 +399,47 @@
     return CITIES[checked && isCity(checked.value) ? checked.value : DEFAULT_CITY];
   }
 
-  // Teksty budowane z nazwy miasta — wspólny wzór dla wszystkich lokalizacji
+  // Teksty budowane z nazwy miasta — wspólny wzór dla wszystkich lokalizacji.
+  // {loc} — polska forma „w Barcelonie”, {city} — nazwa miasta w wybranym języku.
   function cityTexts(city) {
+    const vars = { loc: city.locative, city: t(city.name) };
     return {
       ...city,
-      heroEyebrow: `e-spania · ${city.name}`,
-      heroDiscover: `Odkryj hotel ${city.locative}`,
-      roomPanelEyebrow: `Wybór pokoju · ${city.name}`,
-      ctaText: `Wybierz daty i pokój — zaplanuj swój pobyt ${city.locative}.`,
-      experiencesIntro: `Jeden dzień ${city.locative} — od poranka do późnego wieczoru. Wycieczki z przewodnikiem dodasz do pobytu przy rezerwacji.`,
+      heroEyebrow: `e-spania · ${vars.city}`,
+      heroDiscover: t('Odkryj hotel {loc}', vars),
+      roomPanelEyebrow: t('Wybór pokoju · {city}', vars),
+      ctaText: t('Wybierz daty i pokój — zaplanuj swój pobyt {loc}.', vars),
+      experiencesIntro: t('Jeden dzień {loc} — od poranka do późnego wieczoru. Wycieczki z przewodnikiem dodasz do pobytu przy rezerwacji.', vars),
     };
   }
 
   function setImage(img, { src, alt }) {
     img.src = src;
-    img.alt = alt;
+    img.alt = t(alt);
   }
 
+  // Teksty z CITIES są po polsku — każdy przechodzi przez t()
   function fillCityText(el, value) {
     const key = el.dataset.city;
     if (typeof value === 'string') {
-      el.textContent = value;
+      el.textContent = t(value);
     } else if (key === 'principles') {
       qsa('li', el).forEach((item, i) => {
-        qs('.principles__name', item).textContent = value[i][0];
-        qs('.principles__text', item).textContent = value[i][1];
+        qs('.principles__name', item).textContent = t(value[i][0]);
+        qs('.principles__text', item).textContent = t(value[i][1]);
       });
     } else if (key === 'experiences') {
       qsa('.experience', el).forEach((card, i) => {
         setImage(qs('img', card), value[i]);
-        qs('.experience__title', card).textContent = value[i].title;
-        qs('.experience__text', card).textContent = value[i].text;
+        qs('.experience__title', card).textContent = t(value[i].title);
+        qs('.experience__text', card).textContent = t(value[i].text);
       });
     } else if (value.src) {
       setImage(el, value);
     } else {
       const em = document.createElement('em');
-      em.textContent = value[1];
-      el.replaceChildren(value[0], em);
+      em.textContent = t(value[1]);
+      el.replaceChildren(t(value[0]), em);
     }
   }
 
@@ -351,7 +454,7 @@
 
   function changeCity(id) {
     const city = CITIES[id];
-    qs('#cityAnnounce').textContent = `Wyświetlasz hotel e-spania ${city.locative}.`;
+    qs('#cityAnnounce').textContent = t('Wyświetlasz hotel e-spania {loc}.', { loc: city.locative, city: t(city.name) });
     // Zdjęcia nowego miasta zaczynają się wczytywać już w trakcie wygaszania
     [...city.experiences, city.ctaImage].forEach(({ src }) => { new Image().src = src; });
     try {
@@ -383,12 +486,17 @@
     }, () => { /* przerwane kolejnym wyborem — teksty ustawi nowsze wywołanie */ });
   }
 
-  function initCity() {
+  // Miasto zapamiętane przy ostatnim wyborze na stronie głównej (nieznane lub brak → Barcelona)
+  function savedCity() {
     let saved = null;
     try {
       saved = localStorage.getItem('es-city');
     } catch (e) { /* brak dostępu do localStorage — zostaje Barcelona */ }
-    const id = isCity(saved) ? saved : DEFAULT_CITY;
+    return isCity(saved) ? saved : DEFAULT_CITY;
+  }
+
+  function initCity() {
+    const id = savedCity();
     qs(`#city-${id}`).checked = true;
     if (id !== DEFAULT_CITY) fillCity(id);
     document.documentElement.classList.remove('city-pending');
@@ -435,9 +543,9 @@
   }
 
   function validateDates() {
-    if (!arrival.value) return setError(datesToggle, 'Wybierz datę przyjazdu i wyjazdu.'), false;
-    if (!departure.value) return setError(datesToggle, 'Wybierz jeszcze datę wyjazdu.'), false;
-    if (!hasValidDates()) return setError(datesToggle, 'Sprawdź daty — wyjazd musi być po przyjeździe.'), false;
+    if (!arrival.value) return setError(datesToggle, t('Wybierz datę przyjazdu i wyjazdu.')), false;
+    if (!departure.value) return setError(datesToggle, t('Wybierz jeszcze datę wyjazdu.')), false;
+    if (!hasValidDates()) return setError(datesToggle, t('Sprawdź daty — wyjazd musi być po przyjeździe.')), false;
     setError(datesToggle, '');
     return true;
   }
@@ -445,7 +553,7 @@
   function validateRoom() {
     const room = rooms.get(roomInput.value);
     if (room && guestsTotal() > room.capacity) {
-      setError(roomTrigger, `${room.name} mieści maks. ${room.capacity} ${plural(room.capacity, ['gościa', 'gości', 'gości'])}.`);
+      setError(roomTrigger, t('{room} mieści maks. {guests}.', { room: room.name, guests: tn(room.capacity, ['gościa', 'gości', 'gości']) }));
       return false;
     }
     setError(roomTrigger, '');
@@ -454,13 +562,12 @@
 
   // Krótki opis wybranego pobytu, np. "Barcelona · 12 lis – 15 lis · 3 noce · 2 gości"
   function stayDescription() {
-    const parts = [currentCity().name];
+    const parts = [t(currentCity().name)];
     if (hasValidDates()) {
       const nights = nightsBetween(arrival.value, departure.value);
-      parts.push(formatRange(arrival.value, departure.value), `${nights} ${plural(nights, ['noc', 'noce', 'nocy'])}`);
+      parts.push(formatRange(arrival.value, departure.value), tn(nights, ['noc', 'noce', 'nocy']));
     }
-    const total = guestsTotal();
-    parts.push(`${total} ${plural(total, ['gość', 'gości', 'gości'])}`);
+    parts.push(tn(guestsTotal(), ['gość', 'gości', 'gości']));
     return parts.join(' · ');
   }
 
@@ -474,8 +581,8 @@
     // Krótki opis mieści się w polu także na telefonie; szczegóły są w rozwijanym okienku
     const total = a + c;
     qs('#guestsSummary').textContent = c > 0
-      ? `${total} ${plural(total, ['gość', 'gości', 'gości'])}`
-      : `${a} ${plural(a, ['dorosły', 'dorosłych', 'dorosłych'])}`;
+      ? tn(total, ['gość', 'gości', 'gości'])
+      : tn(a, ['dorosły', 'dorosłych', 'dorosłych']);
 
     qsa('.stepper__btn').forEach((btn) => {
       const input = qs(`#${btn.dataset.target}`);
@@ -497,7 +604,7 @@
   function setRoom(id) {
     const room = rooms.get(id);
     roomInput.value = room ? id : '';
-    qs('#roomSummary').textContent = room ? room.name : 'Dowolny pokój';
+    qs('#roomSummary').textContent = room ? room.name : t('Dowolny pokój');
     validateRoom();
   }
 
@@ -529,9 +636,12 @@
     hover: null,    // data pod kursorem — podgląd zakresu przed wybraniem wyjazdu
   };
   const twoMonths = window.matchMedia('(min-width: 768px)');
-  const monthTitle = new Intl.DateTimeFormat('pl-PL', { month: 'long', year: 'numeric' });
-  const dayLabel = new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const WEEKDAYS = [['Pn', 'poniedziałek'], ['Wt', 'wtorek'], ['Śr', 'środa'], ['Cz', 'czwartek'], ['Pt', 'piątek'], ['So', 'sobota'], ['Nd', 'niedziela']];
+  const monthTitle = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
+  const dayLabel = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  // Dni tygodnia od poniedziałku: po polsku ręcznie (Pn, Wt…), w EN/ES z Intl (1.01.2024 to poniedziałek)
+  const WEEKDAYS = lang === 'pl'
+    ? [['Pn', 'poniedziałek'], ['Wt', 'wtorek'], ['Śr', 'środa'], ['Cz', 'czwartek'], ['Pt', 'piątek'], ['So', 'sobota'], ['Nd', 'niedziela']]
+    : Array.from({ length: 7 }, (_, i) => ['short', 'long'].map((weekday) => new Intl.DateTimeFormat(locale, { weekday }).format(new Date(2024, 0, 1 + i))));
 
   const firstOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1);
   const lastBookable = () => addDays(toISO(new Date()), 365);
@@ -578,18 +688,18 @@
   }
 
   function updateHint() {
-    if (!arrival.value) calendar.hint.textContent = 'Wybierz datę przyjazdu';
-    else if (!departure.value) calendar.hint.textContent = 'Teraz wybierz datę wyjazdu';
+    if (!arrival.value) calendar.hint.textContent = t('Wybierz datę przyjazdu');
+    else if (!departure.value) calendar.hint.textContent = t('Teraz wybierz datę wyjazdu');
     else {
       const nights = nightsBetween(arrival.value, departure.value);
-      calendar.hint.textContent = `${formatRange(arrival.value, departure.value)} · ${nights} ${plural(nights, ['noc', 'noce', 'nocy'])}`;
+      calendar.hint.textContent = `${formatRange(arrival.value, departure.value)} · ${tn(nights, ['noc', 'noce', 'nocy'])}`;
     }
   }
 
   function updateDatesSummary() {
     qs('#datesSummary').textContent = arrival.value && departure.value
       ? formatRange(arrival.value, departure.value)
-      : arrival.value ? `${dateFormat.format(fromISO(arrival.value))} – …` : 'Przyjazd / Wyjazd';
+      : arrival.value ? `${dateFormat.format(fromISO(arrival.value))} – …` : t('Przyjazd / Wyjazd');
   }
 
   // Przesuwa widok tak, by wskazana data była widoczna, i ustawia na niej fokus
@@ -612,7 +722,7 @@
       arrival.value = iso;
       departure.value = '';
     } else if (nightsBetween(arrival.value, iso) > MAX_NIGHTS) {
-      calendar.hint.textContent = `Pobyt może trwać maks. ${MAX_NIGHTS} nocy.`;
+      calendar.hint.textContent = t('Pobyt może trwać maks. {n} nocy.', { n: MAX_NIGHTS });
       return;
     } else {
       departure.value = iso;
@@ -795,8 +905,8 @@
   function refreshPanel() {
     const total = guestsTotal();
     qs('#roomPanelSummary').textContent = hasValidDates()
-      ? `${stayDescription()}. Wybierz pokój, a przejdziemy do rezerwacji.`
-      : `${stayDescription()}. Wybierz pokój, a dodamy go do wyszukiwania.`;
+      ? t('{stay}. Wybierz pokój, a przejdziemy do rezerwacji.', { stay: stayDescription() })
+      : t('{stay}. Wybierz pokój, a dodamy go do wyszukiwania.', { stay: stayDescription() });
 
     qsa('.room-option', list).forEach((option) => {
       const room = rooms.get(option.dataset.roomId);
@@ -806,11 +916,11 @@
       option.classList.toggle('is-unavailable', tooSmall);
       option.classList.toggle('is-selected', selected);
       qs('.room-option__limit', option).textContent = tooSmall
-        ? `Za mały dla ${total} ${plural(total, ['gościa', 'gości', 'gości'])} — maks. ${room.capacity}.`
+        ? t('Za mały dla {guests} — maks. {max}.', { guests: tn(total, ['gościa', 'gości', 'gości']), max: room.capacity })
         : '';
       button.disabled = tooSmall;
       button.setAttribute('aria-pressed', String(selected));
-      qs('.room-option__select-label', button).textContent = selected ? 'Wybrano' : 'Wybierz';
+      qs('.room-option__select-label', button).textContent = selected ? t('Wybrano') : t('Wybierz');
     });
   }
 
@@ -831,7 +941,7 @@
         <p class="room-option__limit"></p>
         <button class="btn btn-ink room-option__select" type="button" aria-pressed="false">
           <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
-          <span class="room-option__select-label">Wybierz</span>
+          <span class="room-option__select-label">${t('Wybierz')}</span>
           <span class="visually-hidden"> — ${room.name}</span>
         </button>
       </div>`;
@@ -851,7 +961,7 @@
       if (fromSearch && hasValidDates()) {
         goToReservation(room.id);
       } else if (!hasValidDates()) {
-        notify(`Dodano: ${room.name}`, 'Wybierz daty przyjazdu i wyjazdu, a następnie kliknij „Sprawdź dostępność”.');
+        notify(t('Dodano: {room}', { room: room.name }), t('Wybierz daty przyjazdu i wyjazdu, a następnie kliknij „Sprawdź dostępność”.'));
       }
     });
     return item;
@@ -949,7 +1059,38 @@
   }
 
   /* ---------- Blog (blog.html, single.html) — elementy demonstracyjne ---------- */
+
+  // Autorzy wpisów. Karty linkują do wspólnego szablonu single.html z parametrem ?autor=klucz;
+  // HTML zawiera wersję Oskara (działa bez JS), pozostałych podmieniamy po wczytaniu.
+  const AUTHORS = {
+    oskar: {
+      name: 'Oskar Kasprzyk',
+      initials: 'OK',
+      bio: 'Współtwórca serwisu e-spania. Na blogu zbiera praktyczne wskazówki dla osób, które planują pierwszy lub kolejny wyjazd do Hiszpanii — od wyboru terminu po plan zwiedzania.'
+    },
+    krystian: {
+      name: 'Krystian Jałocha',
+      initials: 'KJ',
+      bio: 'Współtwórca serwisu e-spania. Pisze o hiszpańskiej kuchni, winach i zwyczajach — o tym, co zamówić, kiedy usiąść do kolacji i jak poczuć rytm dnia jak miejscowi.'
+    },
+    dawid: {
+      name: 'Dawid Jajko',
+      initials: 'DJ',
+      bio: 'Współtwórca serwisu e-spania. Układa trasy zwiedzania i podpowiada, jak sprawnie poruszać się po Hiszpanii — od miast Andaluzji po górskie miasteczka Majorki.'
+    }
+  };
+
+  function initPostAuthor() {
+    const fields = qsa('[data-post-author]');
+    if (!fields.length) return;
+    const author = AUTHORS[new URLSearchParams(window.location.search).get('autor')];
+    if (!author) return;                  // brak lub nieznany parametr → zostaje autor z HTML
+    fields.forEach((el) => { el.textContent = t(author[el.dataset.postAuthor]); });
+  }
+
   function initBlog() {
+    initPostAuthor();
+
     // Wyszukiwarka i formularz komentarza: walidacja Bootstrapa, potem komunikat demo (nic nie jest wysyłane)
     qsa('[data-demo-form]').forEach((demoForm) => {
       demoForm.addEventListener('submit', (event) => {
@@ -974,8 +1115,8 @@
 
     qsa('[data-copy-link]').forEach((button) => {
       button.addEventListener('click', () => {
-        const copied = () => notify('Skopiowano link', 'Adres artykułu jest w schowku — możesz go wkleić w wiadomości.');
-        const failed = () => notify('Nie udało się skopiować', 'Skopiuj adres z paska przeglądarki.');
+        const copied = () => notify(t('Skopiowano link'), t('Adres artykułu jest w schowku — możesz go wkleić w wiadomości.'));
+        const failed = () => notify(t('Nie udało się skopiować'), t('Skopiuj adres z paska przeglądarki.'));
         // Bez Clipboard API (np. strona otwarta przez http w starszej przeglądarce) prosimy o ręczne skopiowanie
         if (!navigator.clipboard) {
           failed();
@@ -1090,10 +1231,12 @@
   }
 
   // Wspólne narzędzia dla shop.js
-  window.ES = { qs, qsa, plural, toISO, fromISO, addDays, nightsBetween, notify };
+  window.ES = { qs, qsa, plural, toISO, fromISO, addDays, nightsBetween, notify, t, tn, tw, lang, locale };
 
   // Miasto ustawiamy przed podziałem tytułów na słowa — dzielony jest już właściwy tekst
+  // Na podstronach jedynym elementem zależnym od miasta jest adres w stopce
   if (form) initCity();
+  else if (savedCity() !== DEFAULT_CITY) fillCity(savedCity());
   qsa('[data-split]').forEach(splitTitle);
   initHeader();
   initLanguage();

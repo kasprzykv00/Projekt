@@ -7,16 +7,25 @@
 (() => {
   'use strict';
 
-  const { qs, qsa, plural, toISO, fromISO, addDays, nightsBetween, notify } = window.ES;
+  const { qs, qsa, toISO, fromISO, addDays, nightsBetween, notify, t, tn, tw, lang, locale } = window.ES;
   const { products, rooms, extras, excursions, cities, delivery, payments, discountCodes } = window.ES_DATA;
 
   /* ---------- Pomocnicze ---------- */
 
+  // Wersje językowe: dane w shop-data.js i w localStorage zostają po polsku (od nich zależą ceny
+  // i warianty), a tłumaczymy dopiero tekst wyświetlany na stronie — przez t() z main.js.
+  // Kwoty zawsze w złotych, w polskim zapisie (jak ceny w HTML).
   const moneyFormat = (fraction) => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN', minimumFractionDigits: fraction, maximumFractionDigits: 2 });
   const money = (value) => moneyFormat(Number.isInteger(value) ? 0 : 2).format(value);
-  const longDate = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
-  const shortDate = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short' });
-  const monthName = new Intl.DateTimeFormat('pl-PL', { month: 'long', year: 'numeric' });
+  const longDate = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  const shortDate = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' });
+  const monthName = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
+  // Skróty dni tygodnia od poniedziałku (1.01.2024 to poniedziałek)
+  const WEEKDAYS_SHORT = lang === 'pl'
+    ? ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd']
+    : Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, 1 + i)));
+  // Sposób płatności zapisany po polsku, np. „Karta •••• 4417” albo „Szybki przelew · mBank”
+  const paidWithText = (value) => String(value).replace(/^(Karta płatnicza|Szybki przelew|Karta)(?= |$)/, (name) => t(name));
   const formatDate = (iso) => longDate.format(fromISO(iso));
   const formatStay = (start, end) => `${shortDate.format(fromISO(start))} – ${longDate.format(fromISO(end))}`;
   const round2 = (value) => Math.round(value * 100) / 100;
@@ -43,8 +52,8 @@
     return `${html}</span>`;
   }
 
-  const ratingText = (rating) => String(rating.toFixed(1)).replace('.', ',');
-  const reviewWord = (count) => plural(count, ['opinia', 'opinie', 'opinii']);
+  const ratingText = (rating) => rating.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const reviewWord = (count) => tw(count, ['opinia', 'opinie', 'opinii']);
 
   /* ---------- Pamięć przeglądarki ---------- */
   // Gdy localStorage jest niedostępny (np. tryb prywatny), dane żyją do odświeżenia strony
@@ -80,14 +89,15 @@
     const guests = adults + children;
     const lines = [];
     if (room && nights > 0) {
-      lines.push({ label: `${room.name} · ${nights} ${plural(nights, ['noc', 'noce', 'nocy'])}`, amount: room.price * nights });
+      lines.push({ label: `${t(room.name)} · ${tn(nights, ['noc', 'noce', 'nocy'])}`, amount: room.price * nights });
     }
     const chosenExtras = extras.filter((extra) => extraIds.includes(extra.id)).map((extra) => {
       const factor = { 'person-night': guests * nights, night: nights, stay: 1 }[extra.unit];
       return { id: extra.id, name: extra.name, amount: extra.price * factor };
     });
-    chosenExtras.forEach((extra) => lines.push({ label: extra.name, amount: extra.amount }));
-    trips.forEach((trip) => lines.push({ label: `${trip.name} · ${guests} ${plural(guests, ['os.', 'os.', 'os.'])}`, amount: trip.price * guests }));
+    // Etykiety linii są tekstem do wyświetlenia (podsumowanie, płatność), więc od razu tłumaczone
+    chosenExtras.forEach((extra) => lines.push({ label: t(extra.name), amount: extra.amount }));
+    trips.forEach((trip) => lines.push({ label: `${t(trip.name)} · ${tn(guests, ['os.', 'os.', 'os.'])}`, amount: trip.price * guests }));
     return { nights, guests, lines, chosenExtras, total: lines.reduce((sum, line) => sum + line.amount, 0) };
   }
 
@@ -163,7 +173,7 @@
       badge.textContent = count;
       badge.hidden = count === 0;
       const link = badge.closest('a');
-      if (link) link.setAttribute('aria-label', `Koszyk, liczba produktów: ${count}`);
+      if (link) link.setAttribute('aria-label', window.ES.t('Koszyk, liczba produktów: {n}', { n: count }));
     });
   }
 
@@ -184,24 +194,25 @@
 
   /* ---------- Karta produktu (sklep, rekomendacje) ---------- */
   function productPriceHTML(product) {
-    const from = product.priceFrom ? 'od ' : '';
+    const from = product.priceFrom ? t('od {price}', { price: '' }) : '';
     if (!product.oldPrice) return `<p class="product-price">${from}${money(product.price)}</p>`;
-    return `<p class="product-price product-price--sale">${money(product.price)} <s class="product-price__old"><span class="visually-hidden">Cena regularna: </span>${money(product.oldPrice)}</s></p>`;
+    return `<p class="product-price product-price--sale">${money(product.price)} <s class="product-price__old"><span class="visually-hidden">${t('Cena regularna:')} </span>${money(product.oldPrice)}</s></p>`;
   }
 
   function relatedCardHTML(product) {
     const image = product.images[0];
-    const badge = product.badge ? `<span class="badge product-badge">${product.badge}</span>` : '';
+    const name = t(product.name);
+    const badge = product.badge ? `<span class="badge product-badge">${t(product.badge)}</span>` : '';
     return `<div class="col-6 col-lg-3">
         <article class="card product-card">
           <figure class="product-card__media media-frame">
-            <img src="${image.thumb}" width="800" height="800" loading="lazy" decoding="async" alt="${esc(image.alt)}">
+            <img src="${image.thumb}" width="800" height="800" loading="lazy" decoding="async" alt="${esc(t(image.alt))}">
             ${badge}
           </figure>
           <div class="card-body product-card__body">
-            <h3 class="card-title product-card__title"><a href="produkt.html?id=${product.id}">${product.name}</a></h3>
+            <h3 class="card-title product-card__title"><a href="produkt.html?id=${product.id}">${name}</a></h3>
             ${productPriceHTML(product)}
-            <a class="btn btn-ink product-card__cta" href="produkt.html?id=${product.id}">Zobacz<span class="visually-hidden">: ${product.name}</span></a>
+            <a class="btn btn-ink product-card__cta" href="produkt.html?id=${product.id}">${t('Zobacz')}<span class="visually-hidden">: ${name}</span></a>
           </div>
         </article>
       </div>`;
@@ -219,14 +230,14 @@
     const sortEl = qs('#productSort');
     const priceEl = qs('#filterPrice');
     const priceOut = qs('#filterPriceOutput');
-    const collator = new Intl.Collator('pl');
+    const collator = new Intl.Collator(locale);
     let page = 1;
 
     const sorters = {
       popular: (a, b) => b.popularity - a.popularity,
       'price-asc': (a, b) => a.price - b.price,
       'price-desc': (a, b) => b.price - a.price,
-      name: (a, b) => collator.compare(a.name, b.name),
+      name: (a, b) => collator.compare(t(a.name), t(b.name)),   // alfabetycznie w wybranym języku
     };
     const checkedValues = (name) => qsa(`input[data-group="${name}"]:checked`, form).map((input) => input.value);
 
@@ -251,9 +262,9 @@
       const pageItem = (target, label, { active = false, disabled = false, aria = '' } = {}) => `<li class="page-item${active ? ' active' : ''}${disabled ? ' disabled' : ''}">
           <a class="page-link" href="#produkty" data-page="${target}"${active ? ' aria-current="page"' : ''}${disabled ? ' aria-disabled="true" tabindex="-1"' : ''}${aria ? ` aria-label="${aria}"` : ''}>${label}</a>
         </li>`;
-      let html = pageItem(page - 1, '<i class="bi bi-arrow-left" aria-hidden="true"></i>', { disabled: page === 1, aria: 'Poprzednia strona' });
+      let html = pageItem(page - 1, '<i class="bi bi-arrow-left" aria-hidden="true"></i>', { disabled: page === 1, aria: t('Poprzednia strona') });
       for (let i = 1; i <= pages; i += 1) html += pageItem(i, String(i), { active: i === page });
-      html += pageItem(page + 1, '<i class="bi bi-arrow-right" aria-hidden="true"></i>', { disabled: page === pages, aria: 'Następna strona' });
+      html += pageItem(page + 1, '<i class="bi bi-arrow-right" aria-hidden="true"></i>', { disabled: page === pages, aria: t('Następna strona') });
       qs('.pagination', pagination).innerHTML = html;
     }
 
@@ -267,9 +278,9 @@
       list.forEach((p) => grid.append(items.find((el) => el.dataset.product === p.id)));
       items.forEach((el) => { el.hidden = !visible.includes(el.dataset.product); });
 
-      countEl.textContent = `Znaleziono ${list.length} ${plural(list.length, ['produkt', 'produkty', 'produktów'])}`;
+      countEl.textContent = t('Znaleziono {count}', { count: tn(list.length, ['produkt', 'produkty', 'produktów']) });
       emptyEl.hidden = list.length > 0;
-      priceOut.textContent = `do ${money(Number(priceEl.value))}`;
+      priceOut.textContent = t('do {price}', { price: money(Number(priceEl.value)) });
       renderPagination(pages);
     }
 
@@ -302,45 +313,47 @@
     const mainImage = qs('#productImage');
     const thumbs = qs('#productThumbs');
 
-    document.title = `${product.name} — sklep hotelowy | e-spania`;
-    qs('meta[name="description"]').content = product.lead;
-    qs('#crumbProduct').textContent = product.name;
-    qs('#productName').textContent = product.name;
-    qs('#productMeta').textContent = `${product.categoryLabel} · kod ${product.sku}`;
-    qs('#productRating').innerHTML = `${starsHTML(product.rating)}<span><span class="visually-hidden">Ocena </span>${ratingText(product.rating)}<span class="visually-hidden"> na 5</span> · ${product.reviewsCount} ${reviewWord(product.reviewsCount)}</span>`;
-    qs('#productLead').textContent = product.lead;
+    const name = t(product.name);
+    document.title = t('{name} — sklep hotelowy | e-spania', { name });
+    qs('meta[name="description"]').content = t(product.lead);
+    qs('#crumbProduct').textContent = name;
+    qs('#productName').textContent = name;
+    qs('#productMeta').textContent = t('{category} · kod {sku}', { category: t(product.categoryLabel), sku: product.sku });
+    qs('#productRating').innerHTML = `${starsHTML(product.rating)}<span><span class="visually-hidden">${t('Ocena')} </span>${ratingText(product.rating)}<span class="visually-hidden"> ${t('na 5')}</span> · ${product.reviewsCount} ${reviewWord(product.reviewsCount)}</span>`;
+    qs('#productLead').textContent = t(product.lead);
     qs('#productStock').innerHTML = product.inStock
-      ? '<i class="bi bi-check-circle" aria-hidden="true"></i> W magazynie, wysyłka w 24 godziny'
-      : '<i class="bi bi-hourglass-split" aria-hidden="true"></i> Na zamówienie, wysyłka do 10 dni';
+      ? `<i class="bi bi-check-circle" aria-hidden="true"></i> ${t('W magazynie, wysyłka w 24 godziny')}`
+      : `<i class="bi bi-hourglass-split" aria-hidden="true"></i> ${t('Na zamówienie, wysyłka do 10 dni')}`;
     qs('#productStock').classList.toggle('product-stock--order', !product.inStock);
-    qs('#productDescription').textContent = product.description;
-    qs('#productSpecs').innerHTML = product.specs.map(([key, value]) => `<tr><th scope="row">${key}</th><td>${value}</td></tr>`).join('');
-    qs('#productReviewsSummary').innerHTML = `${starsHTML(product.rating)}<span>${ratingText(product.rating)} na 5 · ${product.reviewsCount} ${reviewWord(product.reviewsCount)}</span>`;
+    qs('#productDescription').textContent = t(product.description);
+    qs('#productSpecs').innerHTML = product.specs.map(([key, value]) => `<tr><th scope="row">${t(key)}</th><td>${t(value)}</td></tr>`).join('');
+    qs('#productReviewsSummary').innerHTML = `${starsHTML(product.rating)}<span>${ratingText(product.rating)} ${t('na 5')} · ${product.reviewsCount} ${reviewWord(product.reviewsCount)}</span>`;
     qs('#productReviews').innerHTML = product.reviews.map((review) => `<li class="product-review">
-        <p class="product-rating">${starsHTML(review.rating)}<span class="visually-hidden">Ocena ${review.rating} na 5</span></p>
-        <p class="product-review__text">${review.text}</p>
-        <p class="product-review__author">${review.author} · ${review.date}</p>
+        <p class="product-rating">${starsHTML(review.rating)}<span class="visually-hidden">${t('Ocena {rating} na 5', { rating: review.rating })}</span></p>
+        <p class="product-review__text">${t(review.text)}</p>
+        <p class="product-review__author">${review.author} · ${t(review.date)}</p>
       </li>`).join('');
-    qs('#productVariantLabel').textContent = product.variant.label;
-    variantEl.innerHTML = product.variant.options.map((option) => `<option>${option.label}</option>`).join('');
+    qs('#productVariantLabel').textContent = t(product.variant.label);
+    // Wartość opcji zostaje po polsku (od niej zależy cena i zapis w koszyku), tłumaczymy tylko napis
+    variantEl.innerHTML = product.variant.options.map((option) => `<option value="${esc(option.label)}">${t(option.label)}</option>`).join('');
 
     function renderPrice() {
       const price = variantPrice(product, variantEl.value);
       const old = price === product.price && product.oldPrice;
-      qs('#productPrice').innerHTML = `${money(price)}${old ? ` <s class="product-price__old"><span class="visually-hidden">Cena regularna: </span>${money(product.oldPrice)}</s>` : ''}`;
+      qs('#productPrice').innerHTML = `${money(price)}${old ? ` <s class="product-price__old"><span class="visually-hidden">${t('Cena regularna:')} </span>${money(product.oldPrice)}</s>` : ''}`;
     }
 
     function showImage(index) {
       const image = product.images[index];
       mainImage.src = image.src;
-      mainImage.alt = image.alt;
+      mainImage.alt = t(image.alt);
       qsa('.product-thumb', thumbs).forEach((thumb, i) => {
         thumb.setAttribute('aria-pressed', String(i === index));
       });
     }
 
     thumbs.innerHTML = product.images.map((image, i) => `<div class="col-4">
-        <button class="product-thumb media-frame" type="button" data-thumb="${i}" aria-pressed="${i === 0}" aria-label="Pokaż zdjęcie ${i + 1} z ${product.images.length}">
+        <button class="product-thumb media-frame" type="button" data-thumb="${i}" aria-pressed="${i === 0}" aria-label="${t('Pokaż zdjęcie {n} z {total}', { n: i + 1, total: product.images.length })}">
           <img src="${image.thumb}" width="800" height="800" loading="lazy" decoding="async" alt="">
         </button>
       </div>`).join('');
@@ -408,21 +421,22 @@
       emptyEl.hidden = sum.lines.length > 0;
       body.innerHTML = sum.lines.map((line, i) => {
         const image = line.product.images[0];
+        const name = t(line.product.name);
         return `<tr data-line="${i}">
-          <td class="cart-table__product" data-label="Produkt">
+          <td class="cart-table__product" data-label="${t('Produkt')}">
             <a class="cart-item" href="produkt.html?id=${line.id}">
               <img class="cart-item__thumb" src="${image.thumb}" width="800" height="800" loading="lazy" decoding="async" alt="">
-              <span><span class="cart-item__name">${line.product.name}</span><span class="cart-item__variant">${esc(line.variant)}</span></span>
+              <span><span class="cart-item__name">${name}</span><span class="cart-item__variant">${esc(t(line.variant))}</span></span>
             </a>
           </td>
-          <td data-label="Cena jednostkowa">${money(line.price)}</td>
-          <td data-label="Ilość">
-            <label class="visually-hidden" for="qty-${i}">Ilość: ${line.product.name}</label>
+          <td data-label="${t('Cena jednostkowa')}">${money(line.price)}</td>
+          <td data-label="${t('Ilość')}">
+            <label class="visually-hidden" for="qty-${i}">${t('Ilość: {name}', { name })}</label>
             <input class="form-control cart-qty" type="number" id="qty-${i}" min="1" max="10" value="${line.qty}" inputmode="numeric">
           </td>
-          <td class="cart-table__total" data-label="Wartość łączna" data-line-total>${money(line.total)}</td>
-          <td class="cart-table__action" data-label="Akcja">
-            <button class="icon-btn cart-remove" type="button" data-remove="${i}" aria-label="Usuń z koszyka: ${line.product.name}"><i class="bi bi-trash" aria-hidden="true"></i></button>
+          <td class="cart-table__total" data-label="${t('Wartość łączna')}" data-line-total>${money(line.total)}</td>
+          <td class="cart-table__action" data-label="${t('Akcja')}">
+            <button class="icon-btn cart-remove" type="button" data-remove="${i}" aria-label="${t('Usuń z koszyka: {name}', { name })}"><i class="bi bi-trash" aria-hidden="true"></i></button>
           </td>
         </tr>`;
       }).join('');
@@ -450,7 +464,7 @@
       const [removed] = cart.splice(Number(button.dataset.remove), 1);
       saveCart(cart);
       render();
-      notify('Usunięto z koszyka', findProduct(removed.id).name);
+      notify(t('Usunięto z koszyka'), t(findProduct(removed.id).name));
       const next = qs('.cart-remove', body);
       (next || qs('#cartEmptyLink')).focus();
     });
@@ -467,13 +481,13 @@
       const code = codeInput.value.trim().toUpperCase();
       if (!code) {
         store.remove('es-discount');
-        showCode('Wpisz kod rabatowy.', false);
+        showCode(t('Wpisz kod rabatowy.'), false);
       } else if (discountCodes[code]) {
         store.set('es-discount', code);
-        showCode(`Kod ${code} aktywny: rabat ${Math.round(discountCodes[code] * 100)}% na produkty.`, true);
+        showCode(t('Kod {code} aktywny: rabat {percent}% na produkty.', { code, percent: Math.round(discountCodes[code] * 100) }), true);
       } else {
         store.remove('es-discount');
-        showCode('Ten kod jest nieprawidłowy lub stracił ważność.', false);
+        showCode(t('Ten kod jest nieprawidłowy lub stracił ważność.'), false);
       }
       renderSummary();
     });
@@ -481,7 +495,7 @@
     const savedCode = store.get('es-discount', '');
     if (savedCode) {
       codeInput.value = savedCode;
-      showCode(`Kod ${savedCode} aktywny: rabat ${Math.round(discountCodes[savedCode] * 100)}% na produkty.`, true);
+      showCode(t('Kod {code} aktywny: rabat {percent}% na produkty.', { code: savedCode, percent: Math.round(discountCodes[savedCode] * 100) }), true);
     }
     render();
   }
@@ -494,7 +508,7 @@
     if (summary) {
       const items = invalid.map((el) => {
         const feedback = qs(`[data-feedback="${el.id}"]`, form) || el.parentElement.querySelector('.invalid-feedback');
-        return `<li><a href="#${el.id}">${feedback ? esc(feedback.textContent) : 'Uzupełnij to pole.'}</a></li>`;
+        return `<li><a href="#${el.id}">${feedback ? esc(feedback.textContent) : t('Uzupełnij to pole.')}</a></li>`;
       }).join('');
       qs('ul', summary).innerHTML = items;
       summary.hidden = false;
@@ -525,13 +539,13 @@
     function renderSummary() {
       const sum = cartSummary(delivery[selectedDelivery()].price);
       qs('#checkoutItems').innerHTML = sum.lines.map((line) => `<li class="summary-item">
-          <span>${line.product.name}<small>${esc(line.variant)} · ${line.qty} szt.</small></span>
+          <span>${t(line.product.name)}<small>${esc(t(line.variant))} · ${t('{n} szt.', { n: line.qty })}</small></span>
           <span>${money(line.total)}</span>
         </li>`).join('');
       qs('#checkoutSubtotal').textContent = money(sum.subtotal);
       qs('#checkoutDiscountRow').hidden = !sum.discount;
       qs('#checkoutDiscount').textContent = `− ${money(sum.discount)}`;
-      qs('#checkoutShippingLabel').textContent = `Dostawa: ${delivery[selectedDelivery()].name}`;
+      qs('#checkoutShippingLabel').textContent = t('Dostawa: {name}', { name: t(delivery[selectedDelivery()].name) });
       qs('#checkoutShipping').textContent = money(sum.shipping);
       qs('#checkoutTotal').textContent = money(sum.total);
       const empty = !sum.lines.length;
@@ -568,9 +582,10 @@
         type: 'order',
         method: qs('input[name="payment"]:checked', form).value,
         total: sum.total,
-        title: `Zamówienie: ${sum.lines.length} ${plural(sum.lines.length, ['pozycja', 'pozycje', 'pozycji'])}`,
-        lines: sum.lines.map((line) => ({ label: `${line.product.name} · ${line.qty} szt.`, amount: line.total }))
-          .concat(sum.discount ? [{ label: `Rabat ${sum.code}`, amount: -sum.discount }] : [], [{ label: `Dostawa: ${delivery[deliveryKey].name}`, amount: sum.shipping }]),
+        // Tytuł i linie są tylko do wyświetlenia na stronie płatności — tłumaczone od razu
+        title: t('Zamówienie: {count}', { count: tn(sum.lines.length, ['pozycja', 'pozycje', 'pozycji']) }),
+        lines: sum.lines.map((line) => ({ label: `${t(line.product.name)} · ${t('{n} szt.', { n: line.qty })}`, amount: line.total }))
+          .concat(sum.discount ? [{ label: t('Rabat {code}', { code: sum.code }), amount: -sum.discount }] : [], [{ label: t('Dostawa: {name}', { name: t(delivery[deliveryKey].name) }), amount: sum.shipping }]),
         order: {
           items: sum.lines.map((line) => ({ id: line.id, name: line.product.name, variant: line.variant, qty: line.qty, price: line.price })),
           deliveryName: delivery[deliveryKey].name,
@@ -619,19 +634,19 @@
     // Lista wycieczek zależy od miasta, a daty w listach od długości pobytu
     function renderTrips() {
       const city = cityEl.value;
-      qs('#tripsCity').textContent = cities[city].locative;
+      qs('#tripsCity').textContent = t(cities[city].locative);
       tripsEl.innerHTML = excursions[city].map((trip) => `<div class="col-12">
           <div class="option-card">
             <div class="form-check option-card__check">
               <input class="form-check-input" type="checkbox" data-group="trip" id="trip-${trip.id}" value="${trip.id}">
               <label class="form-check-label" for="trip-${trip.id}">
-                <span class="option-card__name">${trip.name}</span>
-                <span class="option-card__text">${trip.text} Czas trwania: ${trip.duration}.</span>
+                <span class="option-card__name">${t(trip.name)}</span>
+                <span class="option-card__text">${t(trip.text)} ${t('Czas trwania: {time}.', { time: t(trip.duration) })}</span>
               </label>
             </div>
             <div class="option-card__side">
-              <span class="option-card__price">${money(trip.price)}<small>os.</small></span>
-              <label class="visually-hidden" for="trip-${trip.id}-date">Termin: ${trip.name}</label>
+              <span class="option-card__price">${money(trip.price)}<small>${t('os.')}</small></span>
+              <label class="visually-hidden" for="trip-${trip.id}-date">${t('Termin: {name}', { name: t(trip.name) })}</label>
               <select class="form-select trip-date" id="trip-${trip.id}-date" disabled></select>
             </div>
           </div>
@@ -649,7 +664,7 @@
         const current = select.value;
         select.innerHTML = days.length
           ? days.map((day) => `<option value="${day}">${shortDate.format(fromISO(day))}</option>`).join('')
-          : '<option value="">Najpierw wybierz daty</option>';
+          : `<option value="">${t('Najpierw wybierz daty')}</option>`;
         if (days.includes(current)) select.value = current;
         select.disabled = !input.checked || !days.length;
       });
@@ -664,7 +679,7 @@
         input.disabled = tooSmall;
         if (tooSmall) input.checked = false;
         input.closest('.option-card').classList.toggle('is-disabled', tooSmall);
-        qs(`#room-${room.id}-limit`).textContent = tooSmall ? `Maks. ${room.capacity} ${plural(room.capacity, ['gość', 'gości', 'gości'])}` : '';
+        qs(`#room-${room.id}-limit`).textContent = tooSmall ? t('Maks. {guests}', { guests: tn(room.capacity, ['gość', 'gości', 'gości']) }) : '';
       });
       if (!selectedRoom()) {
         const firstFree = rooms.find((room) => room.capacity >= total);
@@ -674,13 +689,13 @@
 
     function validateDates() {
       let message = '';
-      if (arrivalEl.value && arrivalEl.value < today()) message = 'Data przyjazdu nie może być w przeszłości.';
-      else if (arrivalEl.value && departureEl.value && departureEl.value <= arrivalEl.value) message = 'Wyjazd musi być po przyjeździe.';
-      else if (arrivalEl.value && departureEl.value && nightsBetween(arrivalEl.value, departureEl.value) > MAX_NIGHTS) message = `Pobyt może trwać maksymalnie ${MAX_NIGHTS} nocy.`;
+      if (arrivalEl.value && arrivalEl.value < today()) message = t('Data przyjazdu nie może być w przeszłości.');
+      else if (arrivalEl.value && departureEl.value && departureEl.value <= arrivalEl.value) message = t('Wyjazd musi być po przyjeździe.');
+      else if (arrivalEl.value && departureEl.value && nightsBetween(arrivalEl.value, departureEl.value) > MAX_NIGHTS) message = t('Pobyt może trwać maksymalnie {n} nocy.', { n: MAX_NIGHTS });
       departureEl.setCustomValidity(message);
-      qs('#resDepartureFeedback').textContent = message || 'Wybierz datę wyjazdu.';
+      qs('#resDepartureFeedback').textContent = message || t('Wybierz datę wyjazdu.');
       // Największy pokój mieści 4 osoby
-      adultsEl.setCustomValidity(guests() > 4 ? 'Pokoje mieszczą maksymalnie 4 gości.' : '');
+      adultsEl.setCustomValidity(guests() > 4 ? t('Pokoje mieszczą maksymalnie 4 gości.') : '');
     }
 
     function stayInput() {
@@ -692,10 +707,10 @@
 
     function renderSummary() {
       const priced = priceStay(stayInput());
-      qs('#resSumHotel').textContent = cities[cityEl.value].hotel;
+      qs('#resSumHotel').textContent = t(cities[cityEl.value].hotel);
       qs('#resSumDates').textContent = staysDatesOk()
-        ? `${formatStay(arrivalEl.value, departureEl.value)} · ${priced.guests} ${plural(priced.guests, ['gość', 'gości', 'gości'])}`
-        : 'Wybierz daty, aby zobaczyć cenę pobytu.';
+        ? `${formatStay(arrivalEl.value, departureEl.value)} · ${tn(priced.guests, ['gość', 'gości', 'gości'])}`
+        : t('Wybierz daty, aby zobaczyć cenę pobytu.');
       qs('#resSumLines').innerHTML = priced.lines.map((line) => `<li class="summary-item"><span>${esc(line.label)}</span><span>${money(line.amount)}</span></li>`).join('');
       qs('#resSumTotal').textContent = money(priced.total);
     }
@@ -751,7 +766,7 @@
         type: 'booking',
         method: 'karta',
         total: priced.total,
-        title: `${cities[cityEl.value].hotel} · ${room.name}`,
+        title: `${t(cities[cityEl.value].hotel)} · ${t(room.name)}`,
         subtitle: formatStay(input.arrival, input.departure),
         lines: priced.lines,
         booking: {
@@ -815,6 +830,7 @@
     });
 
     function paidWithLabel() {
+      // Zapisujemy po polsku — na koncie tłumaczy go paidWithText()
       if (method() === 'karta') return `Karta •••• ${cardEl.value.replace(/\D/g, '').slice(-4)}`;
       if (method() === 'przelew') return `Szybki przelew · ${qs('#bankSelect').value}`;
       return payments[method()];
@@ -840,14 +856,14 @@
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const digits = cardEl.value.replace(/\D/g, '');
-      cardEl.setCustomValidity(method() === 'karta' && digits.length !== 16 ? 'Numer karty ma 16 cyfr.' : '');
+      cardEl.setCustomValidity(method() === 'karta' && digits.length !== 16 ? t('Numer karty ma 16 cyfr.') : '');
       if (!form.checkValidity()) {
         showErrors(form, null);
         return;
       }
       const button = qs('#paymentSubmit');
       button.disabled = true;
-      qs('#paymentSubmitLabel').textContent = 'Przetwarzanie płatności…';
+      qs('#paymentSubmitLabel').textContent = t('Przetwarzanie płatności…');
       qs('#paymentSpinner').hidden = false;
       window.setTimeout(finish, 1200);
     });
@@ -869,15 +885,15 @@
     }
 
     const countdownHTML = (parts) => [
-      [parts.days, plural(parts.days, ['dzień', 'dni', 'dni'])],
-      [parts.hours, plural(parts.hours, ['godzina', 'godziny', 'godzin'])],
-      [parts.minutes, plural(parts.minutes, ['minuta', 'minuty', 'minut'])],
+      [parts.days, tw(parts.days, ['dzień', 'dni', 'dni'])],
+      [parts.hours, tw(parts.hours, ['godzina', 'godziny', 'godzin'])],
+      [parts.minutes, tw(parts.minutes, ['minuta', 'minuty', 'minut'])],
     ].map(([value, label]) => `<span class="countdown__unit"><strong>${value}</strong>${label}</span>`).join('');
 
     function monthHTML(start, booking) {
       const offset = (start.getDay() + 6) % 7;
       const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
-      const tripDays = new Map(booking.trips.map((trip) => [trip.date, trip.name]));
+      const tripDays = new Map(booking.trips.map((trip) => [trip.date, t(trip.name)]));
       let cells = '<tr>';
       for (let i = 0; i < offset; i += 1) cells += '<td></td>';
       for (let day = 1; day <= daysInMonth; day += 1) {
@@ -891,7 +907,7 @@
         cells += `<td class="${classes.join(' ')}"${title}>${day}</td>`;
         if ((offset + day) % 7 === 0 && day < daysInMonth) cells += '</tr><tr>';
       }
-      const head = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'].map((name) => `<th scope="col">${name}</th>`).join('');
+      const head = WEEKDAYS_SHORT.map((name) => `<th scope="col">${name}</th>`).join('');
       return `<table class="stay-calendar"><caption>${monthName.format(start)}</caption><thead><tr>${head}</tr></thead><tbody>${cells}</tr></tbody></table>`;
     }
 
@@ -908,30 +924,30 @@
       const city = cities[booking.city];
       const nights = nightsBetween(booking.arrival, booking.departure);
       const parts = isUpcoming(booking) ? countdownParts(booking) : null;
-      const statusLabel = !isUpcoming(booking) ? 'Zakończona' : parts ? 'Opłacona' : 'Trwa pobyt';
-      const extrasList = booking.extras.map((extra) => `<li>${esc(extra.name)}</li>`).join('');
-      const tripsList = booking.trips.map((trip) => `<li>${esc(trip.name)} · ${shortDate.format(fromISO(trip.date))}</li>`).join('');
+      const statusLabel = !isUpcoming(booking) ? t('Zakończona') : parts ? t('Opłacona') : t('Trwa pobyt');
+      const extrasList = booking.extras.map((extra) => `<li>${esc(t(extra.name))}</li>`).join('');
+      const tripsList = booking.trips.map((trip) => `<li>${esc(t(trip.name))} · ${shortDate.format(fromISO(trip.date))}</li>`).join('');
       return `<article class="booking-card${isUpcoming(booking) ? '' : ' booking-card--past'}">
         <div class="row g-0">
           <div class="col-md-4">
-            <figure class="booking-card__media media-frame"><img src="${room.image}" width="1200" height="900" loading="lazy" decoding="async" alt="${esc(room.alt)}"></figure>
+            <figure class="booking-card__media media-frame"><img src="${room.image}" width="1200" height="900" loading="lazy" decoding="async" alt="${esc(t(room.alt))}"></figure>
           </div>
           <div class="col-md-8">
             <div class="booking-card__body">
               <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                 <div>
-                  <h3 class="booking-card__title">${city.hotel}</h3>
-                  <p class="booking-card__room">${room.name} · ${nights} ${plural(nights, ['noc', 'noce', 'nocy'])}</p>
+                  <h3 class="booking-card__title">${t(city.hotel)}</h3>
+                  <p class="booking-card__room">${t(room.name)} · ${tn(nights, ['noc', 'noce', 'nocy'])}</p>
                 </div>
                 <span class="badge status-badge${isUpcoming(booking) ? ' status-badge--ok' : ''}">${statusLabel}</span>
               </div>
               <p class="booking-card__dates"><i class="bi bi-calendar-event" aria-hidden="true"></i> ${formatStay(booking.arrival, booking.departure)}</p>
-              ${parts ? `<div class="countdown" data-countdown="${esc(booking.ref)}"><p class="countdown__label">Do przyjazdu zostało</p><p class="countdown__units">${countdownHTML(parts)}</p></div>` : ''}
+              ${parts ? `<div class="countdown" data-countdown="${esc(booking.ref)}"><p class="countdown__label">${t('Do przyjazdu zostało')}</p><p class="countdown__units">${countdownHTML(parts)}</p></div>` : ''}
               <div class="row gy-4 mt-1">
                 <div class="col-sm-6">
-                  ${extrasList ? `<h4 class="booking-card__subtitle">Dodatki</h4><ul class="booking-card__list">${extrasList}</ul>` : ''}
-                  ${tripsList ? `<h4 class="booking-card__subtitle">Wycieczki</h4><ul class="booking-card__list">${tripsList}</ul>` : ''}
-                  <p class="booking-card__meta">Numer: ${esc(booking.ref)}<br>Zapłacono: ${money(booking.total)}<br>${esc(booking.paidWith)}</p>
+                  ${extrasList ? `<h4 class="booking-card__subtitle">${t('Dodatki')}</h4><ul class="booking-card__list">${extrasList}</ul>` : ''}
+                  ${tripsList ? `<h4 class="booking-card__subtitle">${t('Wycieczki')}</h4><ul class="booking-card__list">${tripsList}</ul>` : ''}
+                  <p class="booking-card__meta">${t('Numer:')} ${esc(booking.ref)}<br>${t('Zapłacono:')} ${money(booking.total)}<br>${esc(paidWithText(booking.paidWith))}</p>
                 </div>
                 <div class="col-sm-6">${calendarHTML(booking)}</div>
               </div>
@@ -944,29 +960,30 @@
     function renderBookings() {
       qs('#accountBookings').innerHTML = bookings.length
         ? [...upcoming, ...bookings.filter((booking) => !isUpcoming(booking))].map(bookingHTML).join('')
-        : '<p class="account-empty">Nie masz jeszcze rezerwacji.</p>';
+        : `<p class="account-empty">${t('Nie masz jeszcze rezerwacji.')}</p>`;
     }
 
     function renderDashboard() {
       const profile = store.get('es-profile', DEFAULT_PROFILE);
-      qs('#accountGreeting').textContent = `Witaj, ${profile.firstName}`;
+      qs('#accountGreeting').textContent = t('Witaj, {name}', { name: profile.firstName });
       qs('#statBookings').textContent = upcoming.length;
       qs('#statOrders').textContent = orders.filter((order) => order.status !== 'Dostarczone').length;
       const next = upcoming[0];
       const parts = next ? countdownParts(next) : null;
-      qs('#statNext').textContent = parts ? `${parts.days} ${plural(parts.days, ['dzień', 'dni', 'dni'])}` : '—';
+      qs('#statNext').textContent = parts ? tn(parts.days, ['dzień', 'dni', 'dni']) : '—';
       qs('#accountIntro').textContent = next
-        ? `Najbliższy pobyt: ${cities[next.city].hotel}, ${formatStay(next.arrival, next.departure)}.`
-        : 'Nie masz zaplanowanych pobytów. Hiszpania czeka.';
+        ? t('Najbliższy pobyt: {hotel}, {dates}.', { hotel: t(cities[next.city].hotel), dates: formatStay(next.arrival, next.departure) })
+        : t('Nie masz zaplanowanych pobytów. Hiszpania czeka.');
     }
 
+    // Status zamówienia jest zapisany po polsku („W realizacji”, „Wysłane”) — tłumaczymy przy wyświetlaniu
     function renderOrders() {
       qs('#ordersBody').innerHTML = orders.map((order) => `<tr>
-          <th scope="row" data-label="Numer">${esc(order.ref)}</th>
-          <td data-label="Data">${formatDate(order.date)}</td>
-          <td data-label="Kwota">${money(order.total)}</td>
-          <td data-label="Status"><span class="badge status-badge${order.status === 'Wysłane' ? ' status-badge--ok' : ''}">${esc(order.status)}</span></td>
-          <td data-label="Akcja"><button class="btn link-arrow" type="button" data-order="${esc(order.ref)}">Szczegóły<span class="visually-hidden"> zamówienia ${esc(order.ref)}</span></button></td>
+          <th scope="row" data-label="${t('Numer')}">${esc(order.ref)}</th>
+          <td data-label="${t('Data')}">${formatDate(order.date)}</td>
+          <td data-label="${t('Kwota')}">${money(order.total)}</td>
+          <td data-label="${t('Status')}"><span class="badge status-badge${order.status === 'Wysłane' ? ' status-badge--ok' : ''}">${esc(t(order.status))}</span></td>
+          <td data-label="${t('Akcja')}"><button class="btn link-arrow" type="button" data-order="${esc(order.ref)}">${t('Szczegóły')}<span class="visually-hidden"> ${t('zamówienia {ref}', { ref: esc(order.ref) })}</span></button></td>
         </tr>`).join('');
     }
 
@@ -975,17 +992,17 @@
       const button = event.target.closest('[data-order]');
       if (!button) return;
       const order = orders.find((item) => item.ref === button.dataset.order);
-      qs('#orderModalTitle').textContent = `Zamówienie ${order.ref}`;
+      qs('#orderModalTitle').textContent = t('Zamówienie {ref}', { ref: order.ref });
       qs('#orderModalBody').innerHTML = `
-        <p class="order-progress__label">Status: ${esc(order.status)}</p>
-        <div class="progress order-progress" role="progressbar" aria-label="Postęp realizacji zamówienia" aria-valuenow="${order.progress}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: ${order.progress}%"></div></div>
+        <p class="order-progress__label">${t('Status:')} ${esc(t(order.status))}</p>
+        <div class="progress order-progress" role="progressbar" aria-label="${t('Postęp realizacji zamówienia')}" aria-valuenow="${order.progress}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: ${order.progress}%"></div></div>
         <ul class="summary-list">
-          ${order.items.map((item) => `<li class="summary-item"><span>${esc(item.name)}<small>${esc(item.variant)} · ${item.qty} szt.</small></span><span>${money(item.price * item.qty)}</span></li>`).join('')}
-          ${order.discount ? `<li class="summary-item"><span>Rabat</span><span>− ${money(order.discount)}</span></li>` : ''}
-          <li class="summary-item"><span>Dostawa: ${esc(order.deliveryName)}</span><span>${money(order.deliveryPrice)}</span></li>
+          ${order.items.map((item) => `<li class="summary-item"><span>${esc(t(item.name))}<small>${esc(t(item.variant))} · ${t('{n} szt.', { n: item.qty })}</small></span><span>${money(item.price * item.qty)}</span></li>`).join('')}
+          ${order.discount ? `<li class="summary-item"><span>${t('Rabat')}</span><span>− ${money(order.discount)}</span></li>` : ''}
+          <li class="summary-item"><span>${t('Dostawa: {name}', { name: esc(t(order.deliveryName)) })}</span><span>${money(order.deliveryPrice)}</span></li>
         </ul>
-        <p class="summary-total"><span>Razem</span><strong>${money(order.total)}</strong></p>
-        <p class="order-meta">Adres: ${esc(order.address)}<br>Płatność: ${esc(order.paidWith)}${order.invoice ? `<br>Faktura: ${esc(order.invoice)}` : ''}</p>`;
+        <p class="summary-total"><span>${t('Razem')}</span><strong>${money(order.total)}</strong></p>
+        <p class="order-meta">${t('Adres:')} ${esc(order.address)}<br>${t('Płatność:')} ${esc(paidWithText(order.paidWith))}${order.invoice ? `<br>${t('Faktura:')} ${esc(order.invoice)}` : ''}</p>`;
       bootstrap.Modal.getOrCreateInstance(orderModalEl).show();
     });
 
@@ -1010,7 +1027,7 @@
       store.set('es-profile', { ...p, street: qs('#addrStreet').value.trim(), postal: qs('#addrPostal').value.trim(), city: qs('#addrCity').value.trim(), phone: qs('#addrPhone').value.trim() });
       renderAddress();
       bootstrap.Collapse.getOrCreateInstance(addressCollapse).hide();
-      notify('Zapisano adres', 'Użyjemy go przy kolejnych zamówieniach.');
+      notify(t('Zapisano adres'), t('Użyjemy go przy kolejnych zamówieniach.'));
     });
 
     const settingsForm = qs('#settingsForm');
@@ -1033,7 +1050,7 @@
       store.set('es-profile', { ...p, firstName: qs('#setFirstName').value.trim(), lastName: qs('#setLastName').value.trim(), email: qs('#setEmail').value.trim(), newsletter: qs('#setNewsletter').checked });
       renderDashboard();
       renderAddress();
-      notify('Zapisano ustawienia', 'Twoje dane zostały zaktualizowane.');
+      notify(t('Zapisano ustawienia'), t('Twoje dane zostały zaktualizowane.'));
     });
 
     /* Komunikat po płatności */
@@ -1042,10 +1059,10 @@
     const ref = (params.get('nr') || '').replace(/[^A-Z0-9-]/gi, '');
     if (paid === 'rezerwacja' || paid === 'zamowienie') {
       const box = qs('#accountSuccess');
-      qs('#accountSuccessTitle').textContent = 'Płatność przyjęta';
+      qs('#accountSuccessTitle').textContent = t('Płatność przyjęta');
       qs('#accountSuccessText').textContent = paid === 'rezerwacja'
-        ? `Rezerwacja ${ref} jest opłacona. Szczegóły i odliczanie znajdziesz poniżej.`
-        : `Zamówienie ${ref} jest opłacone i trafiło do realizacji.`;
+        ? t('Rezerwacja {ref} jest opłacona. Szczegóły i odliczanie znajdziesz poniżej.', { ref })
+        : t('Zamówienie {ref} jest opłacone i trafiło do realizacji.', { ref });
       box.hidden = false;
       box.focus();
       // Odświeżenie strony nie powinno pokazywać komunikatu ponownie
